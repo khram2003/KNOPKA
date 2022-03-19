@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -cp target/classes:target/dependency/* com.hse.knopkaBackend.SpringKnopkaApplication
+web: java -Dserver.port=$PORT -jar target/SpringKnopka-0.0.1-SNAPSHOT.jar
