@@ -32,13 +32,22 @@ public class KnopkaUser {
     )
     private String nickname;
 
-    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private Profile profile;
 
-    public KnopkaUser(Long curId, String curNickname) {
+    public KnopkaUser(Long curId, String curNickname, Profile curProfile) {
         id = curId;
         nickname = curNickname;
+        profile = curProfile;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
     }
 
     public KnopkaUser(String nickname) {

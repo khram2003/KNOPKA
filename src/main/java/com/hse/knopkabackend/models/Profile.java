@@ -18,7 +18,6 @@ public class Profile {
     private Long userWithThisProfileId;
 
 
-
     @Column(
             name = "profile_nickname",
             nullable = false,
@@ -45,11 +44,12 @@ public class Profile {
     @JoinColumn(name = "profile_user_id")
     private KnopkaUser user;
 
-    public Profile(String name, String bio, byte[] encodedPhoto, Long userWithThisProfileId) {
+    public Profile(String name, String bio, byte[] encodedPhoto, Long userWithThisProfileId, KnopkaUser user) {
         this.nickname = name;
         this.bio = bio;
         this.encodedPhoto = encodedPhoto;
         this.userWithThisProfileId = userWithThisProfileId;
+        this.user = user;
     }
 
     public Profile(String name, String bio, Long userWithThisProfileId) {
@@ -88,6 +88,22 @@ public class Profile {
 
     public void setEncodedPhoto(byte[] encodedPhoto) {
         this.encodedPhoto = encodedPhoto;
+    }
+
+    public Long getUserWithThisProfileId() {
+        return userWithThisProfileId;
+    }
+
+    public void setUserWithThisProfileId(Long userWithThisProfileId) {
+        this.userWithThisProfileId = userWithThisProfileId;
+    }
+
+    public KnopkaUser getUser() {
+        return user;
+    }
+
+    public void setUser(KnopkaUser user) {
+        this.user = user;
     }
 
     @Override
