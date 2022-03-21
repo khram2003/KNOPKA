@@ -1,4 +1,4 @@
-package com.hse.knopkaBackend.button;
+package com.hse.knopkabackend.models;
 
 public class Knopka {
     String text;
@@ -32,4 +32,6 @@ public class Knopka {
                 ", authorId=" + authorId +
                 '}';
     }
+
+
 }

@@ -1,4 +1,4 @@
-package com.hse.knopkaBackend;
+package com.hse.knopkabackend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

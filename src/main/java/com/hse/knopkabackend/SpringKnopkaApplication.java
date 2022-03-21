@@ -1,4 +1,4 @@
-package com.hse.knopkaBackend;
+package com.hse.knopkabackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

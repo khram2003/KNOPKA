@@ -1,9 +1,14 @@
-package com.hse.knopkaBackend.knopkaUser;
+package com.hse.knopkabackend.models;
 
 import javax.persistence.*;
 
-@Entity
-@Table
+@Entity(name = "knopka_user")
+@Table(
+        name = "knopka_user",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "user_nickname_unique", columnNames = "nickname")
+        }
+)
 public class KnopkaUser {
     @Id
     @SequenceGenerator(
@@ -15,9 +20,21 @@ public class KnopkaUser {
             strategy = GenerationType.SEQUENCE,
             generator = "user_sequence"
     )
+    @Column(
+            name = "id",
+            updatable = false
+    )
     private Long id;
+    @Column(
+            name = "nickname",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
     private String nickname;
 
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private Profile profile;
 
     public KnopkaUser(Long curId, String curNickname) {
         id = curId;

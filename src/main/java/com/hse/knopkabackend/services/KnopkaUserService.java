@@ -1,5 +1,7 @@
-package com.hse.knopkaBackend.knopkaUser;
+package com.hse.knopkabackend.services;
 
+import com.hse.knopkabackend.models.KnopkaUser;
+import com.hse.knopkabackend.repositories.KnopkaUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

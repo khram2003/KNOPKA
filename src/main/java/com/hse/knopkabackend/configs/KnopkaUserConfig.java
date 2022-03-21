@@ -1,5 +1,7 @@
-package com.hse.knopkaBackend.knopkaUser;
+package com.hse.knopkabackend.configs;
 
+import com.hse.knopkabackend.repositories.KnopkaUserRepository;
+import com.hse.knopkabackend.models.KnopkaUser;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
