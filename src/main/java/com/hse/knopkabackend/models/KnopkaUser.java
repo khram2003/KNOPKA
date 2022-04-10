@@ -3,11 +3,10 @@ package com.hse.knopkabackend.models;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity(name = "knopka_user")
-@Table(
-        name = "knopka_user"
-)
+@Table(name = "knopka_user")
 public class KnopkaUser {
     @Id
     @SequenceGenerator(
@@ -28,7 +27,7 @@ public class KnopkaUser {
     @Column(
             name = "email",
             nullable = false,
-            updatable = false,
+            updatable = true,
             unique = true,
             columnDefinition = "TEXT"
     )
@@ -38,6 +37,9 @@ public class KnopkaUser {
     @PrimaryKeyJoinColumn
     @JsonManagedReference
     private Profile profile;
+
+    @OneToMany(mappedBy = "user")
+    List<Knopka> knopkas;
 
     public KnopkaUser(Long curId, Profile curProfile) {
         id = curId;

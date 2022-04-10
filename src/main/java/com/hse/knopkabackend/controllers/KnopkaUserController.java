@@ -35,8 +35,11 @@ public class KnopkaUserController {
 
     @PutMapping(path = "put/{knopkaUserId}")
     public void updateKnopkaUser(@PathVariable("knopkaUserId") Long knopkaUserId,
-                                 @RequestParam(required = false) String nickname/*,
-                                 @RequestParam(required = false) String email*/) {
-        knopkaUserService.updateKnopkaUserNickname(knopkaUserId, nickname);
+                                 @RequestParam(required = false) String nickname,
+                                 @RequestParam(required = false) String email) {
+        if (email != null)
+            knopkaUserService.updateKnopkaUserEmail(knopkaUserId, email);
+        if (nickname != null)
+            knopkaUserService.updateKnopkaUserNickname(knopkaUserId, nickname);
     }
 }

@@ -82,4 +82,29 @@ public class KnopkaUserService {
             }
         }
     }
+
+    public void updateKnopkaUserEmail(Long knopkaUserId, String email) {
+        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
+                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+        );
+        if (email != null) {
+            Optional<KnopkaUser> knopkaUserByEmail = knopkaUserRepository.findKnopkaUserByEmail(email);
+            if (knopkaUserByEmail.isPresent()) {
+                throw new IllegalStateException("Oops! Email '" +
+                        email + "' is already taken. Try another one."
+                );
+            }
+            if (!email.isBlank() && !knopkaUser.getEmail().equals(email)) {
+                //TODO: validate email
+                knopkaUser.setEmail(email);
+                System.out.println("Changed KnopkaUser's email with id: " +
+                        knopkaUserId + " to: '" + email + "'"
+                );
+            } else {
+                throw new IllegalStateException("Your new email '" +
+                        email + "' is not valid. Please chose another one"
+                );
+            }
+        }
+    }
 }
