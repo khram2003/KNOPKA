@@ -1,5 +1,6 @@
 package com.hse.knopkabackend.configs;
 
+import com.hse.knopkabackend.models.Profile;
 import com.hse.knopkabackend.repositories.KnopkaUserRepository;
 import com.hse.knopkabackend.models.KnopkaUser;
 import org.springframework.boot.CommandLineRunner;
@@ -14,9 +15,18 @@ public class KnopkaUserConfig {
     @Bean
     CommandLineRunner commandLineRunner(KnopkaUserRepository repository) {
         return args -> {
-            KnopkaUser Biba = new KnopkaUser("Biba");
-            KnopkaUser Boba = new KnopkaUser("Boba");
-            KnopkaUser Aboba = new KnopkaUser("Aboba");
+            Profile BibaProfile = new Profile("Biba");
+            KnopkaUser Biba = new KnopkaUser("biba.com");
+            Biba.setProfile(BibaProfile);
+            BibaProfile.setUser(Biba);
+            Profile BobaProfile = new Profile("Boba");
+            KnopkaUser Boba = new KnopkaUser("boba.com");
+            Boba.setProfile(BobaProfile);
+            BobaProfile.setUser(Boba);
+            Profile AbobaProfile = new Profile("Aboba");
+            KnopkaUser Aboba = new KnopkaUser("aboba.com");
+            Aboba.setProfile(AbobaProfile);
+            AbobaProfile.setUser(Aboba);
 
             repository.saveAll(List.of(Biba, Boba, Aboba));
         };

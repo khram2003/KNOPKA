@@ -1,7 +1,9 @@
 package com.hse.knopkabackend.services;
 
 import com.hse.knopkabackend.models.KnopkaUser;
+import com.hse.knopkabackend.models.Profile;
 import com.hse.knopkabackend.repositories.KnopkaUserRepository;
+import com.hse.knopkabackend.repositories.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,10 +15,12 @@ import java.util.Optional;
 public class KnopkaUserService {
 
     private final KnopkaUserRepository knopkaUserRepository;
+    private final ProfileRepository profileKnopkaUserRepository;
 
     @Autowired
-    public KnopkaUserService(KnopkaUserRepository knopkaUserRepository) {
+    public KnopkaUserService(KnopkaUserRepository knopkaUserRepository, ProfileRepository profileKnopkaUserRepository) {
         this.knopkaUserRepository = knopkaUserRepository;
+        this.profileKnopkaUserRepository = profileKnopkaUserRepository;
     }
 
     public List<KnopkaUser> getKnopkaUsers() {
@@ -24,13 +28,20 @@ public class KnopkaUserService {
     }
 
     public void addNewKnopkaUser(KnopkaUser knopkaUser) {
-        Optional<KnopkaUser> knopkaUserByNickname = knopkaUserRepository.findKnopkaUserByNickname(
-                knopkaUser.getNickname()
+        Optional<Profile> profileKnopkaUserByNickname = profileKnopkaUserRepository.findProfileByNickname(
+                knopkaUser.getProfile().getNickname()
         );
-        // IMHO here should be any new account validation logic
-        if (knopkaUserByNickname.isPresent()) {
+        if (profileKnopkaUserByNickname.isPresent()) {
             throw new IllegalStateException("Oops! Nickname '" +
-                    knopkaUser.getNickname() + "' is already taken. Try another one."
+                    knopkaUser.getProfile().getNickname() + "' is already taken. Try another one."
+            );
+        }
+        Optional<KnopkaUser> knopkaUserByEmail = knopkaUserRepository.findKnopkaUserByEmail(
+                knopkaUser.getEmail()
+        );
+        if (knopkaUserByEmail.isPresent()) {
+            throw new IllegalStateException("Oops! Email '" +
+                    knopkaUser.getEmail() + "' is already taken. Try another one."
             );
         }
         knopkaUserRepository.save(knopkaUser);
@@ -48,19 +59,19 @@ public class KnopkaUserService {
     }
 
     @Transactional
-    public void updateKnopkaUser(Long knopkaUserId, String nickname) {
+    public void updateKnopkaUserNickname(Long knopkaUserId, String nickname) {
         KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
                 () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
         );
         if (nickname != null) {
-            Optional<KnopkaUser> knopkaUserByNickname = knopkaUserRepository.findKnopkaUserByNickname(nickname);
+            Optional<Profile> knopkaUserByNickname = profileKnopkaUserRepository.findProfileByNickname(nickname);
             if (knopkaUserByNickname.isPresent()) {
                 throw new IllegalStateException("Oops! Nickname '" +
                         nickname + "' is already taken. Try another one."
                 );
             }
-            if (!nickname.isBlank() && !knopkaUser.getNickname().equals(nickname)) {
-                knopkaUser.setNickname(nickname);
+            if (!nickname.isBlank() && !knopkaUser.getProfile().getNickname().equals(nickname)) {
+                knopkaUser.getProfile().setNickname(nickname);
                 System.out.println("Changed KnopkaUser's nickname with id: " +
                         knopkaUserId + " to: '" + nickname + "'"
                 );

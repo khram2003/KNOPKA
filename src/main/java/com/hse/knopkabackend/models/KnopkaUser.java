@@ -1,13 +1,12 @@
 package com.hse.knopkabackend.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 
 @Entity(name = "knopka_user")
 @Table(
-        name = "knopka_user",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "user_nickname_unique", columnNames = "nickname")
-        }
+        name = "knopka_user"
 )
 public class KnopkaUser {
     @Id
@@ -25,21 +24,32 @@ public class KnopkaUser {
             updatable = false
     )
     private Long id;
+
     @Column(
-            name = "nickname",
+            name = "email",
             nullable = false,
+            updatable = false,
+            unique = true,
             columnDefinition = "TEXT"
     )
-    private String nickname;
+    private String email;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
+    @JsonManagedReference
     private Profile profile;
 
-    public KnopkaUser(Long curId, String curNickname, Profile curProfile) {
+    public KnopkaUser(Long curId, Profile curProfile) {
         id = curId;
-        nickname = curNickname;
         profile = curProfile;
+    }
+
+    public KnopkaUser(Profile profile) {
+        this.profile = profile;
+    }
+
+    public KnopkaUser(String email) {
+        this.email = email;
     }
 
     public Profile getProfile() {
@@ -50,9 +60,14 @@ public class KnopkaUser {
         this.profile = profile;
     }
 
-    public KnopkaUser(String nickname) {
-        this.nickname = nickname;
+    public String getEmail() {
+        return email;
     }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
 
     public KnopkaUser() {
 
@@ -62,17 +77,8 @@ public class KnopkaUser {
         return id;
     }
 
-    public String getNickname() {
-        return nickname;
-    }
-
-
     public void setId(Long curId) {
         id = curId;
-    }
-
-    public void setNickname(String curNickname) {
-        nickname = curNickname;
     }
 
 
@@ -80,7 +86,7 @@ public class KnopkaUser {
     public String toString() {
         return "KnopkaUser{" +
                 "id=" + id +
-                ", nickname='" + nickname +
+                ", email='" + email +
                 "'}";
     }
 }

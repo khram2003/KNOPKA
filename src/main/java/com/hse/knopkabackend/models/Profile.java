@@ -1,7 +1,9 @@
 package com.hse.knopkabackend.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.persistence.*;
-import java.util.Arrays;
 
 @Entity(name = "profile")
 @Table(name = "profile",
@@ -10,7 +12,6 @@ import java.util.Arrays;
         })
 public class Profile {
     @Id
-    @GeneratedValue //not sure that i really need this annotation
     @Column(
             name = "profile_user_id",
             updatable = false
@@ -21,7 +22,7 @@ public class Profile {
     @Column(
             name = "profile_nickname",
             nullable = false,
-            columnDefinition = "TEXT"
+            columnDefinition = "VARCHAR(256)"
     )
     private String nickname;
 
@@ -34,17 +35,18 @@ public class Profile {
 
     @Column(
             name = "encoded_image",
-            nullable = true,
-            columnDefinition = "TEXT"
+            nullable = true
     )
-    byte[] encodedPhoto;
+    @Lob
+    MultipartFile encodedPhoto; //smth strange
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "profile_user_id")
+    @JsonBackReference
     private KnopkaUser user;
 
-    public Profile(String name, String bio, byte[] encodedPhoto, Long userWithThisProfileId, KnopkaUser user) {
+    public Profile(String name, String bio, MultipartFile encodedPhoto, Long userWithThisProfileId, KnopkaUser user) {
         this.nickname = name;
         this.bio = bio;
         this.encodedPhoto = encodedPhoto;
@@ -82,11 +84,11 @@ public class Profile {
         this.bio = bio;
     }
 
-    public byte[] getEncodedPhoto() {
+    public MultipartFile getEncodedPhoto() {
         return encodedPhoto;
     }
 
-    public void setEncodedPhoto(byte[] encodedPhoto) {
+    public void setEncodedPhoto(MultipartFile encodedPhoto) {
         this.encodedPhoto = encodedPhoto;
     }
 
@@ -111,7 +113,6 @@ public class Profile {
         return "Profile{" +
                 "name='" + nickname + '\'' +
                 ", bio='" + bio + '\'' +
-                ", encodedPhoto='" + Arrays.toString(encodedPhoto) + '\'' + //let it be like that for now
                 '}';
     }
 }
