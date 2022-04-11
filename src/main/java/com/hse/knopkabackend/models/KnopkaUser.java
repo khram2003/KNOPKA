@@ -27,11 +27,17 @@ public class KnopkaUser {
     @Column(
             name = "email",
             nullable = false,
-            updatable = true,
             unique = true,
-            columnDefinition = "TEXT"
+            columnDefinition = "VARCHAR"
     )
     private String email;
+
+    @Column(
+            name = "token",
+            unique = true,
+            columnDefinition = "VARCHAR"
+    )
+    private String token;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
@@ -83,6 +89,13 @@ public class KnopkaUser {
         id = curId;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     @Override
     public String toString() {

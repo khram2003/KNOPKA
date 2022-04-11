@@ -30,21 +30,23 @@ public class ProfileController {
     }
 
     @DeleteMapping(path = "delete/{profileKnopkaUserId}")
-    public void deleteKnopkaUser(@PathVariable("profileKnopkaUserId") Long profileKnopkaUserId) {
-        profileService.deleteProfile(profileKnopkaUserId);
+    public void deleteKnopkaUser(@PathVariable("profileKnopkaUserId") Long profileKnopkaUserId,
+                                 @RequestParam String token) {
+        profileService.deleteProfile(profileKnopkaUserId, token);
     }
 
     @PutMapping(path = "put/{profileKnopkaUserId}")
     public void updateProfileNickname(@PathVariable("profileKnopkaUserId") Long profileKnopkaUserId,
                                       @RequestParam(required = false) String nickname,
                                       @RequestParam(required = false) String bio,
-                                      @RequestParam(required = false) MultipartFile photo) {
+                                      @RequestParam(required = false) MultipartFile photo,
+                                      @RequestParam String token) {
         if (nickname != null)
-            profileService.updateProfileNickname(profileKnopkaUserId, nickname);
+            profileService.updateProfileNickname(profileKnopkaUserId, nickname, token);
         if (bio != null)
-            profileService.updateProfileBio(profileKnopkaUserId, bio);
+            profileService.updateProfileBio(profileKnopkaUserId, bio, token);
         if (photo != null)
-            profileService.updateProfilePhoto(profileKnopkaUserId, photo);
+            profileService.updateProfilePhoto(profileKnopkaUserId, photo, token);
     }
 
 }

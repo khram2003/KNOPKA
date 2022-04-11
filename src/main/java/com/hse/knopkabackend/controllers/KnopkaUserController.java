@@ -3,6 +3,8 @@ package com.hse.knopkabackend.controllers;
 import com.hse.knopkabackend.services.KnopkaUserService;
 import com.hse.knopkabackend.models.KnopkaUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,22 +26,25 @@ public class KnopkaUserController {
     }
 
     @PostMapping
-    public void registerNewKnopkaUser(@RequestBody KnopkaUser knopkaUser) {
+    public ResponseEntity<Long> registerNewKnopkaUser(@RequestBody KnopkaUser knopkaUser) {
         knopkaUserService.addNewKnopkaUser(knopkaUser);
+        return new ResponseEntity<>(knopkaUser.getId(), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "delete/{knopkaUserId}")
-    public void deleteKnopkaUser(@PathVariable("knopkaUserId") Long knopkaUserId) {
-        knopkaUserService.deleteKnopkaUser(knopkaUserId);
+    public void deleteKnopkaUser(@PathVariable("knopkaUserId") Long knopkaUserId,
+                                 @RequestParam String token) {
+        knopkaUserService.deleteKnopkaUser(knopkaUserId, token);
     }
 
     @PutMapping(path = "put/{knopkaUserId}")
     public void updateKnopkaUser(@PathVariable("knopkaUserId") Long knopkaUserId,
                                  @RequestParam(required = false) String nickname,
-                                 @RequestParam(required = false) String email) {
+                                 @RequestParam(required = false) String email,
+                                 @RequestParam String token) {
         if (email != null)
-            knopkaUserService.updateKnopkaUserEmail(knopkaUserId, email);
+            knopkaUserService.updateKnopkaUserEmail(knopkaUserId, email, token);
         if (nickname != null)
-            knopkaUserService.updateKnopkaUserNickname(knopkaUserId, nickname);
+            knopkaUserService.updateKnopkaUserNickname(knopkaUserId, nickname, token);
     }
 }

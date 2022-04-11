@@ -17,14 +17,17 @@ public class KnopkaUserConfig {
         return args -> {
             Profile BibaProfile = new Profile("Biba");
             KnopkaUser Biba = new KnopkaUser("biba.com");
+            Biba.setToken("111");
             Biba.setProfile(BibaProfile);
             BibaProfile.setUser(Biba);
             Profile BobaProfile = new Profile("Boba");
             KnopkaUser Boba = new KnopkaUser("boba.com");
+            Boba.setToken("121");
             Boba.setProfile(BobaProfile);
             BobaProfile.setUser(Boba);
             Profile AbobaProfile = new Profile("Aboba");
             KnopkaUser Aboba = new KnopkaUser("aboba.com");
+            Aboba.setToken("333");
             Aboba.setProfile(AbobaProfile);
             AbobaProfile.setUser(Aboba);
 

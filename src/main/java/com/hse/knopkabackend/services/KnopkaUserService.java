@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -49,17 +50,22 @@ public class KnopkaUserService {
     }
 
 
-    public void deleteKnopkaUser(Long knopkaUserId) {
+    public void deleteKnopkaUser(Long knopkaUserId, String token) {
         boolean exists = knopkaUserRepository.existsById(knopkaUserId);
         if (!exists) {
             throw new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist");
         }
-        knopkaUserRepository.deleteById(knopkaUserId);
-        System.out.println("Deleted KnopkaUser with id: " + knopkaUserId);
+        Optional<KnopkaUser> knopkaUserById = knopkaUserRepository.findById(knopkaUserId);
+        if (knopkaUserById.isPresent() && Objects.equals(token, knopkaUserById.get().getToken())) {
+            knopkaUserRepository.deleteById(knopkaUserId);
+            System.out.println("Deleted KnopkaUser with id: " + knopkaUserId);
+        } else {
+            throw new IllegalStateException("Token is not valid");
+        }
     }
 
     @Transactional
-    public void updateKnopkaUserNickname(Long knopkaUserId, String nickname) {
+    public void updateKnopkaUserNickname(Long knopkaUserId, String nickname, String token) {
         KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
                 () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
         );
@@ -70,21 +76,21 @@ public class KnopkaUserService {
                         nickname + "' is already taken. Try another one."
                 );
             }
-            if (!nickname.isBlank() && !knopkaUser.getProfile().getNickname().equals(nickname)) {
+            if (!nickname.isBlank() && !knopkaUser.getProfile().getNickname().equals(nickname) && Objects.equals(knopkaUser.getToken(), token)) {
                 knopkaUser.getProfile().setNickname(nickname);
                 System.out.println("Changed KnopkaUser's nickname with id: " +
                         knopkaUserId + " to: '" + nickname + "'"
                 );
             } else {
                 throw new IllegalStateException("Your new nickname '" +
-                        nickname + "' is not valid. Please chose another one"
+                        nickname + "' is not valid or token is invalid. Please chose another one"
                 );
             }
         }
     }
 
     @Transactional
-    public void updateKnopkaUserEmail(Long knopkaUserId, String email) {
+    public void updateKnopkaUserEmail(Long knopkaUserId, String email, String token) {
         KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
                 () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
         );
@@ -92,10 +98,10 @@ public class KnopkaUserService {
             Optional<KnopkaUser> knopkaUserByEmail = knopkaUserRepository.findKnopkaUserByEmail(email);
             if (knopkaUserByEmail.isPresent()) {
                 throw new IllegalStateException("Oops! Email '" +
-                        email + "' is already taken. Try another one."
+                        email + "' is already taken or token is invalid. Try another one."
                 );
             }
-            if (!email.isBlank() && !knopkaUser.getEmail().equals(email)) {
+            if (!email.isBlank() && !knopkaUser.getEmail().equals(email) && Objects.equals(token, knopkaUser.getToken())) {
                 //TODO: validate email
                 knopkaUser.setEmail(email);
                 System.out.println("Changed KnopkaUser's email with id: " +
@@ -103,7 +109,7 @@ public class KnopkaUserService {
                 );
             } else {
                 throw new IllegalStateException("Your new email '" +
-                        email + "' is not valid. Please chose another one"
+                        email + "' is not valid or token is invalid. Please chose another one"
                 );
             }
         }
