@@ -83,6 +83,7 @@ public class KnopkaUserService {
         }
     }
 
+    @Transactional
     public void updateKnopkaUserEmail(Long knopkaUserId, String email) {
         KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
                 () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
