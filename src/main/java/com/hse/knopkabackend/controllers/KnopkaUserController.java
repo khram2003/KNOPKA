@@ -1,5 +1,6 @@
 package com.hse.knopkabackend.controllers;
 
+import com.hse.knopkabackend.googleauth.Verifier;
 import com.hse.knopkabackend.services.KnopkaUserService;
 import com.hse.knopkabackend.models.KnopkaUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 @RestController
@@ -26,7 +29,11 @@ public class KnopkaUserController {
     }
 
     @PostMapping
-    public ResponseEntity<Long> registerNewKnopkaUser(@RequestBody KnopkaUser knopkaUser) {
+    public ResponseEntity<Long> registerNewKnopkaUser(@RequestBody KnopkaUser knopkaUser) throws GeneralSecurityException, IOException {
+        Verifier verifier = new Verifier();
+        if (!verifier.isVerified(knopkaUser.getToken())){
+            throw new GeneralSecurityException();
+        }
         knopkaUserService.addNewKnopkaUser(knopkaUser);
         return new ResponseEntity<>(knopkaUser.getId(), HttpStatus.OK);
     }
