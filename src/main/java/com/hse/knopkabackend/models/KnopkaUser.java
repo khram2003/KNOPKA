@@ -81,6 +81,14 @@ public class KnopkaUser {
 
     }
 
+    public List<Knopka> getKnopkas() {
+        return knopkas;
+    }
+
+    public void setKnopkas(List<Knopka> knopkas) {
+        this.knopkas = knopkas;
+    }
+
     public Long getId() {
         return id;
     }
