@@ -71,12 +71,14 @@ public class MainActivity extends AppCompatActivity {
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (account != null) {
-            goToNextPage();
+            String idToken = account.getIdToken();
+            goToNextPage(idToken);
         }
 
         googleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "HERE!");
                 Intent signInIntent = gsc.getSignInIntent();
                 startActivityForResult(signInIntent, RC_SIGN_IN);
             }
@@ -112,14 +114,17 @@ public class MainActivity extends AppCompatActivity {
 
             sendPost(account);
 
-            goToNextPage();
+            goToNextPage(idToken);
         } catch (ApiException e) {
             Log.d(TAG, "handleSignInResult:error", e);
         }
     }
 
-    private void goToNextPage() {
-        Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+    private void goToNextPage(String token) {
+        Intent intent = new Intent(MainActivity.this, BioActivity.class);
+//        Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+        intent.putExtra("token", token);
+//        intent.putExtra("id", id);
         startActivity(intent);
     }
 
