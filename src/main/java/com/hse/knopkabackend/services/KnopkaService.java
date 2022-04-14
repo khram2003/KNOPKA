@@ -1,5 +1,6 @@
 package com.hse.knopkabackend.services;
 
+import com.hse.knopkabackend.DTO.KnopkaDTO;
 import com.hse.knopkabackend.additionalclasses.Style;
 import com.hse.knopkabackend.models.Knopka;
 import com.hse.knopkabackend.models.KnopkaUser;
@@ -9,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class KnopkaService {
@@ -36,6 +35,7 @@ public class KnopkaService {
         if (Objects.equals(token, knopkaUserById.getToken())) {
             knopka.setUser(knopkaUserById);
             knopkaUserById.getKnopkas().add(knopka);
+            knopkaUserById.getKnopkaIds().add(knopka.getKnopkaId());
             knopkaRepository.save(knopka);
             System.out.println("Added knopka to user with nickname: " + knopka.getUser().getProfile().getNickname());
         } else {
@@ -45,12 +45,11 @@ public class KnopkaService {
 
 
     public void deleteKnopka(Long knopkaId, String token) {
-        boolean exists = knopkaRepository.existsById(knopkaId);
-        if (!exists) {
-            throw new IllegalStateException("Knopka with id: " + knopkaId + " doesn't exist");
-        }
-        Optional<Knopka> knopka = knopkaRepository.findById(knopkaId);
-        if (knopka.isPresent() && Objects.equals(knopka.get().getUser().getToken(), token)) {
+        Knopka knopka = knopkaRepository.findById(knopkaId).orElseThrow(
+                () -> new IllegalStateException("knopka with id: " + knopkaId + " doesn't exist")
+        );
+        if (Objects.equals(knopka.getUser().getToken(), token)) {
+            knopka.getUser().getKnopkaIds().remove(knopkaId);
             knopkaRepository.deleteById(knopkaId);
             System.out.println("Deleted Knopka with id: " + knopkaId);
         } else {
@@ -134,6 +133,26 @@ public class KnopkaService {
             }
 
         }
+    }
+
+    public Set<KnopkaDTO> getKnopkaDTOs(Long knopkaUserId, String token, List<Long> ids) {
+        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
+                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+        );
+
+        if (!Objects.equals(knopkaUser.getToken(), token)) {
+            throw new IllegalStateException("Token is not valid");
+        }
+
+        Set<KnopkaDTO> resSet = new HashSet<>();
+
+        for (var id : ids) {
+            Knopka knopka = knopkaRepository.findById(id).orElseThrow(
+                    () -> new IllegalStateException("knopka with id: " + id + " doesn't exist")
+            );
+            resSet.add(new KnopkaDTO(knopka.getName(), knopka.getStyle(), knopka.getPushesCounter(), knopka.getKnopkaId()));
+        }
+        return resSet;
     }
 }
 

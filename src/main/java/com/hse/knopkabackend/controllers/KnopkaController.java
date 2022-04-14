@@ -1,5 +1,6 @@
 package com.hse.knopkabackend.controllers;
 
+import com.hse.knopkabackend.DTO.KnopkaDTO;
 import com.hse.knopkabackend.additionalclasses.Style;
 import com.hse.knopkabackend.models.Knopka;
 import com.hse.knopkabackend.services.KnopkaService;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(path = "api/v1/knopka")
@@ -20,36 +22,43 @@ public class KnopkaController {
         this.knopkaService = knopkaService;
     }
 
+
+    //it will be removed later
     @GetMapping
-    public List<Knopka> getProfiles() {
+    public List<Knopka> getKnopkas() {
         return knopkaService.getKnopkas();
+    }
+
+    @GetMapping("/getbyids")
+    public Set<KnopkaDTO> getKnopkasByIds(@RequestParam Long knopkaUserId,
+                                          @RequestHeader String token,
+                                          @RequestParam List<Long> ids) {
+        return knopkaService.getKnopkaDTOs(knopkaUserId, token, ids);
     }
 
     @PostMapping
     public void createNewKnopka(@RequestBody Knopka knopka,
-                                @RequestParam String token,
+                                @RequestHeader String token,
                                 @RequestParam Long knopkaUserId) {
         knopkaService.addNewKnopka(knopka, token, knopkaUserId);
     }
 
-    @DeleteMapping(path = "delete/{knopkaId}")
+    @DeleteMapping(path = "/{knopkaId}")
     public void deleteKnopkaUser(@PathVariable("knopkaId") Long knopkaId,
-                                 @RequestParam String token) {
+                                 @RequestHeader String token) {
         knopkaService.deleteKnopka(knopkaId, token);
     }
 
-    @PutMapping(path = "put/{knopkaId}")
+    @PutMapping(path = "/{knopkaId}")
     public void updateButton(@PathVariable("knopkaId") Long knopkaId,
-                             @RequestParam(required = false) String name,
-                             @RequestParam(required = false) Style style,
-                             @RequestParam(required = false) Long n,
-                             @RequestParam String token) {
-        if (name != null)
-            knopkaService.updateKnopkaName(knopkaId, name, token);
-        if (style != null)
-            knopkaService.updateKnopkaStyle(knopkaId, style, token);
-        if (n != null)
-            knopkaService.updatePushesCount(knopkaId, n, token);
+                             @RequestBody KnopkaDTO knopkaDTO,
+                             @RequestHeader String token) {
+        if (knopkaDTO.getName() != null)
+            knopkaService.updateKnopkaName(knopkaId, knopkaDTO.getName(), token);
+        if (knopkaDTO.getStyle() != null)
+            knopkaService.updateKnopkaStyle(knopkaId, knopkaDTO.getStyle(), token);
+        if (knopkaDTO.getPushes() != null)
+            knopkaService.updatePushesCount(knopkaId, knopkaDTO.getPushes(), token);
     }
 
 }

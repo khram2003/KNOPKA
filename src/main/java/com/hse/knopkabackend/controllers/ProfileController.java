@@ -1,12 +1,11 @@
 package com.hse.knopkabackend.controllers;
 
+import com.hse.knopkabackend.DTO.ProfileDTO;
 import com.hse.knopkabackend.models.Profile;
 import com.hse.knopkabackend.services.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "api/v1/profile")
@@ -19,34 +18,24 @@ public class ProfileController {
         this.profileService = profileService;
     }
 
-    @GetMapping
-    public List<Profile> getProfiles() {
-        return profileService.getProfiles();
+    @GetMapping("/{knopkaUserId}")
+    public ProfileDTO getProfile(@PathVariable("knopkaUserId") Long knopkaUserId,
+                                 @RequestHeader String token) {
+        Profile profile = profileService.getProfile(knopkaUserId, token);
+        return new ProfileDTO(profile.getNickname(), profile.getBio(), profile.getEncodedPhoto());
     }
 
-    @PostMapping
-    public void registerNewProfile(@RequestBody Profile profile) {
-        profileService.addNewProfile(profile);
-    }
 
-    @DeleteMapping(path = "delete/{profileKnopkaUserId}")
-    public void deleteKnopkaUser(@PathVariable("profileKnopkaUserId") Long profileKnopkaUserId,
-                                 @RequestParam String token) {
-        profileService.deleteProfile(profileKnopkaUserId, token);
-    }
-
-    @PutMapping(path = "put/{profileKnopkaUserId}")
-    public void updateProfileNickname(@PathVariable("profileKnopkaUserId") Long profileKnopkaUserId,
-                                      @RequestParam(required = false) String nickname,
-                                      @RequestParam(required = false) String bio,
-                                      @RequestParam(required = false) MultipartFile photo,
-                                      @RequestParam String token) {
-        if (nickname != null)
-            profileService.updateProfileNickname(profileKnopkaUserId, nickname, token);
-        if (bio != null)
-            profileService.updateProfileBio(profileKnopkaUserId, bio, token);
-        if (photo != null)
-            profileService.updateProfilePhoto(profileKnopkaUserId, photo, token);
+    @PutMapping(path = "/{profileKnopkaUserId}")
+    public void updateProfile(@PathVariable("profileKnopkaUserId") Long profileKnopkaUserId,
+                              @RequestBody ProfileDTO profileDTO,
+                              @RequestHeader String token) {
+        if (profileDTO.getNickname() != null)
+            profileService.updateProfileNickname(profileKnopkaUserId, profileDTO.getNickname(), token);
+        if (profileDTO.getBio() != null)
+            profileService.updateProfileBio(profileKnopkaUserId, profileDTO.getBio(), token);
+        if (profileDTO.getPhoto() != null)
+            profileService.updateProfilePhoto(profileKnopkaUserId, profileDTO.getPhoto(), token);
     }
 
 }

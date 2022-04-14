@@ -1,6 +1,9 @@
 package com.hse.knopkabackend.controllers;
 
+import com.hse.knopkabackend.DTO.KnopkaUserDTO;
+import com.hse.knopkabackend.DTO.KnopkaUserResponseDTO;
 import com.hse.knopkabackend.googleauth.Verifier;
+import com.hse.knopkabackend.models.Profile;
 import com.hse.knopkabackend.services.KnopkaUserService;
 import com.hse.knopkabackend.models.KnopkaUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(path = "api/v1/user")
@@ -23,35 +27,63 @@ public class KnopkaUserController {
         this.knopkaUserService = knopkaUserService;
     }
 
+
+    //it's here just for me. It will be removed later
     @GetMapping
     public List<KnopkaUser> getUsers() {
         return knopkaUserService.getKnopkaUsers();
     }
 
+    @GetMapping("{knopkaUserId}/friendsId")
+    public Set<Long> getFriendsId(@PathVariable("knopkaUserId") Long knopkaUserId,
+                                  @RequestHeader String token) {
+        return knopkaUserService.getKnopkaUsersFriends(knopkaUserId, token);
+    }
+
+    @GetMapping("{knopkaUserId}/friends")
+    public Set<KnopkaUserResponseDTO> getFriendsIdDTOs(@PathVariable("knopkaUserId") Long knopkaUserId,
+                                                       @RequestHeader String token,
+                                                       @RequestParam List<Long> friendsId) {
+        return knopkaUserService.getKnopkaUsersFriendsDTOs(knopkaUserId, token, friendsId);
+    }
+
+    @GetMapping("{knopkaUserId}/knopkasId")
+    public Set<Long> getKnopkasId(@PathVariable("knopkaUserId") Long knopkaUserId,
+                                  @RequestHeader String token) {
+        return knopkaUserService.getKnopkaUsersKnopkaIds(knopkaUserId, token);
+    }
+
+
     @PostMapping
-    public ResponseEntity<Long> registerNewKnopkaUser(@RequestBody KnopkaUser knopkaUser) throws GeneralSecurityException, IOException {
+    public ResponseEntity<Long> registerNewKnopkaUser(@RequestBody KnopkaUserDTO knopkaUserDTO) throws GeneralSecurityException,
+            IOException {
         Verifier verifier = new Verifier();
-        if (!verifier.isVerified(knopkaUser.getToken())){
-            throw new GeneralSecurityException();
-        }
-        knopkaUserService.addNewKnopkaUser(knopkaUser);
+        verifier.getVerifier().verify(knopkaUserDTO.getToken());
+        KnopkaUser knopkaUser = new KnopkaUser(knopkaUserDTO.getEmail(), knopkaUserDTO.getToken());
+        Profile profile = new Profile();
+        profile.setUser(knopkaUser);
+        knopkaUser.setProfile(profile);
+        knopkaUserService.addNewKnopkaUser(knopkaUser, profile);
         return new ResponseEntity<>(knopkaUser.getId(), HttpStatus.OK);
     }
 
-    @DeleteMapping(path = "delete/{knopkaUserId}")
+    @DeleteMapping(path = "/{knopkaUserId}")
     public void deleteKnopkaUser(@PathVariable("knopkaUserId") Long knopkaUserId,
-                                 @RequestParam String token) {
+                                 @RequestHeader String token) {
         knopkaUserService.deleteKnopkaUser(knopkaUserId, token);
     }
 
-    @PutMapping(path = "put/{knopkaUserId}")
+    @DeleteMapping(path = "/{knopkaUserId}/friends")
+    public void deleteKnopkaUserFriend(@PathVariable("knopkaUserId") Long knopkaUserId,
+                                       @RequestParam Long friendId,
+                                       @RequestHeader String token) {
+        knopkaUserService.deleteKnopkaUserFriend(knopkaUserId, friendId, token);
+    }
+
+    @PutMapping(path = "/{knopkaUserId}")
     public void updateKnopkaUser(@PathVariable("knopkaUserId") Long knopkaUserId,
-                                 @RequestParam(required = false) String nickname,
-                                 @RequestParam(required = false) String email,
-                                 @RequestParam String token) {
-        if (email != null)
-            knopkaUserService.updateKnopkaUserEmail(knopkaUserId, email, token);
-        if (nickname != null)
-            knopkaUserService.updateKnopkaUserNickname(knopkaUserId, nickname, token);
+                                 @RequestParam Long friendId,
+                                 @RequestHeader String token) {
+        knopkaUserService.updateKnopkaUserFriends(knopkaUserId, friendId, token);
     }
 }

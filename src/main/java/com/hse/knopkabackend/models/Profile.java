@@ -1,7 +1,6 @@
 package com.hse.knopkabackend.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 
@@ -14,21 +13,28 @@ public class Profile {
     @Id
     @Column(
             name = "profile_user_id",
-            updatable = false
+            updatable = true
     )
     private Long userWithThisProfileId;
 
+    public Long getUserId() {
+        return userWithThisProfileId;
+    }
+
+    public void setUserId(Long userWithThisProfileId) {
+        this.userWithThisProfileId = userWithThisProfileId;
+    }
 
     @Column(
             name = "profile_nickname",
-            nullable = false,
+            nullable = true,
             columnDefinition = "VARCHAR(256)"
     )
     private String nickname;
 
     @Column(
             name = "bio",
-            unique = true,
+            unique = false,
             columnDefinition = "TEXT"
     )
     private String bio;
@@ -37,8 +43,7 @@ public class Profile {
             name = "encoded_image",
             nullable = true
     )
-    @Lob
-    MultipartFile encodedPhoto; //smth strange
+    byte[] encodedPhoto; //smth strange
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
@@ -46,7 +51,7 @@ public class Profile {
     @JsonBackReference
     private KnopkaUser user;
 
-    public Profile(String name, String bio, MultipartFile encodedPhoto, Long userWithThisProfileId, KnopkaUser user) {
+    public Profile(String name, String bio, byte[] encodedPhoto, Long userWithThisProfileId, KnopkaUser user) {
         this.nickname = name;
         this.bio = bio;
         this.encodedPhoto = encodedPhoto;
@@ -84,11 +89,11 @@ public class Profile {
         this.bio = bio;
     }
 
-    public MultipartFile getEncodedPhoto() {
+    public byte[] getEncodedPhoto() {
         return encodedPhoto;
     }
 
-    public void setEncodedPhoto(MultipartFile encodedPhoto) {
+    public void setEncodedPhoto(byte[] encodedPhoto) {
         this.encodedPhoto = encodedPhoto;
     }
 
@@ -99,6 +104,7 @@ public class Profile {
     public void setUserWithThisProfileId(Long userWithThisProfileId) {
         this.userWithThisProfileId = userWithThisProfileId;
     }
+
 
     public KnopkaUser getUser() {
         return user;

@@ -3,10 +3,10 @@ package com.hse.knopkabackend.models;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity(name = "knopka_user")
-@Table(name = "knopka_user")
+@Table(name = "knopka_user", indexes = @Index(name = "unique_email_indexes", columnList = "email", unique = true))
 public class KnopkaUser {
     @Id
     @SequenceGenerator(
@@ -28,16 +28,28 @@ public class KnopkaUser {
             name = "email",
             nullable = false,
             unique = true,
-            columnDefinition = "VARCHAR"
+            columnDefinition = "VARCHAR(2048)"
     )
     private String email;
 
     @Column(
             name = "token",
             unique = true,
-            columnDefinition = "VARCHAR"
+            columnDefinition = "VARCHAR(2048)"
     )
     private String token;
+
+    @Column(
+            name = "friends"
+    )
+    @ElementCollection
+    private Set<Long> friends;
+
+    @Column(
+            name = "knopkaIds"
+    )
+    @ElementCollection
+    Set<Long> knopkaIds;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
@@ -45,7 +57,7 @@ public class KnopkaUser {
     private Profile profile;
 
     @OneToMany(mappedBy = "user")
-    List<Knopka> knopkas;
+    Set<Knopka> knopkas;
 
     public KnopkaUser(Long curId, Profile curProfile) {
         id = curId;
@@ -81,11 +93,16 @@ public class KnopkaUser {
 
     }
 
-    public List<Knopka> getKnopkas() {
+    public KnopkaUser(String email, String token) {
+        this.email = email;
+        this.token = token;
+    }
+
+    public Set<Knopka> getKnopkas() {
         return knopkas;
     }
 
-    public void setKnopkas(List<Knopka> knopkas) {
+    public void setKnopkas(Set<Knopka> knopkas) {
         this.knopkas = knopkas;
     }
 
@@ -103,6 +120,24 @@ public class KnopkaUser {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+
+    public Set<Long> getFriends() {
+        return friends;
+    }
+
+    public Set<Long> getKnopkaIds() {
+        return knopkaIds;
+    }
+
+    public void setKnopkaIds(Set<Long> knopkaIds) {
+        this.knopkaIds = knopkaIds;
+    }
+
+
+    public void setFriends(Set<Long> friends) {
+        this.friends = friends;
     }
 
     @Override

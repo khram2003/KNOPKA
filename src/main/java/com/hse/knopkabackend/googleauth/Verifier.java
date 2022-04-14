@@ -14,18 +14,18 @@ import java.util.Collections;
 
 public class Verifier {
 
-    GoogleIdTokenVerifier verifier;
+    private final GoogleIdTokenVerifier verifier;
 
-    public Verifier(){
+    public Verifier() {
 
         verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
-                // should be in config file
                 .setAudience(Collections.singletonList(
                         "289368713312-lvfhknnkjlv886nisi9ustnoreu5cj28.apps.googleusercontent.com"
                 )).build();
     }
 
-    public boolean isVerified(String token) throws GeneralSecurityException, IOException {
-        return verifier.verify(token) != null;
+
+    public GoogleIdTokenVerifier getVerifier() {
+        return verifier;
     }
 }

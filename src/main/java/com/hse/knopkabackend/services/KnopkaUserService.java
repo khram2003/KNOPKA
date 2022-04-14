@@ -1,5 +1,6 @@
 package com.hse.knopkabackend.services;
 
+import com.hse.knopkabackend.DTO.KnopkaUserResponseDTO;
 import com.hse.knopkabackend.models.KnopkaUser;
 import com.hse.knopkabackend.models.Profile;
 import com.hse.knopkabackend.repositories.KnopkaUserRepository;
@@ -8,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class KnopkaUserService {
@@ -28,15 +27,7 @@ public class KnopkaUserService {
         return knopkaUserRepository.findAll();
     }
 
-    public void addNewKnopkaUser(KnopkaUser knopkaUser) {
-        Optional<Profile> profileKnopkaUserByNickname = profileKnopkaUserRepository.findProfileByNickname(
-                knopkaUser.getProfile().getNickname()
-        );
-        if (profileKnopkaUserByNickname.isPresent()) {
-            throw new IllegalStateException("Oops! Nickname '" +
-                    knopkaUser.getProfile().getNickname() + "' is already taken. Try another one."
-            );
-        }
+    public void addNewKnopkaUser(KnopkaUser knopkaUser, Profile profile) {
         Optional<KnopkaUser> knopkaUserByEmail = knopkaUserRepository.findKnopkaUserByEmail(
                 knopkaUser.getEmail()
         );
@@ -46,17 +37,17 @@ public class KnopkaUserService {
             );
         }
         knopkaUserRepository.save(knopkaUser);
-        System.out.println("Added user with unique nickname: " + knopkaUser);
+        profile.setUserId(knopkaUser.getId());
+        profileKnopkaUserRepository.save(profile);
+        System.out.println("Added user with unique email: " + knopkaUser);
     }
 
 
     public void deleteKnopkaUser(Long knopkaUserId, String token) {
-        boolean exists = knopkaUserRepository.existsById(knopkaUserId);
-        if (!exists) {
-            throw new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist");
-        }
-        Optional<KnopkaUser> knopkaUserById = knopkaUserRepository.findById(knopkaUserId);
-        if (knopkaUserById.isPresent() && Objects.equals(token, knopkaUserById.get().getToken())) {
+        KnopkaUser knopkaUserById = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
+                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+        );
+        if (Objects.equals(token, knopkaUserById.getToken())) {
             knopkaUserRepository.deleteById(knopkaUserId);
             System.out.println("Deleted KnopkaUser with id: " + knopkaUserId);
         } else {
@@ -64,54 +55,89 @@ public class KnopkaUserService {
         }
     }
 
+
     @Transactional
-    public void updateKnopkaUserNickname(Long knopkaUserId, String nickname, String token) {
+    public void updateKnopkaUserFriends(Long knopkaUserId, Long friendId, String token) {
+        if (Objects.equals(friendId, knopkaUserId)) {
+            throw new IllegalStateException("No");
+        }
         KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
                 () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
         );
-        if (nickname != null) {
-            Optional<Profile> knopkaUserByNickname = profileKnopkaUserRepository.findProfileByNickname(nickname);
-            if (knopkaUserByNickname.isPresent()) {
-                throw new IllegalStateException("Oops! Nickname '" +
-                        nickname + "' is already taken. Try another one."
-                );
-            }
-            if (!nickname.isBlank() && !knopkaUser.getProfile().getNickname().equals(nickname) && Objects.equals(knopkaUser.getToken(), token)) {
-                knopkaUser.getProfile().setNickname(nickname);
-                System.out.println("Changed KnopkaUser's nickname with id: " +
-                        knopkaUserId + " to: '" + nickname + "'"
-                );
-            } else {
-                throw new IllegalStateException("Your new nickname '" +
-                        nickname + "' is not valid or token is invalid. Please chose another one"
-                );
-            }
+
+        KnopkaUser knopkaUserFriend = knopkaUserRepository.findById(friendId).orElseThrow(
+                () -> new IllegalStateException("KnopkaUser with id: " + friendId + " doesn't exist")
+        );
+        if (Objects.equals(token, knopkaUser.getToken())) {
+            knopkaUser.getFriends().add(friendId);
+            knopkaUserFriend.getFriends().add(knopkaUserId);
+            System.out.println(knopkaUserId + " and " + friendId + " are friends now!"
+            );
+        } else {
+            throw new IllegalStateException("Your token is invalid. Please chose another one");
         }
     }
 
-    @Transactional
-    public void updateKnopkaUserEmail(Long knopkaUserId, String email, String token) {
+    public Set<Long> getKnopkaUsersFriends(Long knopkaUserId, String token) {
         KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
                 () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
         );
-        if (email != null) {
-            Optional<KnopkaUser> knopkaUserByEmail = knopkaUserRepository.findKnopkaUserByEmail(email);
-            if (knopkaUserByEmail.isPresent()) {
-                throw new IllegalStateException("Oops! Email '" +
-                        email + "' is already taken or token is invalid. Try another one."
-                );
-            }
-            if (!email.isBlank() && !knopkaUser.getEmail().equals(email) && Objects.equals(token, knopkaUser.getToken())) {
-                //TODO: validate email
-                knopkaUser.setEmail(email);
-                System.out.println("Changed KnopkaUser's email with id: " +
-                        knopkaUserId + " to: '" + email + "'"
-                );
-            } else {
-                throw new IllegalStateException("Your new email '" +
-                        email + "' is not valid or token is invalid. Please chose another one"
-                );
-            }
+        if (Objects.equals(token, knopkaUser.getToken())) {
+            return knopkaUser.getFriends();
+        } else {
+            throw new IllegalStateException("Your token is invalid. Please chose another one");
         }
     }
+
+    public Set<Long> getKnopkaUsersKnopkaIds(Long knopkaUserId, String token) {
+        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
+                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+        );
+        if (Objects.equals(token, knopkaUser.getToken())) {
+            return knopkaUser.getKnopkaIds();
+        } else {
+            throw new IllegalStateException("Your token is invalid. Please chose another one");
+        }
+    }
+
+    public void deleteKnopkaUserFriend(Long knopkaUserId, Long friendId, String token) {
+        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
+                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+        );
+        KnopkaUser friend = knopkaUserRepository.findById(friendId).orElseThrow(
+                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+        );
+        if (Objects.equals(token, knopkaUser.getToken())) {
+            if (knopkaUser.getFriends().contains(friendId)) {
+                knopkaUser.getFriends().remove(friendId);
+                friend.getFriends().remove(knopkaUserId);
+            } else {
+                throw new IllegalStateException("It is not friend");
+            }
+        } else {
+            throw new IllegalStateException("Your token is invalid. Please chose another one");
+        }
+    }
+
+    public Set<KnopkaUserResponseDTO> getKnopkaUsersFriendsDTOs(Long knopkaUserId, String token, List<Long> friendsId) {
+        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
+                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+        );
+
+        if (!Objects.equals(knopkaUser.getToken(), token)) {
+            throw new IllegalStateException("Token is not valid");
+        }
+        Set<KnopkaUserResponseDTO> resSet = new HashSet<>();
+
+        for (var id : friendsId) {
+            if (knopkaUser.getFriends().contains(id)) {
+                KnopkaUser friend = knopkaUserRepository.findById(id).orElseThrow(
+                        () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+                );
+                resSet.add(new KnopkaUserResponseDTO(friend.getProfile().getNickname(), friend.getProfile().getEncodedPhoto(), id));
+            }
+        }
+        return resSet;
+    }
+
 }
