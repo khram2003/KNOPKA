@@ -3,6 +3,7 @@ package com.hse.knopkabackend.models;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity(name = "knopka_user")
@@ -40,16 +41,20 @@ public class KnopkaUser {
     private String token;
 
     @Column(
-            name = "friends"
+            name = "friends",
+            updatable = true
     )
     @ElementCollection
+
     private Set<Long> friends;
 
+
+    @ElementCollection
+    @CollectionTable(name = "knopkaIds", joinColumns = @JoinColumn(name = "id"))
     @Column(
             name = "knopkaIds"
     )
-    @ElementCollection
-    Set<Long> knopkaIds;
+    Set<Long> knopkaIds = new HashSet<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn

@@ -11,6 +11,7 @@ import org.hibernate.annotations.TypeDef;
 import org.json.JSONObject;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity(name = "knopka")
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
@@ -28,7 +29,8 @@ public class Knopka {
     )
     @Column(
             name = "knopka_id",
-            updatable = false
+            updatable = false,
+            nullable = false
     )
     private Long knopkaId;
 
@@ -50,6 +52,11 @@ public class Knopka {
             columnDefinition = "jsonb"
     )
     private Style style;
+
+    @Column(
+            name = "createdAt"
+    )
+    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "id", nullable = false)
@@ -95,6 +102,14 @@ public class Knopka {
 
     public void setStyle(Style style) {
         this.style = style;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public Knopka() {

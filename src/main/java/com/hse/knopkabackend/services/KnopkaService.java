@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -34,9 +35,13 @@ public class KnopkaService {
         });
         if (Objects.equals(token, knopkaUserById.getToken())) {
             knopka.setUser(knopkaUserById);
-            knopkaUserById.getKnopkas().add(knopka);
-            knopkaUserById.getKnopkaIds().add(knopka.getKnopkaId());
+            knopka.setCreatedAt(LocalDateTime.now());
             knopkaRepository.save(knopka);
+            knopkaUserById.getKnopkas().add(knopka);
+            System.out.println("-----------------------------------");
+            System.out.println(knopka.getKnopkaId());
+
+            knopka.getUser().getKnopkaIds().add(knopka.getKnopkaId());
             System.out.println("Added knopka to user with nickname: " + knopka.getUser().getProfile().getNickname());
         } else {
             throw new IllegalStateException("Token is invalid");
@@ -150,7 +155,7 @@ public class KnopkaService {
             Knopka knopka = knopkaRepository.findById(id).orElseThrow(
                     () -> new IllegalStateException("knopka with id: " + id + " doesn't exist")
             );
-            resSet.add(new KnopkaDTO(knopka.getName(), knopka.getStyle(), knopka.getPushesCounter(), knopka.getKnopkaId()));
+            resSet.add(new KnopkaDTO(knopka.getName(), knopka.getStyle(), knopka.getPushesCounter(), knopka.getKnopkaId(), knopka.getCreatedAt()));
         }
         return resSet;
     }

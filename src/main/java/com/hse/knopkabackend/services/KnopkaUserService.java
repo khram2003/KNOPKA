@@ -70,8 +70,7 @@ public class KnopkaUserService {
         );
         if (Objects.equals(token, knopkaUser.getToken())) {
             knopkaUser.getFriends().add(friendId);
-            knopkaUserFriend.getFriends().add(knopkaUserId);
-            System.out.println(knopkaUserId + " and " + friendId + " are friends now!"
+            System.out.println(knopkaUserId + " added " + friendId + " as friend!"
             );
         } else {
             throw new IllegalStateException("Your token is invalid. Please chose another one");
@@ -110,7 +109,6 @@ public class KnopkaUserService {
         if (Objects.equals(token, knopkaUser.getToken())) {
             if (knopkaUser.getFriends().contains(friendId)) {
                 knopkaUser.getFriends().remove(friendId);
-                friend.getFriends().remove(knopkaUserId);
             } else {
                 throw new IllegalStateException("It is not friend");
             }
