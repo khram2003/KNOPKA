@@ -42,9 +42,21 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.358" />
 
+    <Button
+        android:id="@+id/googleAutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="log in using google"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.739" />
+
     <ImageView
-        android:id="@+id/profilePic"
+        android:id="@+id/imageViewProfilePic"
         android:layout_width="107dp"
+        android:drawingCacheQuality="low"
         android:layout_height="104dp"
         android:src="@drawable/img"
         android:scaleType="centerCrop"
