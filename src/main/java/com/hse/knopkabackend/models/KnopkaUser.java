@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity(name = "knopka_user")
 @Table(name = "knopka_user", indexes = @Index(name = "unique_email_indexes", columnList = "email", unique = true))
@@ -45,16 +46,20 @@ public class KnopkaUser {
             updatable = true
     )
     @ElementCollection
-
     private Set<Long> friends;
 
 
-    @ElementCollection
-    @CollectionTable(name = "knopkaIds", joinColumns = @JoinColumn(name = "id"))
+    @Transient
     @Column(
-            name = "knopkaIds"
+            name = "knopka_ids"
     )
-    Set<Long> knopkaIds = new HashSet<>();
+    private Set<Long> knopkaIds;
+
+    //oh no, cringe
+    @PostLoad
+    private void postLoad() {
+        knopkaIds = knopkas.stream().map(Knopka::getKnopkaId).collect(Collectors.toSet());
+    }
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn

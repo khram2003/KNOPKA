@@ -38,10 +38,6 @@ public class KnopkaService {
             knopka.setCreatedAt(LocalDateTime.now());
             knopkaRepository.save(knopka);
             knopkaUserById.getKnopkas().add(knopka);
-            System.out.println("-----------------------------------");
-            System.out.println(knopka.getKnopkaId());
-
-            knopka.getUser().getKnopkaIds().add(knopka.getKnopkaId());
             System.out.println("Added knopka to user with nickname: " + knopka.getUser().getProfile().getNickname());
         } else {
             throw new IllegalStateException("Token is invalid");

@@ -54,4 +54,12 @@ public class KnopkaDTO implements Serializable {
     public void setPushes(Long pushes) {
         this.pushes = pushes;
     }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }
