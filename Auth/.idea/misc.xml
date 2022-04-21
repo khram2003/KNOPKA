@@ -3,12 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/activity_bio.xml" value="0.15307971014492755" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/activity_main.xml" value="0.1796875" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/activity_profile_acrtivity.xml" value="0.4466666666666667" />
-        <entry key="app/src/main/res/layout/activity_bio.xml" value="0.18177083333333333" />
-        <entry key="app/src/main/res/layout/activity_change_info.xml" value="0.32518115942028986" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.32518115942028986" />
-        <entry key="app/src/main/res/layout/activity_main1.xml" value="0.32518115942028986" />
       </map>
     </option>
   </component>

@@ -3,11 +3,11 @@ package com.example.Auth
 
 import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -20,6 +20,7 @@ import kotlinx.serialization.json.Json
 import java.io.ByteArrayOutputStream
 import java.util.*
 
+
 const val CHANGE_INFO_REQUEST_CODE = 100
 
 
@@ -31,8 +32,10 @@ class BioActivity : AppCompatActivity() {
         var textViewName: TextView? = null
         var textViewBio: TextView? = null
         var imageViewProfilePic: ImageView? = null
+        var googleLogOutButton: Button? = null
         var profilePicBitMap: Bitmap? = null // Profile picture bitmap
-        var autPassed: Boolean = false
+//        var autPassed: Boolean = false
+        var token : String? = null
     }
 
     private var units: MainActivityUnits = MainActivityUnits()
@@ -64,13 +67,19 @@ class BioActivity : AppCompatActivity() {
         units.imageViewProfilePic = findViewById(R.id.imageViewProfilePic)
 
         units.profilePicBitMap =
-            BitmapFactory.decodeResource(resources, R.drawable.img) //get default picture bitmap
+                BitmapFactory.decodeResource(resources, R.drawable.img) //get default picture bitmap
+        units.googleLogOutButton = findViewById(R.id.googleLogOutButton)
+        units.token = intent.getStringExtra("token")
 
-        if (!storageInfoLoad()) {
-            // start authentication intent
-            units.autPassed = true
+        storageInfoLoad()
+
+        if(units.token != null) {
             storageInfoUpdate()
+            // load from server
         }
+
+
+
 
         units.changeInfoButton?.setOnClickListener { //change info button listener
 
@@ -79,11 +88,11 @@ class BioActivity : AppCompatActivity() {
             val bioString: String = units.textViewBio?.text.toString()
 
             val mapData = // create json transfer object
-                mapOf(
-                    "name" to nameString,
-                    "bio" to bioString,
-                    "pic" to imageString
-                )
+                    mapOf(
+                            "name" to nameString,
+                            "bio" to bioString,
+                            "pic" to imageString
+                    )
 
             val jsonData = Json.encodeToString(mapData)
 
@@ -92,6 +101,12 @@ class BioActivity : AppCompatActivity() {
             }
 
             startActivityForResult(intent1, CHANGE_INFO_REQUEST_CODE)
+        }
+
+        units.googleLogOutButton?.setOnClickListener {
+            val intent2 = Intent(this,  ProfileActivity::class.java)
+            clearData()
+            startActivity(intent2)
         }
 
     }
@@ -128,8 +143,8 @@ class BioActivity : AppCompatActivity() {
         val imageString: String? = bitMapToBase64String(units.profilePicBitMap)
         val nameString: String = units.textViewName?.text.toString()
         val bioString: String = units.textViewBio?.text.toString()
-        val autPassedString: String = units.autPassed.toString()
-
+//        val autPassedString: String = units.autPassed.toString()
+        val tokenString: String = units.token.toString()
         val sharedPref = getSharedPreferences("mypref", 0)
         val editor = sharedPref.edit()
 
@@ -137,28 +152,32 @@ class BioActivity : AppCompatActivity() {
         editor.putString("name", nameString)
         editor.putString("bio", bioString)
         editor.putString("image", imageString)
-        editor.putString("aut", autPassedString)
+//        editor.putString("aut", autPassedString)
+        editor.putString("token", tokenString)
 
         editor.apply()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun storageInfoLoad(): Boolean {
+    fun storageInfoLoad() /*: Boolean*/ {
 
         val sharedPref = getSharedPreferences("mypref", 0)
 
         val nameString = sharedPref.getString("name", "").toString()
         val bioString = sharedPref.getString("bio", "").toString()
         val imageString = sharedPref.getString("image", "").toString()
-        val autPassedString = sharedPref.getString("aut", "").toString()
+        val tokenString = sharedPref.getString("token", "").toString()
 
         units.profilePicBitMap = base64StringToBitMap(imageString)
         units.imageViewProfilePic?.setImageBitmap(units.profilePicBitMap)
         units.textViewName?.text = nameString
         units.textViewBio?.text = bioString
-        units.autPassed = autPassedString == "true"
+        units.token = tokenString
+    }
 
-        return units.autPassed
+    fun clearData() /*: Boolean*/{
+        val sharedPref = getSharedPreferences("mypref", 0)
+        sharedPref.edit().clear().apply()
     }
 
 }
