@@ -24,6 +24,26 @@
             <version>20220320</version>
         </dependency>
         <dependency>
+            <groupId>io.github.pelenthium</groupId>
+            <artifactId>clickhouse-dialect-spring-boot-starter</artifactId>
+            <version>1.1.0</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <!-- will stop using ru.yandex.clickhouse starting from 0.4.0  -->
+            <groupId>com.clickhouse</groupId>
+            <artifactId>clickhouse-jdbc</artifactId>
+            <version>0.3.2-patch8</version>
+            <!-- below is only needed when all you want is a shaded jar -->
+            <classifier>http</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>com.vladmihalcea</groupId>
             <artifactId>hibernate-types-52</artifactId>
             <version>2.14.1</version>

@@ -34,10 +34,11 @@ public class KnopkaUserController {
         return knopkaUserService.getKnopkaUsers();
     }
 
-    @GetMapping("{knopkaUserId}/friendsId")
+    @GetMapping("{knopkaUserId}/{friendsOfId}/friendsId")
     public Set<Long> getFriendsId(@PathVariable("knopkaUserId") Long knopkaUserId,
+                                  @PathVariable("friendsOfId") Long friendsOfId,
                                   @RequestHeader String token) {
-        return knopkaUserService.getKnopkaUsersFriends(knopkaUserId, token);
+        return knopkaUserService.getKnopkaUsersFriends(knopkaUserId, friendsOfId, token);
     }
 
     @GetMapping("{knopkaUserId}/friends")
@@ -47,10 +48,11 @@ public class KnopkaUserController {
         return knopkaUserService.getKnopkaUsersFriendsDTOs(knopkaUserId, token, friendsId);
     }
 
-    @GetMapping("{knopkaUserId}/knopkasId")
+    @GetMapping("{knopkaUserId}/{knopkasOfId}/knopkasId")
     public Set<Long> getKnopkasId(@PathVariable("knopkaUserId") Long knopkaUserId,
+                                  @PathVariable("knopkasOfId") Long knopkasOfId,
                                   @RequestHeader String token) {
-        return knopkaUserService.getKnopkaUsersKnopkaIds(knopkaUserId, token);
+        return knopkaUserService.getKnopkaUsersKnopkaIds(knopkaUserId, knopkasOfId, token);
     }
 
 

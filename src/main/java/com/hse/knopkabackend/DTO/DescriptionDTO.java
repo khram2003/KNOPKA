@@ -2,6 +2,7 @@ package com.hse.knopkabackend.DTO;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 public class DescriptionDTO implements Serializable {
     private String text;
@@ -9,6 +10,12 @@ public class DescriptionDTO implements Serializable {
     private List<String> tags;
 
     public DescriptionDTO() {
+    }
+
+    public DescriptionDTO(String text, byte[] image, List<String> tags) {
+        this.text = text;
+        this.image = image;
+        this.tags = tags;
     }
 
     public String getText() {

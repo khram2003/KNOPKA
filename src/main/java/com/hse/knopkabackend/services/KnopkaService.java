@@ -2,8 +2,10 @@ package com.hse.knopkabackend.services;
 
 import com.hse.knopkabackend.DTO.KnopkaDTO;
 import com.hse.knopkabackend.additionalclasses.Style;
+import com.hse.knopkabackend.models.Description;
 import com.hse.knopkabackend.models.Knopka;
 import com.hse.knopkabackend.models.KnopkaUser;
+import com.hse.knopkabackend.repositories.DescriptionRepository;
 import com.hse.knopkabackend.repositories.KnopkaRepository;
 import com.hse.knopkabackend.repositories.KnopkaUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,26 +20,32 @@ public class KnopkaService {
 
     private final KnopkaRepository knopkaRepository;
     private final KnopkaUserRepository knopkaUserRepository;
+    private final DescriptionRepository descriptionRepository;
 
     @Autowired
-    public KnopkaService(KnopkaRepository knopkaRepository, KnopkaUserRepository knopkaUserRepository) {
+    public KnopkaService(KnopkaRepository knopkaRepository, KnopkaUserRepository knopkaUserRepository,
+                         DescriptionRepository descriptionRepository) {
         this.knopkaRepository = knopkaRepository;
         this.knopkaUserRepository = knopkaUserRepository;
+        this.descriptionRepository = descriptionRepository;
     }
 
     public List<Knopka> getKnopkas() {
         return knopkaRepository.findAll();
     }
 
-    public void addNewKnopka(Knopka knopka, String token, Long knopkaUserId) {
+    public void addNewKnopka(Knopka knopka, String token, Long knopkaUserId, Description description) {
         KnopkaUser knopkaUserById = knopkaUserRepository.findById(knopkaUserId).orElseThrow(() -> {
             throw new IllegalStateException("Invalid id");
         });
         if (Objects.equals(token, knopkaUserById.getToken())) {
-            knopka.setUser(knopkaUserById);
             knopka.setCreatedAt(LocalDateTime.now());
+            knopka.setUser(knopkaUserById);
             knopkaRepository.save(knopka);
             knopkaUserById.getKnopkas().add(knopka);
+            description.setKnopkaWithThisKnopkaId(knopka.getKnopkaId());
+            descriptionRepository.save(description);
+
             System.out.println("Added knopka to user with nickname: " + knopka.getUser().getProfile().getNickname());
         } else {
             throw new IllegalStateException("Token is invalid");
@@ -78,25 +86,6 @@ public class KnopkaService {
         }
     }
 
-//    @Transactional
-//    public void updateDescription(Long knopkaId, Description, String token) {
-//        Knopka knopka = knopkaRepository.findById(knopkaId).orElseThrow(
-//                () -> new IllegalStateException("knopka with id: " + knopkaId + " doesn't exist")
-//        );
-//        if (name != null) {
-//            if (!name.isBlank() && name.length() <= 255 && Objects.equals(knopka.getUser().getToken(), token)) {
-//                knopka.setName(name);
-//                System.out.println("Changed Knopka's name with id: " +
-//                        knopkaId + " to: '" + name + "'"
-//                );
-//            } else {
-//                throw new IllegalStateException("Your new name '" +
-//                        name + "' is not valid or token is invalid. Please chose another one"
-//                );
-//            }
-//
-//        }
-//    }
 
     @Transactional
     public void updateKnopkaStyle(Long knopkaId, Style style, String token) {
@@ -118,12 +107,17 @@ public class KnopkaService {
     }
 
     @Transactional
-    public void updatePushesCount(Long knopkaId, Long n, String token) {
+    public void updatePushesCount(Long knopkaUserId, Long knopkaId, Long n, String token) {
         Knopka knopka = knopkaRepository.findById(knopkaId).orElseThrow(
                 () -> new IllegalStateException("knopka with id: " + knopkaId + " doesn't exist")
         );
+
+        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
+                () -> new IllegalStateException("User with id: " + knopkaId + " doesn't exist")
+        );
+
         if (n != null) {
-            if (Objects.equals(knopka.getUser().getToken(), token)) {
+            if (Objects.equals(knopkaUser.getToken(), token)) {
                 knopka.setPushesCounter(n);
                 System.out.println("Changed Knopka's pushes with id: " +
                         knopkaId + " to: '" + n + "'"

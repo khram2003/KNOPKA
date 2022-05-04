@@ -2,6 +2,7 @@ package com.hse.knopkabackend.models;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hse.knopkabackend.additionalclasses.Style;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.hibernate.annotations.OnDelete;
@@ -58,11 +59,22 @@ public class Knopka {
     )
     private LocalDateTime createdAt;
 
+    @OneToOne(mappedBy = "knopka", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
+    @JsonManagedReference
+    private Description description;
+
     @ManyToOne
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonBackReference
     KnopkaUser user;
+
+    public Knopka(String name, Long pushes, Style style) {
+        this.name = name;
+        this.pushesCounter = pushes;
+        this.style = style;
+    }
 
     public KnopkaUser getUser() {
         return user;
@@ -112,9 +124,21 @@ public class Knopka {
         this.createdAt = createdAt;
     }
 
+    public void setDescription(Description description) {
+        this.description = description;
+    }
+
     public Knopka() {
 
     }
 
-
+    public Knopka(Long knopkaId, String name, Long pushesCounter, Style style, LocalDateTime createdAt, Description description, KnopkaUser user) {
+        this.knopkaId = knopkaId;
+        this.name = name;
+        this.pushesCounter = pushesCounter;
+        this.style = style;
+        this.createdAt = createdAt;
+        this.description = description;
+        this.user = user;
+    }
 }

@@ -18,10 +18,11 @@ public class ProfileController {
         this.profileService = profileService;
     }
 
-    @GetMapping("/{knopkaUserId}")
-    public ProfileDTO getProfile(@PathVariable("knopkaUserId") Long knopkaUserId,
+    @GetMapping("/{profileId}/{knopkaUserId}")
+    public ProfileDTO getProfile(@PathVariable("profileId") Long profileId,
+                                 @PathVariable("knopkaUserId") Long knopkaUserId,
                                  @RequestHeader String token) {
-        Profile profile = profileService.getProfile(knopkaUserId, token);
+        Profile profile = profileService.getProfile(profileId, knopkaUserId, token);
         return new ProfileDTO(profile.getNickname(), profile.getBio(), profile.getEncodedPhoto());
     }
 

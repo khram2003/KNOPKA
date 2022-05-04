@@ -77,23 +77,33 @@ public class KnopkaUserService {
         }
     }
 
-    public Set<Long> getKnopkaUsersFriends(Long knopkaUserId, String token) {
+    public Set<Long> getKnopkaUsersFriends(Long knopkaUserId, Long friendsOfId, String token) {
+
+
         KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
                 () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
         );
+
+        KnopkaUser friendsOfUser = knopkaUserRepository.findById(friendsOfId).orElseThrow(
+                () -> new IllegalStateException("KnopkaUser with id: " + friendsOfId + " doesn't exist")
+        );
+
         if (Objects.equals(token, knopkaUser.getToken())) {
-            return knopkaUser.getFriends();
+            return friendsOfUser.getFriends();
         } else {
-            throw new IllegalStateException("Your token is invalid. Please chose another one");
+            throw new IllegalStateException("Your token is invalid.");
         }
     }
 
-    public Set<Long> getKnopkaUsersKnopkaIds(Long knopkaUserId, String token) {
+    public Set<Long> getKnopkaUsersKnopkaIds(Long knopkaUserId, Long knopkasOfId, String token) {
         KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
                 () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
         );
+        KnopkaUser knopkasOfUser = knopkaUserRepository.findById(knopkasOfId).orElseThrow(
+                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+        );
         if (Objects.equals(token, knopkaUser.getToken())) {
-            return knopkaUser.getKnopkaIds();
+            return knopkasOfUser.getKnopkaIds();
         } else {
             throw new IllegalStateException("Your token is invalid. Please chose another one");
         }

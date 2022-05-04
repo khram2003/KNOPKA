@@ -1,6 +1,8 @@
 package com.hse.knopkabackend.services;
 
+import com.hse.knopkabackend.models.KnopkaUser;
 import com.hse.knopkabackend.models.Profile;
+import com.hse.knopkabackend.repositories.KnopkaUserRepository;
 import com.hse.knopkabackend.repositories.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,19 +15,25 @@ import java.util.Optional;
 public class ProfileService {
 
     private final ProfileRepository profileRepository;
+    private final KnopkaUserRepository knopkaUserRepository;
 
     @Autowired
-    public ProfileService(ProfileRepository profileRepository) {
+    public ProfileService(ProfileRepository profileRepository, KnopkaUserRepository knopkaUserRepository) {
         this.profileRepository = profileRepository;
+        this.knopkaUserRepository = knopkaUserRepository;
     }
 
-    public Profile getProfile(Long knopkaUserId, String token) {
+    public Profile getProfile(Long profileId, Long knopkaUserId, String token) {
 
-        Profile profile = profileRepository.findById(knopkaUserId).orElseThrow(
+        Profile profile = profileRepository.findById(profileId).orElseThrow(
                 () -> new IllegalStateException("profileKnopkaUser with id: " + knopkaUserId + " doesn't exist")
         );
 
-        if (Objects.equals(token, profile.getUser().getToken())) {
+        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
+                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+        );
+
+        if (Objects.equals(token, knopkaUser.getToken())) {
             return profile;
         } else {
             throw new IllegalStateException("Token is invalid");
