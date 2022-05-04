@@ -107,14 +107,8 @@ public class MainActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             String idToken = account.getIdToken();
-            System.out.println("--------------");
-            System.out.println(idToken);
-            System.out.println("--------------");
-
-            //send to back
 
             sendPost(account);
-
             goToNextPage(idToken);
         } catch (ApiException e) {
             Log.d(TAG, "handleSignInResult:error", e);

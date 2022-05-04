@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Auth</string>
     <string name="sign_out">Sign out</string>
-    <string name="sign_in">Sign In</string>
+    <string name="sign_in_google">Sign in with Google</string>
+    <string name="sign_in_knopka">Sign in to Knopka:</string>
     <string name="server_client_id">289368713312-voh4c314mqp5a8iini5e2esht1pes7t5.apps.googleusercontent.com</string>
 </resources>
