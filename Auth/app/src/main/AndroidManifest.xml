@@ -16,6 +16,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <activity
+            android:name=".CreateButtonActivity"
+            android:exported="false" />
+        <activity
             android:name=".ChangeInfoActivity"
             android:exported="false" />
         <activity

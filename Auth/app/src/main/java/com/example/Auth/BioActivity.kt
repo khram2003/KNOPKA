@@ -3,16 +3,19 @@ package com.example.Auth
 
 import android.app.Activity
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.Auth.databinding.ActivityBioBinding
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -21,10 +24,10 @@ import java.io.ByteArrayOutputStream
 import java.util.*
 
 
-const val CHANGE_INFO_REQUEST_CODE = 100
-
-
-class BioActivity : AppCompatActivity() {
+class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
+    lateinit var binding: ActivityBioBinding
+    private val adapter = KnopkaFeedAdapter(this)
+    private var ind: Int = 0;
 
     class MainActivityUnits {
 
@@ -34,8 +37,9 @@ class BioActivity : AppCompatActivity() {
         var imageViewProfilePic: ImageView? = null
         var googleLogOutButton: Button? = null
         var profilePicBitMap: Bitmap? = null // Profile picture bitmap
-//        var autPassed: Boolean = false
-        var token : String? = null
+
+        //        var autPassed: Boolean = false // TODO ???
+        var token: String? = null
     }
 
     private var units: MainActivityUnits = MainActivityUnits()
@@ -55,11 +59,25 @@ class BioActivity : AppCompatActivity() {
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
     }
 
+    private fun initRecyclerView() {
+        binding.RecyclerViewKnopkasFeed.layoutManager =
+            LinearLayoutManager(this)
+        binding.RecyclerViewKnopkasFeed.adapter = adapter
+        binding.addKnopkaButtton.setOnClickListener {
+            val intent2 = Intent(this, CreateButtonActivity::class.java)
+            startActivityForResult(intent2, RequestCodes.CREATE_BUTTON_REQUEST_CODE)
+
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalSerializationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_bio)
+        binding = ActivityBioBinding.inflate(layoutInflater)
+//        setContentView(R.layout.activity_main1) // same as next line but next line allows to use binding
+        setContentView(binding.root)
+        initRecyclerView()
 
         units.changeInfoButton = findViewById(R.id.changeInfoButton)
         units.textViewName = findViewById(R.id.textViewName)
@@ -67,14 +85,15 @@ class BioActivity : AppCompatActivity() {
         units.imageViewProfilePic = findViewById(R.id.imageViewProfilePic)
 
         units.profilePicBitMap =
-                BitmapFactory.decodeResource(resources, R.drawable.img) //get default picture bitmap
+            BitmapFactory.decodeResource(resources, R.drawable.img) //get default picture bitmap
         units.googleLogOutButton = findViewById(R.id.googleLogOutButton)
         units.token = intent.getStringExtra("token")
 
+        //TODO: server
         storageInfoLoad()
 
-        if(units.token != null) {
-            storageInfoUpdate()
+        if (units.token != null) {
+            storageInfoUpdate() // ???
             // load from server
         }
 
@@ -88,11 +107,11 @@ class BioActivity : AppCompatActivity() {
             val bioString: String = units.textViewBio?.text.toString()
 
             val mapData = // create json transfer object
-                    mapOf(
-                            "name" to nameString,
-                            "bio" to bioString,
-                            "pic" to imageString
-                    )
+                mapOf(
+                    "name" to nameString,
+                    "bio" to bioString,
+                    "pic" to imageString
+                )
 
             val jsonData = Json.encodeToString(mapData)
 
@@ -100,11 +119,11 @@ class BioActivity : AppCompatActivity() {
                 putExtra("data", jsonData)
             }
 
-            startActivityForResult(intent1, CHANGE_INFO_REQUEST_CODE)
+            startActivityForResult(intent1, RequestCodes.CHANGE_INFO_REQUEST_CODE)
         }
 
         units.googleLogOutButton?.setOnClickListener {
-            val intent2 = Intent(this,  ProfileActivity::class.java)
+            val intent2 = Intent(this, ProfileActivity::class.java)
             clearData()
             startActivity(intent2)
         }
@@ -118,7 +137,7 @@ class BioActivity : AppCompatActivity() {
         if (data != null) {
             if (resultCode == Activity.RESULT_OK) {
                 when (requestCode) {
-                    CHANGE_INFO_REQUEST_CODE -> {
+                    RequestCodes.CHANGE_INFO_REQUEST_CODE -> {
                         val jsonData = data.getStringExtra("data")
                         val mapData: Map<String, String>
                         if (jsonData != null) {
@@ -132,6 +151,19 @@ class BioActivity : AppCompatActivity() {
                             storageInfoUpdate()
                         }
                     }
+                    RequestCodes.CREATE_BUTTON_REQUEST_CODE -> {
+
+                        val jsonData = data.getStringExtra("data")
+                        val mapData: Map<String, String>
+                        if (jsonData != null) {
+                            mapData = Json.decodeFromString(jsonData)
+                            val textViewLabel = mapData["label"].toString()
+                            val textViewDescr = mapData["descr"].toString()
+
+                            adapter.addKnopka(Knopka(textViewLabel, textViewDescr, 0))
+                            ind++
+                        }
+                    }
                 }
             }
         }
@@ -143,7 +175,7 @@ class BioActivity : AppCompatActivity() {
         val imageString: String? = bitMapToBase64String(units.profilePicBitMap)
         val nameString: String = units.textViewName?.text.toString()
         val bioString: String = units.textViewBio?.text.toString()
-//        val autPassedString: String = units.autPassed.toString()
+//        val autPassedString: String = units.autPassed.toString() // TODO ???
         val tokenString: String = units.token.toString()
         val sharedPref = getSharedPreferences("mypref", 0)
         val editor = sharedPref.edit()
@@ -152,7 +184,7 @@ class BioActivity : AppCompatActivity() {
         editor.putString("name", nameString)
         editor.putString("bio", bioString)
         editor.putString("image", imageString)
-//        editor.putString("aut", autPassedString)
+//        editor.putString("aut", autPassedString) // TODO ???
         editor.putString("token", tokenString)
 
         editor.apply()
@@ -165,19 +197,31 @@ class BioActivity : AppCompatActivity() {
 
         val nameString = sharedPref.getString("name", "").toString()
         val bioString = sharedPref.getString("bio", "").toString()
-        val imageString = sharedPref.getString("image", "").toString()
+        val imageString = sharedPref.getString("image", "").toString() //TODO
         val tokenString = sharedPref.getString("token", "").toString()
-
-        units.profilePicBitMap = base64StringToBitMap(imageString)
+        if (base64StringToBitMap(imageString) != null)
+            units.profilePicBitMap = base64StringToBitMap(imageString)
         units.imageViewProfilePic?.setImageBitmap(units.profilePicBitMap)
         units.textViewName?.text = nameString
         units.textViewBio?.text = bioString
         units.token = tokenString
     }
 
-    fun clearData() /*: Boolean*/{
+    fun clearData() /*: Boolean*/ {
         val sharedPref = getSharedPreferences("mypref", 0)
         sharedPref.edit().clear().apply()
+    }
+
+
+    override fun onItemLongClick(item: Knopka, position: Int) {
+        Log.d("AAA", "REGISTERED LONG CLICK")
+        Toast.makeText(this, item.description, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onItemClick(item: Knopka, position: Int) {
+        item.timesClicked++
+        Toast.makeText(this, item.timesClicked.toString(), Toast.LENGTH_SHORT).show()
+
     }
 
 }
