@@ -1,8 +1,8 @@
 package com.hse.knopkabackend.controllers;
 
 import com.hse.knopkabackend.DTO.KnopkaDTO;
-import com.hse.knopkabackend.models.Description;
-import com.hse.knopkabackend.models.Knopka;
+import com.hse.knopkabackend.models.description.Description;
+import com.hse.knopkabackend.models.knopka.Knopka;
 import com.hse.knopkabackend.services.KnopkaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

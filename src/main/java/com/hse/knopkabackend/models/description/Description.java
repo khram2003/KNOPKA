@@ -1,11 +1,11 @@
-package com.hse.knopkabackend.models;
+package com.hse.knopkabackend.models.description;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.hse.knopkabackend.models.knopka.Knopka;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Set;
 
 @Entity(name = "description")
 public class Description {

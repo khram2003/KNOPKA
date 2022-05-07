@@ -1,6 +1,6 @@
-package com.hse.knopkabackend.repositories;
+package com.hse.knopkabackend.repositories.knopkauser;
 
-import com.hse.knopkabackend.models.KnopkaUser;
+import com.hse.knopkabackend.models.knopkauser.KnopkaUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

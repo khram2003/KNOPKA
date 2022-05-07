@@ -1,7 +1,7 @@
 package com.hse.knopkabackend.controllers;
 
 import com.hse.knopkabackend.DTO.ProfileDTO;
-import com.hse.knopkabackend.models.Profile;
+import com.hse.knopkabackend.models.profile.Profile;
 import com.hse.knopkabackend.services.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

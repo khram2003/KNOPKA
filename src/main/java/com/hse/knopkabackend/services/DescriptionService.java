@@ -1,17 +1,15 @@
 package com.hse.knopkabackend.services;
 
-import com.hse.knopkabackend.models.Description;
-import com.hse.knopkabackend.models.KnopkaUser;
-import com.hse.knopkabackend.repositories.DescriptionRepository;
-import com.hse.knopkabackend.repositories.KnopkaUserRepository;
+import com.hse.knopkabackend.models.description.Description;
+import com.hse.knopkabackend.models.knopkauser.KnopkaUser;
+import com.hse.knopkabackend.repositories.description.DescriptionRepository;
+import com.hse.knopkabackend.repositories.knopkauser.KnopkaUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Service
 public class DescriptionService {

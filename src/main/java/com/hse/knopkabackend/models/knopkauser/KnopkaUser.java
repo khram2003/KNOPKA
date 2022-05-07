@@ -1,9 +1,10 @@
-package com.hse.knopkabackend.models;
+package com.hse.knopkabackend.models.knopkauser;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.hse.knopkabackend.models.profile.Profile;
+import com.hse.knopkabackend.models.knopka.Knopka;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 

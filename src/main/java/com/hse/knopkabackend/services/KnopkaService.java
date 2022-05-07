@@ -2,12 +2,12 @@ package com.hse.knopkabackend.services;
 
 import com.hse.knopkabackend.DTO.KnopkaDTO;
 import com.hse.knopkabackend.additionalclasses.Style;
-import com.hse.knopkabackend.models.Description;
-import com.hse.knopkabackend.models.Knopka;
-import com.hse.knopkabackend.models.KnopkaUser;
-import com.hse.knopkabackend.repositories.DescriptionRepository;
-import com.hse.knopkabackend.repositories.KnopkaRepository;
-import com.hse.knopkabackend.repositories.KnopkaUserRepository;
+import com.hse.knopkabackend.models.description.Description;
+import com.hse.knopkabackend.models.knopka.Knopka;
+import com.hse.knopkabackend.models.knopkauser.KnopkaUser;
+import com.hse.knopkabackend.repositories.description.DescriptionRepository;
+import com.hse.knopkabackend.repositories.knopka.KnopkaRepository;
+import com.hse.knopkabackend.repositories.knopkauser.KnopkaUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

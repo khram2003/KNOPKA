@@ -1,6 +1,7 @@
-package com.hse.knopkabackend.models;
+package com.hse.knopkabackend.models.profile;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.hse.knopkabackend.models.knopkauser.KnopkaUser;
 
 import javax.persistence.*;
 

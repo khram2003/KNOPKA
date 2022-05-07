@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "spring.datasourceclickhouse.url",
+      "type": "java.lang.String",
+      "description": "Description for spring.datasourceClickhouse.jdbc-url."
+    },
+    {
+      "name": "spring.datasourceclickhouse.driver-class-name",
+      "type": "java.lang.String",
+      "description": "Description for spring.datasourceClickhouse.driver-class-name."
+    }
+  ] }

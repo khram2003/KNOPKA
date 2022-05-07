@@ -1,10 +1,8 @@
-package com.hse.knopkabackend.repositories;
+package com.hse.knopkabackend.repositories.description;
 
-import com.hse.knopkabackend.models.Description;
+import com.hse.knopkabackend.models.description.Description;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface DescriptionRepository extends JpaRepository<Description, Long> {

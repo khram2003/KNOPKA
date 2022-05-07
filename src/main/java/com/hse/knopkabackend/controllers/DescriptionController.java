@@ -1,13 +1,10 @@
 package com.hse.knopkabackend.controllers;
 
 import com.hse.knopkabackend.DTO.DescriptionDTO;
-import com.hse.knopkabackend.models.Description;
+import com.hse.knopkabackend.models.description.Description;
 import com.hse.knopkabackend.services.DescriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @RestController

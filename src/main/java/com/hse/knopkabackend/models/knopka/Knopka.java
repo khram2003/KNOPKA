@@ -1,15 +1,16 @@
-package com.hse.knopkabackend.models;
+package com.hse.knopkabackend.models.knopka;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hse.knopkabackend.additionalclasses.Style;
+import com.hse.knopkabackend.models.knopkauser.KnopkaUser;
+import com.hse.knopkabackend.models.description.Description;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
-import org.json.JSONObject;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

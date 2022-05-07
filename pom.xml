@@ -30,6 +30,11 @@
             <type>pom</type>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <!-- will stop using ru.yandex.clickhouse starting from 0.4.0  -->
             <groupId>com.clickhouse</groupId>
             <artifactId>clickhouse-jdbc</artifactId>
