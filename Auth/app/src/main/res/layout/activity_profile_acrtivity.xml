@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfileActivity">
+    tools:context=".ProfileActivity"
+    style="@style/BackgroundStyle">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/name"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:textSize="24sp" />
@@ -19,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/email"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/name"
@@ -27,6 +28,7 @@
 
     <Button
         android:id="@+id/sign_out_button"
+        style="@style/ButtonStyle_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -34,7 +36,8 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="560dp"
         android:text="@string/sign_out"
-        android:visibility="visible">
+        android:visibility="visible"
+        app:cornerRadius="30dp">
 
     </Button>
 
