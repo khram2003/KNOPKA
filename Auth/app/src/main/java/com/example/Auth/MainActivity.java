@@ -57,8 +57,16 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        if (account != null) {
+            String idToken = account.getIdToken();
+            goToNextPage(idToken);
+        }
+        Log.d("HDHDHDH", "HERENOW");
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+
 
 
         googleButton = findViewById(R.id.sign_in_button);
@@ -70,11 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
         gsc = GoogleSignIn.getClient(this, gso);
 
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if (account != null) {
-            String idToken = account.getIdToken();
-            goToNextPage(idToken);
-        }
+
 
         googleButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("token", token);
 //        intent.putExtra("id", id);
         startActivity(intent);
+        finish();
     }
 
     private void sendPost(GoogleSignInAccount account) {

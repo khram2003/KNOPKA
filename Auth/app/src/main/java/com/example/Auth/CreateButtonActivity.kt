@@ -26,7 +26,11 @@ class CreateButtonActivity : AppCompatActivity() {
             val descrString: String = editTextDescr.text.toString()
 
             val returnIntent = Intent()
-            val mapData = mapOf("label" to labelString, "descr" to descrString)
+            val mapData = mapOf(
+                "name" to labelString,
+                "style" to "", // TODO
+                "descr" to descrString
+            )
             val jsonData = Json.encodeToString(mapData)
 
             returnIntent.putExtra("data", jsonData)
