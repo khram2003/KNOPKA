@@ -7,25 +7,6 @@
     android:background="@color/BackgroundColor"
     tools:context=".BioActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/imageViewProfilePic"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/bio_bar"
-            style="@style/ToolbarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:title="@string/app_name"
-            app:navigationIcon="@drawable/knopka_menu_24"
-            app:collapseIcon="@drawable/knopka_log_out_24"
-            app:titleTextColor="@color/white" />
-    </com.google.android.material.appbar.AppBarLayout>
 
     <RelativeLayout
         android:id="@+id/Block_Bio"

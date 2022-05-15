@@ -53,7 +53,9 @@ class ChangeInfoActivity : AppCompatActivity() {
     @OptIn(ExperimentalSerializationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_change_info)
+        supportActionBar?.hide();
 
         units.applyButton = findViewById(R.id.applyButton)
         units.cancelButton = findViewById(R.id.cancelButton)
@@ -67,9 +69,9 @@ class ChangeInfoActivity : AppCompatActivity() {
 
         if (jsonDataMain != null) {
             mapDataMain = Json.decodeFromString(jsonDataMain)
-            units.editTextName?.text = mapDataMain["name"] // set with values from main
+            units.editTextName?.text = mapDataMain["nickname"] // set with values from main
             units.editTextBio?.text = mapDataMain["bio"]
-            units.profilePicBitMap = base64StringToBitMap(mapDataMain["pic"].toString())
+            units.profilePicBitMap = base64StringToBitMap(mapDataMain["photo"].toString())
             units.imageViewProfilePic?.setImageBitmap(units.profilePicBitMap)
         }
 
@@ -99,7 +101,7 @@ class ChangeInfoActivity : AppCompatActivity() {
 //            Toast.makeText(this, name, Toast.LENGTH_SHORT).show() //show new value at the bottom
 
             val returnIntent = Intent()
-            val mapData = mapOf("name" to nameString, "bio" to bioString, "pic" to imageString)
+            val mapData = mapOf("nickname" to nameString, "bio" to bioString, "photo" to imageString)
             val jsonData = Json.encodeToString(mapData)
             returnIntent.putExtra("data", jsonData) //return new name from activity
             setResult(Activity.RESULT_OK, returnIntent)

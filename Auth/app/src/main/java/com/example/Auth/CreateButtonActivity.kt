@@ -15,6 +15,7 @@ class CreateButtonActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_button)
+        supportActionBar?.hide();
 
         val cancelButton = findViewById<Button>(R.id.cancelButton)
         val createButton = findViewById<Button>(R.id.createButton)
@@ -26,7 +27,11 @@ class CreateButtonActivity : AppCompatActivity() {
             val descrString: String = editTextDescr.text.toString()
 
             val returnIntent = Intent()
-            val mapData = mapOf("label" to labelString, "descr" to descrString)
+            val mapData = mapOf(
+                "name" to labelString,
+                "style" to "", // TODO
+                "descr" to descrString
+            )
             val jsonData = Json.encodeToString(mapData)
 
             returnIntent.putExtra("data", jsonData)

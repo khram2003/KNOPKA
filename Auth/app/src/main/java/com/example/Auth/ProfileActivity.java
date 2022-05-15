@@ -18,6 +18,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.Objects;
+
 public class ProfileActivity extends AppCompatActivity {
 
     GoogleSignInOptions gso;
@@ -30,7 +32,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_acrtivity);
-
+        Objects.requireNonNull(getSupportActionBar()).hide();
         name = findViewById(R.id.name);
         email = findViewById(R.id.email);
         signOutButton = findViewById(R.id.sign_out_button);

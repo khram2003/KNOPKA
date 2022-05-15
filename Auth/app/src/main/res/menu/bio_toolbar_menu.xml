@@ -5,5 +5,6 @@
         android:id="@+id/log_out"
         android:icon="@drawable/knopka_log_out_24"
         android:title="@string/log_out"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom"
+        android:orderInCategory="200"/>
 </menu>

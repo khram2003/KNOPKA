@@ -11,4 +11,16 @@
     <style name="ToolbarStyle">
         <item name="android:background">#373737</item>
     </style>
+
+    <style name="NoToolbarStyleBlack" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:background">@color/BackgroundColor</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="NoToolbarStyleWhite" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:background">@color/white</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
 </resources>
