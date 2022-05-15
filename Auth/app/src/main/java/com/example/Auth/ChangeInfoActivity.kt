@@ -19,7 +19,7 @@ import java.lang.Short.decode
 import java.nio.charset.StandardCharsets
 import java.util.Base64
 
-const val PICK_PHOTO_REQUEST_CODE = 200
+
 
 class ChangeInfoActivity : AppCompatActivity() {
 
@@ -85,7 +85,7 @@ class ChangeInfoActivity : AppCompatActivity() {
                     it.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     it.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                     it.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
-                }, PICK_PHOTO_REQUEST_CODE
+                },RequestCodes.PICK_PHOTO_REQUEST_CODE
             )
         }
 
@@ -118,7 +118,7 @@ class ChangeInfoActivity : AppCompatActivity() {
         if (data != null) {
             if (resultCode == Activity.RESULT_OK) {
                 when (requestCode) {
-                    PICK_PHOTO_REQUEST_CODE -> {
+                   RequestCodes.PICK_PHOTO_REQUEST_CODE -> {
                         val picUri = data.data
                         val picBitmap =
                             MediaStore.Images.Media.getBitmap(this.contentResolver, picUri)

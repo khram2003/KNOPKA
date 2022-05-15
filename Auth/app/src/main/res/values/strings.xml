@@ -6,4 +6,12 @@
     <string name="server_client_id">289368713312-voh4c314mqp5a8iini5e2esht1pes7t5.apps.googleusercontent.com</string>
     <string name="bio">bio</string>
     <string name="nickname">nickname</string>
+    <string name="knopka_name">Knopka\'s name</string>
+    <string name="knopka_description">Knopka\'s description</string>
+    <string name="add_knopka">ADD KNOPKA</string>
+    <string name="apply">apply</string>
+    <string name="create">create</string>
+    <string name="cancel">cancel</string>
+    <string name="log_out">log out</string>
+    <string name="last_phrase_before_log_out">Do you want to log out?</string>
 </resources>

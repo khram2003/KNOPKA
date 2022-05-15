@@ -7,15 +7,23 @@
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/drawable/bio_icon_section.xml" value="0.1135" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/drawable/edit_vector.xml" value="0.139" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/drawable/ic_baseline_edit_24.xml" value="0.139" />
+        <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/drawable/ic_baseline_exit_to_app_24.xml" value="0.158" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/drawable/ic_launcher_background.xml" value="0.139" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/drawable/icons_info.xml" value="0.1135" />
+        <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/drawable/knopka_cross_24.xml" value="0.142" />
+        <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/drawable/knopka_menu_24.xml" value="0.158" />
+        <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/drawable/knopla_cross_24.xml" value="0.22" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/drawable/rounded.xml" value="0.139" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/drawable/vector.xml" value="0.1135" />
+        <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/drawable/vector_edit.xml" value="0.158" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/font/metrophobic.xml" value="0.13229166666666667" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/activity_bio.xml" value="0.3333333333333333" />
-        <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/activity_change_info.xml" value="0.4466666666666667" />
+        <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/activity_change_info.xml" value="0.5" />
+        <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/activity_create_button.xml" value="0.16666666666666666" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/activity_main.xml" value="0.3015075376884422" />
-        <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/activity_profile_acrtivity.xml" value="0.12" />
+        <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/activity_profile_acrtivity.xml" value="0.5" />
+        <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/knopka_item.xml" value="0.15307971014492755" />
+        <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/menu/bio_toolbar_menu.xml" value="0.1796875" />
       </map>
     </option>
   </component>

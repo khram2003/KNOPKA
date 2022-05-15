@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#22373737"
+    android:background="@color/white"
     tools:context=".MainActivity">
 
 
@@ -36,7 +36,7 @@
         android:textColor="#000000"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:backgroundTint="#FFFFFF"
+        app:backgroundTint="#22373737"
         app:cornerRadius="30dp"
         app:elevation="0dp"
         app:iconTint="#FFFFFF"
