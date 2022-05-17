@@ -5,9 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -18,15 +16,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Auth.databinding.ActivityBioBinding
+import kotlinx.android.synthetic.main.activity_bio.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToJsonElement
-import okhttp3.*
 import java.io.ByteArrayOutputStream
 import java.util.*
 
@@ -36,6 +35,7 @@ private val jsonFormat = Json {
 
 class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     lateinit var binding: ActivityBioBinding
+    lateinit var toggle: ActionBarDrawerToggle
     private val adapter = KnopkaFeedAdapter(this)
 //    private var ind: Int = 0;
 
@@ -45,7 +45,6 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         var textViewName: TextView? = null
         var textViewBio: TextView? = null
         var imageViewProfilePic: ImageView? = null
-        var googleLogOutButton: Button? = null
         var profilePicBitMap: Bitmap? = null
         var token: String? = null
         var id: Int = 1
@@ -93,15 +92,41 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // toolbar
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.knopka_menu_24)
-        supportActionBar?.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.AllComponentsColor)))
-
         binding = ActivityBioBinding.inflate(layoutInflater)
 //        setContentView(R.layout.activity_main1) // same as next line but next line allows to use binding
         setContentView(binding.root)
         initRecyclerView()
+
+        // toolbar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.AllComponentsColor)))
+
+        // slideout menu
+        val dLayout = findViewById<DrawerLayout>(R.id.drawerLayout)
+        val navigationView = findViewById<com.google.android.material.navigation.NavigationView>(R.id.navView)
+        toggle = ActionBarDrawerToggle(this, dLayout, R.string.open, R.string.close)
+        dLayout?.addDrawerListener(toggle)
+        toggle.syncState()
+
+
+        navigationView.setNavigationItemSelectedListener {
+            when (it.itemId) {
+
+                R.id.feed -> {
+                    val intent2 = Intent(this, FeedActivity::class.java)
+                    startActivity(intent2)
+                }
+
+                R.id.following -> {
+                    val intent2 = Intent(this, FollowingActivity::class.java)
+                    startActivity(intent2)
+                }
+
+                R.id.myProfile -> dLayout.closeDrawer(navigationView)
+            }
+
+            true
+        }
 
         units.changeInfoButton = findViewById(R.id.changeInfoButton)
         units.textViewName = findViewById(R.id.textViewName)
@@ -110,7 +135,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
         units.profilePicBitMap =
                 BitmapFactory.decodeResource(resources, R.drawable.img) //get default picture bitmap
-        units.googleLogOutButton = findViewById(R.id.googleLogOutButton)
+//        units.googleLogOutButton = findViewById(R.id.googleLogOutButton)
 
         units.token = intent.getStringExtra("token")
 
@@ -145,11 +170,13 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
             startActivityForResult(intent1, RequestCodes.CHANGE_INFO_REQUEST_CODE)
         }
 
-        units.googleLogOutButton?.setOnClickListener {
-            val intent2 = Intent(this, ProfileActivity::class.java)
-            storageInfoClear()
-            startActivity(intent2)
-        }
+
+        // не нужна
+//        units.googleLogOutButton?.setOnClickListener {
+//            val intent2 = Intent(this, ProfileActivity::class.java)
+//            storageInfoClear()
+//            startActivity(intent2)
+//        }
 
     }
 
@@ -333,17 +360,16 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (toggle.onOptionsItemSelected(item) == true) { //user clicked on toggle button
+            return true
+        }
         when (item.itemId) {
             R.id.log_out -> {
-                val intent2 = Intent(this, ProfileActivity::class.java)
-                startActivity(intent2)
-            }
-
-            android.R.id.home -> {
                 val intent2 = Intent(this, ProfileActivity::class.java)
                 startActivity(intent2)
             }
         }
         return true
     }
+
 }

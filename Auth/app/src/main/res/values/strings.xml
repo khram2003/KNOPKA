@@ -14,4 +14,10 @@
     <string name="cancel">cancel</string>
     <string name="log_out">log out</string>
     <string name="last_phrase_before_log_out">Do you want to log out?</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
+    <string name="feed">Feed</string>
+    <string name="following">Followings</string>
+    <string name="myProfile">My profile</string>
+
 </resources>
