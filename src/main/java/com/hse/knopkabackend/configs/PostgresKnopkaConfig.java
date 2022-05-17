@@ -5,12 +5,7 @@ import com.hse.knopkabackend.models.profile.Profile;
 import com.hse.knopkabackend.repositories.knopkauser.KnopkaUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -26,6 +21,7 @@ import java.util.Objects;
 
 @Configuration
 @PropertySource({"classpath:application.properties"})
+@ComponentScan
 @EnableJpaRepositories(
         basePackages = {"com.hse.knopkabackend.repositories.knopkauser",
                 "com.hse.knopkabackend.repositories.description",
@@ -57,6 +53,7 @@ public class PostgresKnopkaConfig {
         dataSource.setUrl(env.getProperty("spring.datasource.url"));
         dataSource.setUsername(env.getProperty("spring.datasource.username"));
         dataSource.setPassword(env.getProperty("spring.datasource.password"));
+//        dataSource.setConnectionProperties();
 
         return dataSource;
     }
@@ -78,11 +75,9 @@ public class PostgresKnopkaConfig {
         em.setJpaVendorAdapter(vendorAdapter);
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("hibernate.hbm2ddl.auto",
-                env.getProperty("hibernate.hbm2ddl.auto"));
+                "create-drop");
         properties.put("hibernate.dialect",
-                env.getProperty("hibernate.dialect"));
-//        properties.put("hibernate.dll-auto",
-//                env.getProperty("hibernate.dll-auto"));
+                "org.hibernate.dialect.PostgreSQLDialect");
         em.setJpaPropertyMap(properties);
 
         return em;
