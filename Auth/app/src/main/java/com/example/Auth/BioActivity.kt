@@ -1,20 +1,20 @@
 package com.example.Auth
 
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +22,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Auth.databinding.ActivityBioBinding
 import kotlinx.android.synthetic.main.activity_bio.*
+import kotlinx.android.synthetic.main.activity_pop_up_info.view.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -37,6 +38,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     lateinit var binding: ActivityBioBinding
     lateinit var toggle: ActionBarDrawerToggle
     private val adapter = KnopkaFeedAdapter(this)
+    lateinit var dialog: Dialog
 //    private var ind: Int = 0;
 
     class MainActivityUnits {
@@ -80,10 +82,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         binding.RecyclerViewKnopkasFeed.layoutManager =
                 LinearLayoutManager(this)
         binding.RecyclerViewKnopkasFeed.adapter = adapter
-        binding.addKnopkaButtton.setOnClickListener {
-            val intent2 = Intent(this, CreateButtonActivity::class.java)
-            startActivityForResult(intent2, RequestCodes.CREATE_BUTTON_REQUEST_CODE)
-        }
+
 //        sendGetUserKnopkaIds()
     }
 
@@ -97,6 +96,8 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         setContentView(binding.root)
         initRecyclerView()
 
+        dialog = Dialog(this)
+
         // toolbar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.AllComponentsColor)))
@@ -108,7 +109,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         dLayout?.addDrawerListener(toggle)
         toggle.syncState()
 
-
+        //items clicked on slideout menu
         navigationView.setNavigationItemSelectedListener {
             when (it.itemId) {
 
@@ -235,11 +236,11 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 //                                "\"LocalDateTime\"" to "\"" + mapData["LocalDateTime"] + "\""
                             )
 
-                            sendPostButtonRequest(
-                                    m as Map<String, String>,
-                                    knopka,
-                                    knopka.knopkaList.size - 1
-                            ) // the end of the knpokas list
+//                            sendPostButtonRequest(
+//                                    m as Map<String, String>,
+//                                    knopka,
+//                                    knopka.knopkaList.size - 1
+//                            ) // the end of the knpokas list
                         }
                     }
                 }
@@ -339,10 +340,24 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 //    @RequiresApi(Build.VERSION_CODES.N)
 //    fun sendGetUserFriendsList() = getUserFriendsList().execute()
 
+    // long click on knopka
     override fun onItemLongClick(item: Knopka, position: Int) {
-        Log.d("AAA", "REGISTERED LONG CLICK")
-        Log.d("AAA", item.id.toString())
-        Toast.makeText(this, item.name, Toast.LENGTH_SHORT).show()
+//        val popUpActivity = findViewById<RelativeLayout>(R.layout.activity_pop_up_info)
+//        val knopkaName = popUpActivity.KnopkaName
+//        knopkaName.setText(item.name)
+//        val popUpInfo = CustomDialogFragment()
+//        popUpInfo.show(supportFragmentManager, "customDialog")
+        dialog.setContentView(R.layout.activity_pop_up_info)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        val name = dialog.findViewById<TextView>(R.id.KnopkaName)
+        name.setText(item.name)
+
+        //TODO set bio, set author
+        val author = dialog.findViewById<TextView>(R.id.AuthorName)
+//        author.setText(item.)
+        //TODO
+
+        dialog.show()
     }
 
     override fun onItemClick(item: Knopka, position: Int) {
@@ -359,14 +374,20 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         return true
     }
 
+    // items from toolbar
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (toggle.onOptionsItemSelected(item) == true) { //user clicked on toggle button
             return true
         }
         when (item.itemId) {
-            R.id.log_out -> {
-                val intent2 = Intent(this, ProfileActivity::class.java)
-                startActivity(intent2)
+            R.id.logOutIcon -> {
+                val intentLogOut = Intent(this, ProfileActivity::class.java)
+                startActivity(intentLogOut)
+            }
+            R.id.addKnopkaIcon -> {
+                val intentCreateKnopka = Intent(this, CreateButtonActivity::class.java)
+                startActivityForResult(intentCreateKnopka, RequestCodes.CREATE_BUTTON_REQUEST_CODE)
             }
         }
         return true

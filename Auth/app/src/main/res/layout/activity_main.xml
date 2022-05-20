@@ -65,17 +65,19 @@
         tools:ignore="MissingConstraints" />
 
     <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
 
-            android:elevation="2dp"
-            android:src="@drawable/gb"
-            app:layout_constraintBottom_toBottomOf="@+id/materialButton"
-            app:layout_constraintEnd_toEndOf="@+id/materialButton"
-            app:layout_constraintHorizontal_bias="0.517"
-            app:layout_constraintStart_toStartOf="@+id/materialButton"
-            app:layout_constraintTop_toTopOf="@+id/materialButton"
-            app:layout_constraintVertical_bias="0.071"></ImageView>
+        android:elevation="2dp"
+        android:src="@drawable/gb"
+        app:layout_constraintBottom_toBottomOf="@+id/materialButton"
+        app:layout_constraintEnd_toEndOf="@+id/materialButton"
+        app:layout_constraintHorizontal_bias="0.517"
+        app:layout_constraintStart_toStartOf="@+id/materialButton"
+        app:layout_constraintTop_toTopOf="@+id/materialButton"
+        app:layout_constraintVertical_bias="0.071">
+
+    </ImageView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
