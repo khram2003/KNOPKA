@@ -66,8 +66,8 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
         showUserKnopkas()
 
-        PutAddFriendRequest("http://10.0.2.2:8080/api/v1/user", 1, "111", 2)
-        PutAddFriendRequest("http://10.0.2.2:8080/api/v1/user", 1, "111", 3)
+        PutAddFriendRequest(this, "http://10.0.2.2:8080/api/v1/user", 1, "111", 2)
+        PutAddFriendRequest(this, "http://10.0.2.2:8080/api/v1/user", 1, "111", 3)
 
     }
 
@@ -276,7 +276,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun sendGetUserProfileInfo() {
-        val result = GetUserProfileInfo("http://10.0.2.2:8080/api/v1/profile", 1, "111", 1)
+        val result = GetUserProfileInfo(this, "http://10.0.2.2:8080/api/v1/profile", 1, "111", 1)
         val mapData: User = jsonFormat.decodeFromString(result.toString())
         units.textViewName?.text = mapData.nickname
         units.textViewBio?.text = mapData.bio
@@ -290,7 +290,8 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendPostButtonRequest(param: Map<String, String>, knopka: KnopkaFeedAdapter, ind: Int) {
-        val result = Requests.PostKnopkaRequest("http://10.0.2.2:8080/api/v1/knopka", 1, "111", param)
+        val result =
+            Requests.PostKnopkaRequest(this, "http://10.0.2.2:8080/api/v1/knopka", 1, "111", param)
         if (result != null) {
             knopka.knopkaList[ind].id = result.toLong()
         }
@@ -299,12 +300,12 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendPutChangeInfoRequest(param: Map<String, String>) =
-        Requests.PutChangeInfoRequest("http://10.0.2.2:8080/api/v1/profile", 1, "111", param)
+        Requests.PutChangeInfoRequest(this, "http://10.0.2.2:8080/api/v1/profile", 1, "111", param)
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendGetUserKnopkaIds(): List<Long> {
         val result =
-            Requests.GetUserKnopkaIds("http://10.0.2.2:8080/api/v1/user", 1, 1, "111")
+            Requests.GetUserKnopkaIds(this, "http://10.0.2.2:8080/api/v1/user", 1, 1, "111")
         Log.d("KNOKA IDS", result.toString())
         val knopkaIdsList =
             jsonFormat.decodeFromString<List<Long>>(result)
@@ -314,10 +315,16 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendGetUserKnopkas(knopkasIdList: List<Long>): List<Knopka> {
         val result =
-            Requests.GetUserKnopkas("http://10.0.2.2:8080/api/v1/knopka", 1, "111", knopkasIdList)
+            Requests.GetUserKnopkas(
+                this,
+                "http://10.0.2.2:8080/api/v1/knopka",
+                1,
+                "111",
+                knopkasIdList
+            )
         Log.d("KNOPKAS", result.toString())
-        val knopkaIdsList = stringToButtons(result.toString())
-        return knopkaIdsList
+        val knopkasList = stringToButtons(result.toString())
+        return knopkasList
     }
 
 

@@ -101,7 +101,7 @@ class FollowingActivity : AppCompatActivity(), OnFriendClickListener {
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendGetUserFriendsIds(): List<Long>? {
         val result = Requests.GetUserFriendsIds(
-            "http://10.0.2.2:8080/api/v1/user",
+            this,"http://10.0.2.2:8080/api/v1/user",
             1,
             1,
             "111"
@@ -118,7 +118,7 @@ class FollowingActivity : AppCompatActivity(), OnFriendClickListener {
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendGetUserFriends(friendIdsList: List<Long>): List<User> {
         val result = Requests.GetUserFriends(
-            "http://10.0.2.2:8080/api/v1/user",
+            this, "http://10.0.2.2:8080/api/v1/user",
             1,
             "111",
             friendIdsList)
