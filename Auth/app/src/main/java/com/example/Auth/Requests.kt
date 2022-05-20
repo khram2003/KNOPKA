@@ -2,104 +2,203 @@ package com.example.Auth
 
 import android.os.AsyncTask
 import android.util.Log
+import kotlinx.serialization.json.Json
 import okhttp3.*
 
-class Requests {
-//    internal class getUserProfileInfo(/*val url : String, val id : Int, val token : String*/) :
-//        AsyncTask<Void, Void, String>() {
-//
-//        override fun doInBackground(vararg params: Void?): String {
-//            val client = OkHttpClient()
-//            val url = "http://10.0.2.2:8080/api/v1/profile/1/1"
-//            val request = Request.Builder().url(url).addHeader("token", "111").build()
-//            val response = client.newCall(request).execute()
-//            return response.body()?.string().toString()
-//        }
-//    }
+object Requests {
+    // gets
+    fun GetUserProfileInfo(
+        url: String, id: Long,
+        token: String, requestId: Long
+    ): String = SendGetRequest<Nothing>("$url/$requestId/$id", token, null, null).execute().get()
 
-    internal class PostButtonRequest(/*val url : String, val id : Int, val token : String,*/
-        val requestBodyMap: Map<String, String>, val knopka: KnopkaFeedAdapter, val ind: Int
+    fun GetUserKnopkaIds(
+        url: String, idSender: Int,
+        idOwner: Int, token: String
+    ): String =
+        SendGetRequest<Void>("$url/$idSender/$idOwner/knopkasId", token, null, null).execute().get()
+
+    fun GetUserKnopkas(
+        url: String, id: Int, token: String,
+        knopkasIdList: List<Long>
+    ):
+            String =
+        SendGetRequest<Long>("$url/$id/getbyids", token, knopkasIdList, "ids").execute().get()
+
+    fun GetUserFriendsIds(
+        url: String,
+        idSender: Int,
+        idOwner: Int,
+        token: String
+    ):
+            String =
+        SendGetRequest<Nothing>("$url/$idSender/$idOwner/friendsId", token, null, null).execute()
+            .get()
+
+    fun GetUserFriends(
+        url: String, id: Int, token: String,
+        friendsIdList: List<Long>
+    ):
+            String =
+        SendGetRequest<Long>("$url/$id/friends", token, friendsIdList, "friendsId").execute().get()
+
+    // posts
+
+    fun PostKnopkaRequest(
+        url: String, id: Int, token: String,
+        requestBodyMap: Map<String, String>
+    ): String {
+        val knopkaDTO: RequestBody = RequestBody.create(
+            MediaType.parse("application/json"),
+            requestBodyMap.toString().replace("=", ":")
+        )
+        return SendPostRequest(url, token, knopkaDTO, id.toString(), "knopkaUserId").execute()
+            .get()
+    }
+
+    // puts
+    fun PutChangeInfoRequest(
+        url: String, id: Int, token: String,
+        requestBodyMap: Map<String, String>
+    ): String {
+        val requestDTO: RequestBody = RequestBody.create(
+            MediaType.parse("application/json"),
+            requestBodyMap.toString().replace("=", ":")
+        )
+        return SendPutRequest("$url/$id", token, requestDTO, null, null).execute().get()
+    }
+
+
+    internal class SendGetRequest<T>(
+        private val url: String,
+        private val token: String,
+        private val parameters: List<T>?,
+        private val parameterName: String?
+    ) :
+        AsyncTask<Void, Void, String>() {
+        override fun doInBackground(vararg params: Void?): String {
+            val client = OkHttpClient()
+            val httpBuilder = HttpUrl.parse(url)!!.newBuilder()
+
+            if (parameters != null && parameterName != null) {
+                for (param in parameters) {
+                    httpBuilder.addQueryParameter(parameterName, param.toString())
+                }
+            }
+
+            val request =
+                Request.Builder().url(httpBuilder.build()).addHeader("token", token)
+                    .build()
+
+            val response = client.newCall(request).execute()
+
+            if (response.code() == 200) {
+                //TODO: deal with return status
+            }
+
+            return response.body()?.string().toString()
+        }
+    }
+
+    internal class SendPostRequest(
+        private val url: String,
+        private val token: String,
+        private val requestDTO: RequestBody,
+        private val parameter: String?,
+        private val parameterName: String?
     ) :
         AsyncTask<Void, Void, String>() {
 
         override fun doInBackground(vararg params: Void?): String {
             val client = OkHttpClient()
-            val url = "http://10.0.2.2:8080/api/v1/knopka"
-            val knopkaDTO: RequestBody = RequestBody.create(
-                MediaType.parse("application/json"),
-                requestBodyMap.toString().replace("=", ":")
-            )
-
-            Log.d("KNOPKADTO", knopkaDTO.toString())
 
             val httpBuilder = HttpUrl.parse(url)!!.newBuilder()
-            httpBuilder.addQueryParameter("knopkaUserId", "1")
+
+            if (parameterName != null) {
+                httpBuilder.addQueryParameter(parameterName, parameter)
+            }
 
             val request = Request.Builder()
                 .url(httpBuilder.build())
-                .addHeader("token", "111")
-                .post(knopkaDTO)
+                .addHeader("token", token)
+                .post(requestDTO)
                 .build()
             val response = client.newCall(request).execute()
+
+            checkStatusCode(response.code())
+
             return response.body()?.string().toString()
         }
 
     }
 
 
-    internal class PutChangeInfoRequest(/*val url : String, val id : Int, val token : String, */
-        val requestBodyMap: Map<String, String>
+    fun PutAddFriendRequest(
+        url: String, id: Int, token: String,
+        friendId: Long
+    ): AsyncTask<Void, Void, String>? {
+        val requestDTO: RequestBody = RequestBody.create(
+            MediaType.parse("application/json"),
+            Json.Default.toString().replace("=", ":")
+        )
+        return SendPutRequest(
+            "$url/$id",
+            token, requestDTO,
+            friendId.toString(),
+            "friendId"
+        ).execute()
+    }
+
+    internal class SendPutRequest(
+        private val url: String,
+        private val token: String,
+        private val requestDTO: RequestBody?,
+        private val parameter: String?,
+        private val parameterName: String?
     ) :
         AsyncTask<Void, Void, String>() {
-
         override fun doInBackground(vararg params: Void?): String {
-            Log.d("BBBB", requestBodyMap.toString())
+
             val client = OkHttpClient()
-            val url = "http://10.0.2.2:8080/api/v1/profile/1"
-            val profileDTO: RequestBody = RequestBody.create(
-                MediaType.parse("application/json"),
-                requestBodyMap.toString().replace("=", ":")
-            )
 
-            Log.d("AAAA", profileDTO.toString())
+            val httpBuilder = HttpUrl.parse(url)!!.newBuilder()
 
-            val request = Request.Builder().url(url)
-                .addHeader("token", "111")
-                .put(profileDTO)
-                .build()
+            if (parameterName != null) {
+                httpBuilder.addQueryParameter(parameterName, parameter)
+            }
+
+            val requestPart = Request.Builder()
+                .url(httpBuilder.build())
+                .addHeader("token", token)
+
+            val request: Request = if (requestDTO != null) {
+                requestPart.put(requestDTO).build()
+            } else {
+                requestPart.put(requestDTO).build()
+            }
+
             val response = client.newCall(request).execute()
+
+            checkStatusCode(response.code())
+
             return response.body()?.string().toString()
         }
     }
 
-    internal class GetUserKnopkaIds(/*val url : String, val id : Int, val token : String*/) :
-        AsyncTask<Void, Void, String>() {
 
-        override fun doInBackground(vararg params: Void?): String {
-            val client = OkHttpClient()
-            val url = "http://10.0.2.2:8080/api/v1/user/1/1/knopkasId"
-            val request = Request.Builder().url(url).addHeader("token", "111").build()
-            val response = client.newCall(request).execute()
-            return response.body()?.string().toString()
+    fun checkStatusCode(code: Int) {
+        Log.d("RESPONSE STATUS CODE", code.toString())
+
+        when (code) {
+            400 -> {
+
+            }
+            200 -> {
+
+            }
         }
     }
+
+
 }
 
-internal class GetUserKnopkas(/*val url : String, val id : Int, val token : String*/
-    val knopkasIdList: List<Long>
-) :
-    AsyncTask<Void, Void, String>() {
-
-    override fun doInBackground(vararg params: Void?): String {
-        val client = OkHttpClient()
-        val url = "http://10.0.2.2:8080/api/v1/knopka/1/getbyids"
-        val httpBuilder = HttpUrl.parse(url)!!.newBuilder()
-        for (id in knopkasIdList) {
-            httpBuilder.addQueryParameter("ids", id.toString())
-        }
-        val request =
-            Request.Builder().url(httpBuilder.build()).addHeader("token", "111").build()
-        val response = client.newCall(request).execute()
-        return response.body()?.string().toString()
-    }
-}

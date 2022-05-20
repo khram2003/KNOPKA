@@ -36,6 +36,9 @@
             android:name=".FollowingActivity"
             android:exported="false" />
         <activity
+            android:name=".FriendBioActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
