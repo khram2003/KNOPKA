@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class KnopkaUserResponseDTO implements Serializable {
     String nickname;
-    byte[] encodedPhoto;
+    String encodedPhoto;
     Long id;
 
     public Long getId() {
@@ -15,7 +15,7 @@ public class KnopkaUserResponseDTO implements Serializable {
         this.id = id;
     }
 
-    public KnopkaUserResponseDTO(String nickname, byte[] encodedPhoto, Long id) {
+    public KnopkaUserResponseDTO(String nickname, String encodedPhoto, Long id) {
         this.nickname = nickname;
         this.encodedPhoto = encodedPhoto;
         this.id = id;
@@ -29,11 +29,11 @@ public class KnopkaUserResponseDTO implements Serializable {
         this.nickname = nickname;
     }
 
-    public byte[] getEncodedPhoto() {
+    public String getEncodedPhoto() {
         return encodedPhoto;
     }
 
-    public void setEncodedPhoto(byte[] encodedPhoto) {
+    public void setEncodedPhoto(String encodedPhoto) {
         this.encodedPhoto = encodedPhoto;
     }
 }

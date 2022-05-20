@@ -42,9 +42,10 @@ public class Profile {
 
     @Column(
             name = "encoded_image",
-            nullable = true
+            nullable = true,
+            columnDefinition = "TEXT"
     )
-    byte[] encodedPhoto; //smth strange
+    String encodedPhoto; //smth strange
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
@@ -52,7 +53,7 @@ public class Profile {
     @JsonBackReference
     private KnopkaUser user;
 
-    public Profile(String name, String bio, byte[] encodedPhoto, Long userWithThisProfileId, KnopkaUser user) {
+    public Profile(String name, String bio, String encodedPhoto, Long userWithThisProfileId, KnopkaUser user) {
         this.nickname = name;
         this.bio = bio;
         this.encodedPhoto = encodedPhoto;
@@ -90,11 +91,11 @@ public class Profile {
         this.bio = bio;
     }
 
-    public byte[] getEncodedPhoto() {
+    public String getEncodedPhoto() {
         return encodedPhoto;
     }
 
-    public void setEncodedPhoto(byte[] encodedPhoto) {
+    public void setEncodedPhoto(String encodedPhoto) {
         this.encodedPhoto = encodedPhoto;
     }
 

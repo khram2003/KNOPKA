@@ -5,12 +5,12 @@ import java.io.Serializable;
 public class ProfileDTO implements Serializable {
     private String nickname;
     private String bio;
-    private byte[] photo;
+    private String photo;
 
     public ProfileDTO() {
     }
 
-    public ProfileDTO(String nickname, String bio, byte[] photo) {
+    public ProfileDTO(String nickname, String bio, String photo) {
         this.nickname = nickname;
         this.bio = bio;
         this.photo = photo;
@@ -32,11 +32,11 @@ public class ProfileDTO implements Serializable {
         this.bio = bio;
     }
 
-    public byte[] getPhoto() {
+    public String getPhoto() {
         return photo;
     }
 
-    public void setPhoto(byte[] photo) {
+    public void setPhoto(String photo) {
         this.photo = photo;
     }
 }

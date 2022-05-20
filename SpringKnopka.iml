@@ -15,7 +15,10 @@
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="Hibernate" />
         <datasource-mapping>
+          <factory-entry name="clickHouseKnopkaEntityManager" value="a9f769d8-94fb-4d0c-9a3c-a14f3d58ca8a" />
           <factory-entry name="entityManagerFactory" value="25d92374-60d0-4ad3-b955-9c9f4edc54e1" />
+          <factory-entry name="knopkaUserEntityManager" />
+          <factory-entry name="postgresKnopkaEntityManager" value="25d92374-60d0-4ad3-b955-9c9f4edc54e1" />
         </datasource-mapping>
         <naming-strategy-map />
       </configuration>

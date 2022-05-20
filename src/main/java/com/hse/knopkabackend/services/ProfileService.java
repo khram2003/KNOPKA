@@ -83,14 +83,14 @@ public class ProfileService {
     }
 
     @Transactional
-    public void updateProfilePhoto(Long profileKnopkaUserId, byte[] photo, String token) {
+    public void updateProfilePhoto(Long profileKnopkaUserId, String photo, String token) {
         Profile profile = profileRepository.findById(profileKnopkaUserId).orElseThrow(
                 () -> new IllegalStateException("profileKnopkaUser with id: " + profileKnopkaUserId + " doesn't exist")
         );
         if (!Objects.equals(profile.getUser().getToken(), token))
             throw new IllegalStateException("Token is invalid");
         //photo up to 2MB
-        if (photo.length <= 2097152) {
+        if (photo.length() <= 2097152) {
             profile.setEncodedPhoto(photo);
         } else {
             throw new IllegalStateException("Photo size is too large");

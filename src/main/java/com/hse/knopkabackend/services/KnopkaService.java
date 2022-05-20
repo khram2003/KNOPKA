@@ -145,7 +145,7 @@ public class KnopkaService {
             Knopka knopka = knopkaRepository.findById(id).orElseThrow(
                     () -> new IllegalStateException("knopka with id: " + id + " doesn't exist")
             );
-            resSet.add(new KnopkaDTO(knopka.getName(), knopka.getStyle(), knopka.getPushesCounter(), knopka.getKnopkaId(), knopka.getCreatedAt()));
+            resSet.add(new KnopkaDTO(knopka.getName(), knopka.getStyle(), knopka.getPushesCounter(), knopka.getKnopkaId()/*, knopka.getCreatedAt()*/));
         }
         return resSet;
     }

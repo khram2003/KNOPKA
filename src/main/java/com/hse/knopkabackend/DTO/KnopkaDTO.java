@@ -10,17 +10,17 @@ public class KnopkaDTO implements Serializable {
     private Style style;
     private Long pushes;
     private Long id;
-    private LocalDateTime createdAt;
+//    private LocalDateTime createdAt;
 
     KnopkaDTO() {
     }
 
-    public KnopkaDTO(String name, Style style, Long pushes, Long id, LocalDateTime createdAt) {
+    public KnopkaDTO(String name, Style style, Long pushes, Long id/*, LocalDateTime createdAt*/) {
         this.name = name;
         this.style = style;
         this.pushes = pushes;
         this.id = id;
-        this.createdAt = createdAt;
+//        this.createdAt = createdAt;
     }
 
     public Long getId() {
@@ -55,11 +55,11 @@ public class KnopkaDTO implements Serializable {
         this.pushes = pushes;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+//    public LocalDateTime getCreatedAt() {
+//        return createdAt;
+//    }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+//    public void setCreatedAt(LocalDateTime createdAt) {
+//        this.createdAt = createdAt;
+//    }
 }
