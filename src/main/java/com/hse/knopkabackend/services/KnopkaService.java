@@ -30,8 +30,13 @@ public class KnopkaService {
         this.descriptionRepository = descriptionRepository;
     }
 
-    public List<KnopkaDTO> getKnopkas() {
-
+    public List<KnopkaDTO> getKnopkas(Long knopkaUserId, String token) {
+        KnopkaUser knopkaUserById = knopkaUserRepository.findById(knopkaUserId).orElseThrow(() -> {
+            throw new IllegalStateException("Invalid id");
+        });
+        if (!Objects.equals(token, knopkaUserById.getToken())) {
+            throw new IllegalStateException("Invalid token");
+        }
         List<Knopka> knopkaList = knopkaRepository.findAll();
         List<KnopkaDTO> knopkaDTOList = new ArrayList<>();
         for (var knopka : knopkaList)

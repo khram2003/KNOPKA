@@ -26,9 +26,10 @@ public class KnopkaController {
 
 
     //it will be removed later
-    @GetMapping
-    public List<KnopkaDTO> getKnopkas() {
-        return knopkaService.getKnopkas();
+    @GetMapping("/{knopkaUserId}/getall")
+    public List<KnopkaDTO> getKnopkas(@PathVariable("knopkaUserId") Long knopkaUserId,
+                                      @RequestHeader String token) {
+        return knopkaService.getKnopkas(knopkaUserId, token);
     }
 
     @GetMapping("/{knopkaUserId}/getbyids")
