@@ -10,16 +10,27 @@ public class KnopkaDTO implements Serializable {
     private Style style;
     private Long pushes;
     private Long id;
+    private Long authorId;
 //    private LocalDateTime createdAt;
+
+
+    public Long getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
+    }
 
     KnopkaDTO() {
     }
 
-    public KnopkaDTO(String name, Style style, Long pushes, Long id/*, LocalDateTime createdAt*/) {
+    public KnopkaDTO(String name, Style style, Long pushes, Long id, Long authorId) {
         this.name = name;
         this.style = style;
         this.pushes = pushes;
         this.id = id;
+        this.authorId = authorId;
 //        this.createdAt = createdAt;
     }
 

@@ -30,8 +30,13 @@ public class KnopkaService {
         this.descriptionRepository = descriptionRepository;
     }
 
-    public List<Knopka> getKnopkas() {
-        return knopkaRepository.findAll();
+    public List<KnopkaDTO> getKnopkas() {
+
+        List<Knopka> knopkaList = knopkaRepository.findAll();
+        List<KnopkaDTO> knopkaDTOList = new ArrayList<>();
+        for (var knopka : knopkaList)
+            knopkaDTOList.add(new KnopkaDTO(knopka.getName(), knopka.getStyle(), knopka.getPushesCounter(), knopka.getKnopkaId(), knopka.getUser().getId()));
+        return knopkaDTOList;
     }
 
     public void addNewKnopka(Knopka knopka, String token, Long knopkaUserId, Description description) {
@@ -145,7 +150,7 @@ public class KnopkaService {
             Knopka knopka = knopkaRepository.findById(id).orElseThrow(
                     () -> new IllegalStateException("knopka with id: " + id + " doesn't exist")
             );
-            resSet.add(new KnopkaDTO(knopka.getName(), knopka.getStyle(), knopka.getPushesCounter(), knopka.getKnopkaId()/*, knopka.getCreatedAt()*/));
+            resSet.add(new KnopkaDTO(knopka.getName(), knopka.getStyle(), knopka.getPushesCounter(), knopka.getKnopkaId(), knopka.getUser().getId()));
         }
         return resSet;
     }

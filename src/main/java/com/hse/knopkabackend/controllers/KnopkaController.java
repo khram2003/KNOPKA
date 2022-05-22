@@ -27,7 +27,7 @@ public class KnopkaController {
 
     //it will be removed later
     @GetMapping
-    public List<Knopka> getKnopkas() {
+    public List<KnopkaDTO> getKnopkas() {
         return knopkaService.getKnopkas();
     }
 
