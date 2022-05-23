@@ -20,6 +20,11 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.Auth.Converters.base64StringToBitMap
+import com.example.Auth.Converters.bitMapToBase64String
+import com.example.Auth.Converters.stringToButtons
+import com.example.Auth.Requests.GetUserProfileInfo
+import com.example.Auth.Requests.PutAddFriendRequest
 import com.example.Auth.databinding.ActivityBioBinding
 import kotlinx.android.synthetic.main.activity_bio.*
 import kotlinx.android.synthetic.main.activity_pop_up_info.view.*
@@ -27,8 +32,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.io.ByteArrayOutputStream
-import java.util.*
 
 private val jsonFormat = Json {
     coerceInputValues = true; ignoreUnknownKeys = true
@@ -54,36 +57,30 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
     private var units: MainActivityUnits = MainActivityUnits()
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun bitMapToBase64String(bitMap: Bitmap?): String? {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitMap?.compress(Bitmap.CompressFormat.JPEG, 10, byteArrayOutputStream)
-        // TODO: what quality to use?
-        val imageBytes: ByteArray = byteArrayOutputStream.toByteArray()
-        return Base64.getEncoder().encodeToString(imageBytes)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun base64StringToBitMap(str: String?): Bitmap? {
-        val imageBytes = Base64.getDecoder().decode(str)
-        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-    }
-
-    fun stringToButtons(knopkasString: String): List<Knopka> {
-        val knopkaIdsList =
-                knopkasString.removeSurrounding("[", "]")
-                        .split("(?<=\\}),".toRegex()).map { jsonFormat.decodeFromString<Knopka>(it) }
-
-        return knopkaIdsList
-    }
-
     @RequiresApi(Build.VERSION_CODES.N)
     private fun initRecyclerView() {
         binding.RecyclerViewKnopkasFeed.layoutManager =
-                LinearLayoutManager(this)
+            LinearLayoutManager(this)
         binding.RecyclerViewKnopkasFeed.adapter = adapter
-
 //        sendGetUserKnopkaIds()
+
+        showUserKnopkas()
+
+        PutAddFriendRequest(this, "http://10.0.2.2:8080/api/v1/user", 1, "111", 2)
+        PutAddFriendRequest(this, "http://10.0.2.2:8080/api/v1/user", 1, "111", 3)
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun showUserKnopkas() {
+        val knopkaIdsList = sendGetUserKnopkaIds()
+        if (knopkaIdsList.isNotEmpty()) {
+            val knopkasList = sendGetUserKnopkas(knopkaIdsList)
+
+            for (knopka in knopkasList) {
+                adapter.addKnopka(Knopka(knopka.name, knopka.style, knopka.pushes, knopka.id))
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -92,8 +89,8 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         super.onCreate(savedInstanceState)
 
         binding = ActivityBioBinding.inflate(layoutInflater)
-//        setContentView(R.layout.activity_main1) // same as next line but next line allows to use binding
         setContentView(binding.root)
+
         initRecyclerView()
 
         dialog = Dialog(this)
@@ -104,7 +101,8 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
         // slideout menu
         val dLayout = findViewById<DrawerLayout>(R.id.drawerLayout)
-        val navigationView = findViewById<com.google.android.material.navigation.NavigationView>(R.id.navView)
+        val navigationView =
+            findViewById<com.google.android.material.navigation.NavigationView>(R.id.navView)
         toggle = ActionBarDrawerToggle(this, dLayout, R.string.open, R.string.close)
         dLayout?.addDrawerListener(toggle)
         toggle.syncState()
@@ -135,18 +133,15 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         units.imageViewProfilePic = findViewById(R.id.imageViewProfilePic)
 
         units.profilePicBitMap =
-                BitmapFactory.decodeResource(resources, R.drawable.img) //get default picture bitmap
-//        units.googleLogOutButton = findViewById(R.id.googleLogOutButton)
+            BitmapFactory.decodeResource(resources, R.drawable.img) //get default picture bitmap
 
         units.token = intent.getStringExtra("token")
 
 
         storageInfoLoad()
-//        sendGetUserProfileInfo()
+        sendGetUserProfileInfo()
         storageInfoUpdate()
 
-
-        // sendGetUserFriendsList() //TODO
 
 
         binding.changeInfoButton.setOnClickListener {
@@ -156,11 +151,11 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
             val bioString: String = units.textViewBio?.text.toString()
 
             val mapData =
-                    mapOf(
-                            "nickname" to nameString,
-                            "bio" to bioString,
-                            "photo" to imageString
-                    )
+                mapOf(
+                    "nickname" to nameString,
+                    "bio" to bioString,
+                    "photo" to imageString
+                )
 
             val jsonData = Json.encodeToString(mapData)
 
@@ -170,14 +165,6 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
             startActivityForResult(intent1, RequestCodes.CHANGE_INFO_REQUEST_CODE)
         }
-
-
-        // не нужна
-//        units.googleLogOutButton?.setOnClickListener {
-//            val intent2 = Intent(this, ProfileActivity::class.java)
-//            storageInfoClear()
-//            startActivity(intent2)
-//        }
 
     }
 
@@ -194,15 +181,15 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
                         if (jsonData != null) {
                             mapData = Json.decodeFromString(jsonData)
                             val param: Map<String, String?> = mapOf(
-                                    "\"nickname\"" to
-                                            if (mapData["nickname"] == units.textViewName?.text) null
-                                            else "\"" + mapData["nickname"] + "\"",
-                                    "\"bio\"" to
-                                            if (mapData["bio"] == units.textViewBio?.text) null
-                                            else "\"" + mapData["bio"].toString() + "\"",
-                                    "\"photo\"" to
-                                            if (base64StringToBitMap(mapData["photo"]) == units.profilePicBitMap) null
-                                            else "\"" + mapData["photo"] + "\""
+                                "\"nickname\"" to
+                                        if (mapData["nickname"] == units.textViewName?.text) null
+                                        else "\"" + mapData["nickname"] + "\"",
+                                "\"bio\"" to
+                                        if (mapData["bio"] == units.textViewBio?.text) null
+                                        else "\"" + mapData["bio"].toString() + "\"",
+                                "\"photo\"" to
+                                        if (base64StringToBitMap(mapData["photo"]) == units.profilePicBitMap) null
+                                        else "\"" + mapData["photo"] + "\""
                             )
 
                             units.textViewName?.text = mapData["nickname"] // set with new values
@@ -226,13 +213,13 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
                             val textViewDescr = mapData["descr"].toString()
 
                             val knopka =
-                                    adapter.addKnopka(Knopka(textViewLabel, "", 0, 0))
+                                adapter.addKnopka(Knopka(textViewLabel, "", 0, 0))
 
                             val m: Map<String, String?> = mapOf(
-                                    "\"name\"" to "\"" + mapData["name"] + "\"",
-                                    "\"style\"" to /*"\"" + mapData["style"].toString() + "\""*/ null,
-                                    "\"pushes\"" to "0",
-                                    "\"id\"" to units.id.toString()
+                                "\"name\"" to "\"" + mapData["name"] + "\"",
+                                "\"style\"" to /*"\"" + mapData["style"].toString() + "\""*/ null,
+                                "\"pushes\"" to "0",
+                                "\"id\"" to units.id.toString()
 //                                "\"LocalDateTime\"" to "\"" + mapData["LocalDateTime"] + "\""
                             )
 
@@ -289,23 +276,24 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     }
 
 
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    fun sendGetUserProfileInfo() {
-//        val result = Requests.getUserProfileInfo().execute().get()
-//        val mapData: User = jsonFormat.decodeFromString(result.toString())
-//        units.textViewName?.text = mapData.nickname
-//        units.textViewBio?.text = mapData.bio
-//        if (mapData.photo != "") {
-//            units.profilePicBitMap =
-//                    base64StringToBitMap(mapData.photo.substring(0, mapData.photo.length - 2))
-//            units.imageViewProfilePic?.setImageBitmap(units.profilePicBitMap)
-//        }
-//
-//    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun sendGetUserProfileInfo() {
+        val result = GetUserProfileInfo(this, "http://10.0.2.2:8080/api/v1/profile", 1, "111", 1)
+        val mapData: User = jsonFormat.decodeFromString(result.toString())
+        units.textViewName?.text = mapData.nickname
+        units.textViewBio?.text = mapData.bio
+        if (mapData.photo != "") {
+            units.profilePicBitMap =
+                base64StringToBitMap(mapData.photo.substring(0, mapData.photo.length - 2))
+            units.imageViewProfilePic?.setImageBitmap(units.profilePicBitMap)
+        }
+
+    }
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendPostButtonRequest(param: Map<String, String>, knopka: KnopkaFeedAdapter, ind: Int) {
-        val result = Requests.PostButtonRequest(param, knopka, ind).execute().get()
+        val result =
+            Requests.PostKnopkaRequest(this, "http://10.0.2.2:8080/api/v1/knopka", 1, "111", param)
         if (result != null) {
             knopka.knopkaList[ind].id = result.toLong()
         }
@@ -314,31 +302,33 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendPutChangeInfoRequest(param: Map<String, String>) =
-            Requests.PutChangeInfoRequest(param).execute()
-
-//    @RequiresApi(Build.VERSION_CODES.N)
-//    fun sendGetUserKnopkaIds() {
-//        val result = Requests.GetUserKnopkaIds().execute().get()
-//        Log.d("KNOKA IDS", result.toString())
-//        if (result?.length!! > 2) { // TODO: try???
-//            val knopkaIdsList =
-//                    result.toString().removeSurrounding("[", "]").split(",").map { it.toLong() }
-//            sendGetUserKnopkas(knopkaIdsList)
-//        }
-//    }
+        Requests.PutChangeInfoRequest(this, "http://10.0.2.2:8080/api/v1/profile", 1, "111", param)
 
     @RequiresApi(Build.VERSION_CODES.N)
-    fun sendGetUserKnopkas(knopkasIdList: List<Long>) {
-        val result = GetUserKnopkas(knopkasIdList).execute().get()
-        Log.d("KNOPKAS", result.toString())
-        val knopkaIdsList = stringToButtons(result.toString())
-        for (knopka in knopkaIdsList) {
-            adapter.addKnopka(Knopka(knopka.name, knopka.style, knopka.pushes, knopka.id))
-        }
+    fun sendGetUserKnopkaIds(): List<Long> {
+        val result =
+            Requests.GetUserKnopkaIds(this, "http://10.0.2.2:8080/api/v1/user", 1, 1, "111")
+        Log.d("KNOKA IDS", result.toString())
+        val knopkaIdsList =
+            jsonFormat.decodeFromString<List<Long>>(result)
+        return knopkaIdsList
     }
 
-//    @RequiresApi(Build.VERSION_CODES.N)
-//    fun sendGetUserFriendsList() = getUserFriendsList().execute()
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun sendGetUserKnopkas(knopkasIdList: List<Long>): List<Knopka> {
+        val result =
+            Requests.GetUserKnopkas(
+                this,
+                "http://10.0.2.2:8080/api/v1/knopka",
+                1,
+                "111",
+                knopkasIdList
+            )
+        Log.d("KNOPKAS", result.toString())
+        val knopkasList = stringToButtons(result.toString())
+        return knopkasList
+    }
+
 
     // long click on knopka
     override fun onItemLongClick(item: Knopka, position: Int) {

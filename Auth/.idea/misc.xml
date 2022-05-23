@@ -36,6 +36,11 @@
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/tmp.xml" value="0.1796875" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/menu/bio_toolbar_menu.xml" value="0.1" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/menu/navi_menu_header.xml" value="0.1796875" />
+        <entry key="app/src/main/res/layout/activity_following.xml" value="0.175" />
+        <entry key="app/src/main/res/layout/activity_friend_bio.xml" value="0.16354166666666667" />
+        <entry key="app/src/main/res/layout/activity_profile_acrtivity.xml" value="0.16354166666666667" />
+        <entry key="app/src/main/res/layout/friend_item.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/knopka_item.xml" value="0.24427083333333333" />
       </map>
     </option>
   </component>
