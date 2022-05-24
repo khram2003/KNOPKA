@@ -47,6 +47,7 @@ public class KnopkaUser {
             updatable = true
     )
     @ElementCollection
+    @Transient
     private Set<Long> friends;
 
 
