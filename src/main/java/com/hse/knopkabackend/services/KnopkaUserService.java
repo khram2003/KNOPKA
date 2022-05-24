@@ -56,7 +56,7 @@ public class KnopkaUserService {
     }
 
 
-    @Transactional
+    @Transactional("postgresKnopkaTransactionManager")
     public void updateKnopkaUserFriends(Long knopkaUserId, Long friendId, String token) {
         if (Objects.equals(friendId, knopkaUserId)) {
             throw new IllegalStateException("No");
