@@ -27,7 +27,7 @@
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/activity_feed.xml" value="0.22" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/activity_following.xml" value="0.1" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/activity_main.xml" value="0.4466666666666667" />
-        <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/activity_pop_up_info.xml" value="0.2997393570807993" />
+        <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/activity_pop_up_info.xml" value="0.1" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/activity_profile_acrtivity.xml" value="0.5" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/backdrop.xml" value="0.14855072463768115" />
         <entry key="..\:/Users/parse/KNOPKA/Auth/app/src/main/res/layout/empty_layout.xml" value="0.10666666666666667" />
@@ -39,8 +39,7 @@
         <entry key="app/src/main/res/layout/activity_following.xml" value="0.175" />
         <entry key="app/src/main/res/layout/activity_friend_bio.xml" value="0.16354166666666667" />
         <entry key="app/src/main/res/layout/activity_profile_acrtivity.xml" value="0.16354166666666667" />
-        <entry key="app/src/main/res/layout/friend_item.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/knopka_item.xml" value="0.24427083333333333" />
+        <entry key="app/src/main/res/layout/friend_item.xml" value="0.6315192743764172" />
       </map>
     </option>
   </component>

@@ -215,7 +215,7 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
             return true
         }
         when (item.itemId) {
-            R.id.log_out -> {
+            R.id.logOutIcon -> {
                 val intent2 = Intent(this, ProfileActivity::class.java)
                 startActivity(intent2)
             }

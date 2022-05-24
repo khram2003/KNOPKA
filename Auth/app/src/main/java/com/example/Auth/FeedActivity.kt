@@ -17,6 +17,12 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Auth.databinding.ActivityBioBinding
 import com.example.Auth.databinding.ActivityFeedBinding
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+
+private val jsonFormat = Json {
+    coerceInputValues = true; ignoreUnknownKeys = true
+}
 
 class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
     lateinit var binding: ActivityFeedBinding
@@ -29,16 +35,15 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         binding.RecyclerViewKnopkasFeed.layoutManager =
                 LinearLayoutManager(this)
         binding.RecyclerViewKnopkasFeed.adapter = adapter
-        adapter.addKnopka(Knopka("Btn1"))
-        adapter.addKnopka(Knopka("Btn2"))
-        adapter.addKnopka(Knopka("Btn3"))
-        adapter.addKnopka(Knopka("Btn1"))
-        adapter.addKnopka(Knopka("Btn2"))
-        adapter.addKnopka(Knopka("Btn3"))
+//        adapter.addKnopka(Knopka("Btn1"))
+//        adapter.addKnopka(Knopka("Btn2"))
+//        adapter.addKnopka(Knopka("Btn3"))
+//        adapter.addKnopka(Knopka("Btn1"))
+//        adapter.addKnopka(Knopka("Btn2"))
+//        adapter.addKnopka(Knopka("Btn3"))
 
+        showAllKnopkas()
 
-
-//        sendGetUserKnopkaIds()
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -81,6 +86,27 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun showAllKnopkas() {
+        val knopkasList = sendGetAllKnopkas()
+        Log.d("----------", knopkasList.toString())
+        if (knopkasList.isNotEmpty()) {
+            for (knopka in knopkasList) {
+                adapter.addKnopka(Knopka(knopka.name, knopka.style, knopka.pushes, knopka.id))
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun sendGetAllKnopkas(): List<Knopka> {
+        val result =
+                Requests.GetAllKnopkaIds(this, "http://10.0.2.2:8080/api/v1/knopka", 1, "111")
+        Log.d("KNOKAS", result.toString())
+        val knopkasList =
+                jsonFormat.decodeFromString<List<Knopka>>(result)
+        return knopkasList
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (toggle.onOptionsItemSelected(item) == true) { //user clicked on toggle button
             return true
@@ -102,7 +128,7 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
 //        author.setText(item.)
         //TODO return back to feed
         author.setOnClickListener {
-            val intent2 = Intent(this, FollowingActivity::class.java)
+            val intent2 = Intent(this, FriendBioActivity::class.java)
             startActivity(intent2)
         }
         dialog.show()

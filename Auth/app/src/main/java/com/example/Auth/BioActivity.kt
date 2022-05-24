@@ -32,6 +32,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.w3c.dom.Text
 
 private val jsonFormat = Json {
     coerceInputValues = true; ignoreUnknownKeys = true
@@ -62,7 +63,6 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         binding.RecyclerViewKnopkasFeed.layoutManager =
             LinearLayoutManager(this)
         binding.RecyclerViewKnopkasFeed.adapter = adapter
-//        sendGetUserKnopkaIds()
 
         showUserKnopkas()
 
@@ -71,17 +71,6 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    fun showUserKnopkas() {
-        val knopkaIdsList = sendGetUserKnopkaIds()
-        if (knopkaIdsList.isNotEmpty()) {
-            val knopkasList = sendGetUserKnopkas(knopkaIdsList)
-
-            for (knopka in knopkasList) {
-                adapter.addKnopka(Knopka(knopka.name, knopka.style, knopka.pushes, knopka.id))
-            }
-        }
-    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalSerializationApi::class)
@@ -212,8 +201,9 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
                             val textViewLabel = mapData["name"].toString()
                             val textViewDescr = mapData["descr"].toString()
 
+                            //TODO
                             val knopka =
-                                adapter.addKnopka(Knopka(textViewLabel, "", 0, 0))
+                                adapter.addKnopka(Knopka(textViewLabel, "", 0, 0, 1)) // 1 = this userID
 
                             val m: Map<String, String?> = mapOf(
                                 "\"name\"" to "\"" + mapData["name"] + "\"",
@@ -223,11 +213,11 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 //                                "\"LocalDateTime\"" to "\"" + mapData["LocalDateTime"] + "\""
                             )
 
-//                            sendPostButtonRequest(
-//                                    m as Map<String, String>,
-//                                    knopka,
-//                                    knopka.knopkaList.size - 1
-//                            ) // the end of the knpokas list
+                            sendPostButtonRequest(
+                                    m as Map<String, String>,
+                                    knopka,
+                                    knopka.knopkaList.size - 1
+                            ) // the end of the knpokas list
                         }
                     }
                 }
@@ -329,6 +319,18 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         return knopkasList
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun showUserKnopkas() {
+        val knopkaIdsList = sendGetUserKnopkaIds()
+        if (knopkaIdsList.isNotEmpty()) {
+            val knopkasList = sendGetUserKnopkas(knopkaIdsList)
+
+            for (knopka in knopkasList) {
+                adapter.addKnopka(Knopka(knopka.name, knopka.style, knopka.pushes, knopka.id))
+            }
+        }
+    }
+
 
     // long click on knopka
     override fun onItemLongClick(item: Knopka, position: Int) {
@@ -340,13 +342,20 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         dialog.setContentView(R.layout.activity_pop_up_info)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val name = dialog.findViewById<TextView>(R.id.KnopkaName)
+        val result = GetUserProfileInfo(this, "http://10.0.2.2:8080/api/v1/profile", 1, "111", item.authorID)
+        val mapData: User = jsonFormat.decodeFromString(result.toString())
         name.setText(item.name)
 
         //TODO set bio, set author
         val author = dialog.findViewById<TextView>(R.id.AuthorName)
-//        author.setText(item.)
+        author.setText(mapData.nickname)
+        Log.d("-----", result)
         //TODO
-
+//        val bio = dialog.findViewById<TextView>(R.id.)
+        author.setOnClickListener {
+            val intent2 = Intent(this, FriendBioActivity::class.java)
+            startActivity(intent2)
+        }
         dialog.show()
     }
 
