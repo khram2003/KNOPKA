@@ -72,7 +72,7 @@ public class ClickHouseKnopkaConfig {
         properties.put("hibernate.hbm2ddl.auto",
                 "none");
         properties.put("hibernate.dialect",
-                "com.hse.knopkabackend.dialect.ClickHouseDialect");
+                "org.hibernate.dialect.MySQLDialect");
         em.setJpaPropertyMap(properties);
 
         return em;

@@ -9,28 +9,34 @@ import java.time.LocalDateTime;
 @Entity(name = "entityforclick")
 public class EntityForClick {
     @Id
-    @SequenceGenerator(
-            name = "click_sequence",
-            sequenceName = "click_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "click_sequence"
-    )
     @Column(
             name = "click_id",
             updatable = false,
-            nullable = false
+            nullable = true
     )
     private Long clickId;
 
     @Column(
             name = "clicked_knopka_id"
     )
-    Long clickedKnopkaId;
+    private Long clickedKnopkaId;
+
+    @Column(
+            name = "time_of_click"
+    )
+    private String time;
+
+    @Column(
+            name = "region"
+    )
+    private String region;
+
 
     public EntityForClick() {
+    }
+
+    public EntityForClick(Long clickId) {
+        this.clickId = clickId;
     }
 
     public Long getClickId() {
