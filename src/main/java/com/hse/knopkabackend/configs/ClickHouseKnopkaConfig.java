@@ -90,12 +90,14 @@ public class ClickHouseKnopkaConfig {
         return transactionManager;
     }
 
-//    @Bean
-//    CommandLineRunner clickCommandLineRunner(EntityForClickRepository repository) {
-//        return args -> {
-//            EntityForClick entityForClick = new EntityForClick();
-//            entityForClick.setClickedKnopkaId(1L);
-//            repository.saveAll(List.of(entityForClick));
-//        };
-//    }
+    @Bean
+    CommandLineRunner clickCommandLineRunner(EntityForClickRepository repository) {
+        return args -> {
+            if (repository.checkTable().get(0) != 1)
+                try {
+                    repository.createTable();
+                } catch (Exception ignored) { //some incompability https://github.com/ClickHouse/ClickHouse/issues/8030 but still works
+                }
+        };
+    }
 }

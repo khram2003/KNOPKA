@@ -12,6 +12,14 @@ import java.util.List;
 
 @Repository
 public interface EntityForClickRepository extends JpaRepository<EntityForClick, Long> {
+    @Query(value = "EXISTS TABLE entityforclick", nativeQuery = true)
+    List<Integer> checkTable();
+
+    @Modifying
+    @Transactional
+    @Query(value = "create table entityforclick (click_id bigint, clicked_knopka_id bigint, region varchar(255), time_of_click varchar(255)) engine Memory as select *", nativeQuery = true)
+    void createTable();
+
     @Modifying
     @Query(value = "INSERT INTO entityforclick(click_id, clicked_knopka_id, region, time_of_click) values (:click_id, :clicked_knopka_id, :region, :time_of_click)", nativeQuery = true)
     @Transactional
