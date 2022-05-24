@@ -3,8 +3,11 @@ package com.hse.knopkabackend.models.knopkauser;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hse.knopkabackend.models.profile.Profile;
 import com.hse.knopkabackend.models.knopka.Knopka;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,7 +25,7 @@ public class KnopkaUser {
             generator = "user_sequence"
     )
     @Column(
-            name = "id",
+            name = "knopkauser_id",
             updatable = false
     )
     private Long id;
@@ -42,13 +45,11 @@ public class KnopkaUser {
     )
     private String token;
 
-    @Column(
-            name = "friends",
-            updatable = true
-    )
-    @ElementCollection
-    @Transient
-    private Set<Long> friends;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "friends_ids",
+            joinColumns = @JoinColumn(name = "knopkauser_id"))
+//    @Column(name = "friends_id")
+    private List<Long> friends;
 
 
     @Transient
@@ -135,7 +136,7 @@ public class KnopkaUser {
     }
 
 
-    public Set<Long> getFriends() {
+    public List<Long> getFriends() {
         return friends;
     }
 
@@ -148,7 +149,7 @@ public class KnopkaUser {
     }
 
 
-    public void setFriends(Set<Long> friends) {
+    public void setFriends(List<Long> friends) {
         this.friends = friends;
     }
 

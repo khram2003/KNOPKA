@@ -66,7 +66,7 @@ public class Knopka {
     private Description description;
 
     @ManyToOne
-    @JoinColumn(name = "id", nullable = true)
+    @JoinColumn(name = "knopkauser_id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonBackReference
     KnopkaUser user;
