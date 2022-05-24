@@ -29,12 +29,11 @@ public class Description {
     )
     private byte[] encodedImage; //for now just one picture
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name="tags",
             joinColumns=@JoinColumn(name="description_knopka_id")
     )
-    @Column(name="tags")
     private List<String> tags;
 
     @OneToOne(fetch = FetchType.LAZY)
