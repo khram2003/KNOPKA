@@ -7,7 +7,7 @@ import com.hse.knopkabackend.repositories.knopkauser.KnopkaUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,7 +41,7 @@ public class DescriptionService {
     }
 
 
-    @Transactional
+    @Transactional("postgresKnopkaTransactionManager")
     public void updateDescriptionText(Long descriptionKnopkaId, String text, String token) {
         Description description = descriptionRepository.findById(descriptionKnopkaId).orElseThrow(
                 () -> new IllegalStateException("descriptionKnopka with id: " + descriptionKnopkaId + " doesn't exist")
@@ -60,7 +60,7 @@ public class DescriptionService {
         }
     }
 
-    @Transactional
+    @Transactional("postgresKnopkaTransactionManager")
     public void updateDescriptionTags(Long descriptionKnopkaId, List<String> tags, String token) {
         Description description = descriptionRepository.findById(descriptionKnopkaId).orElseThrow(
                 () -> new IllegalStateException("descriptionKnopka with id: " + descriptionKnopkaId + " doesn't exist")
@@ -73,7 +73,7 @@ public class DescriptionService {
 
     }
 
-    @Transactional
+    @Transactional("postgresKnopkaTransactionManager")
     public void updateDescriptionImage(Long descriptionKnopkaId, byte[] image, String token) {
         Description description = descriptionRepository.findById(descriptionKnopkaId).orElseThrow(
                 () -> new IllegalStateException("descriptionKnopka with id: " + descriptionKnopkaId + " doesn't exist")
