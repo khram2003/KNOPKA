@@ -1,5 +1,6 @@
 package com.hse.knopkabackend.services;
 
+import com.hse.knopkabackend.additionalclasses.Tag;
 import com.hse.knopkabackend.models.description.Description;
 import com.hse.knopkabackend.models.knopkauser.KnopkaUser;
 import com.hse.knopkabackend.repositories.description.DescriptionRepository;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -89,15 +91,15 @@ public class DescriptionService {
 
     }
 
-//    public List<Description> getDescriptionsByTag(String tag, String token, Long knopkaUserId) {
-//        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
-//                () -> new IllegalStateException("no user with this id")
-//        );
-//        if (Objects.equals(knopkaUser.getToken(), token)) {
-//            return descriptionRepository.findDescriptionsByTags(List.of(tag));
-//        } else {
-//            throw new IllegalStateException("token is invalid");
-//        }
-//    }
+    public List<Tag> getDescriptionsByTag(String tag, String token, Long knopkaUserId) {
+        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
+                () -> new IllegalStateException("no user with this id")
+        );
+        if (Objects.equals(knopkaUser.getToken(), token)) {
+            return descriptionRepository.findByTag(tag);
+        } else {
+            throw new IllegalStateException("token is invalid");
+        }
+    }
 }
 

@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity(name = "description")
+@Table()
 public class Description {
     @Id
     @Column(
@@ -31,8 +32,9 @@ public class Description {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
-            name="tags",
-            joinColumns=@JoinColumn(name="description_knopka_id")
+            name = "tags",
+            indexes = @Index(name = "tag_indexes", columnList = "tags"),
+            joinColumns = @JoinColumn(name = "description_knopka_id")
     )
     private List<String> tags;
 
