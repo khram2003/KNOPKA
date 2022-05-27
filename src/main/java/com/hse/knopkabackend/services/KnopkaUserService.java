@@ -100,7 +100,7 @@ public class KnopkaUserService {
                 () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
         );
         KnopkaUser knopkasOfUser = knopkaUserRepository.findById(knopkasOfId).orElseThrow(
-                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+                () -> new IllegalStateException("KnopkaUser with id: " + knopkasOfId + " doesn't exist")
         );
         if (Objects.equals(token, knopkaUser.getToken())) {
             return knopkasOfUser.getKnopkaIds();
