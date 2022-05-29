@@ -3,6 +3,7 @@ package com.example.Auth
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -29,8 +30,10 @@ object Converters {
         return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
     }
 
-    fun stringToButtons(knopkasString: String): List<Knopka> =
-        jsonFormat.decodeFromString(knopkasString)
+    fun stringToButtons(knopkasString: String): List<Knopka> {
+        Log.d("stringToButtons", knopkasString)
+        return jsonFormat.decodeFromString(knopkasString)
+    }
 
     fun stringToUsers(knopkasString: String): List<User> =
         jsonFormat.decodeFromString(knopkasString)

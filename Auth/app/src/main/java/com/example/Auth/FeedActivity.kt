@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
@@ -15,7 +16,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.Auth.databinding.ActivityBioBinding
 import com.example.Auth.databinding.ActivityFeedBinding
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -33,7 +33,7 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
     @RequiresApi(Build.VERSION_CODES.N)
     private fun initRecyclerView() {
         binding.RecyclerViewKnopkasFeed.layoutManager =
-                LinearLayoutManager(this)
+            LinearLayoutManager(this)
         binding.RecyclerViewKnopkasFeed.adapter = adapter
 //        adapter.addKnopka(Knopka("Btn1"))
 //        adapter.addKnopka(Knopka("Btn2"))
@@ -60,10 +60,12 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         // toolbar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.AllComponentsColor)))
+        supportActionBar?.title = "Knopkas"
 
         // slideout menu
         val dLayout = findViewById<DrawerLayout>(R.id.drawerLayoutFeed)
-        val navigationView = findViewById<com.google.android.material.navigation.NavigationView>(R.id.navViewFeed)
+        val navigationView =
+            findViewById<com.google.android.material.navigation.NavigationView>(R.id.navViewFeed)
         toggle = ActionBarDrawerToggle(this, dLayout, R.string.open, R.string.close)
         dLayout?.addDrawerListener(toggle)
         toggle.syncState()
@@ -100,18 +102,11 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendGetAllKnopkas(): List<Knopka> {
         val result =
-                Requests.GetAllKnopkaIds(this, "http://10.0.2.2:8080/api/v1/knopka", 1, "111")
+            Requests.GetAllKnopkas(this, "http://10.0.2.2:8080/api/v1/knopka", 1, "111")
         Log.d("KNOKAS", result.toString())
         val knopkasList =
-                jsonFormat.decodeFromString<List<Knopka>>(result)
+            jsonFormat.decodeFromString<List<Knopka>>(result)
         return knopkasList
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (toggle.onOptionsItemSelected(item) == true) { //user clicked on toggle button
-            return true
-        }
-        return true
     }
 
     override fun onItemLongClick(item: Knopka, position: Int) {
@@ -138,5 +133,22 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         Log.d("FEED", "REGISTERED SHORT CLICK")
         item.pushes++
         Toast.makeText(this, item.pushes.toString(), Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.search_toolbar_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (toggle.onOptionsItemSelected(item) == true) { //user clicked on toggle button
+            return true
+        }
+        when (item.itemId) {
+            R.id.searchKnopkaIcon -> {
+                //todo
+            }
+        }
+        return true
     }
 }

@@ -45,10 +45,28 @@ object Requests {
             String =
             SendGetRequest<Long>(context, "$url/$id/friends", token, friendsIdList, "friendsId").execute().get()
 
-    fun GetAllKnopkaIds(context: Context,
-                        url: String, idSender: Long, token: String
+    fun GetAllKnopkas(context: Context,
+                      url: String, idSender: Long, token: String
     ): String =
             SendGetRequest<Void>(context, "$url/$idSender/getall", token, null, null).execute().get()
+
+    fun GetKnopksaDescr(
+            context: Context,
+            url: String,
+            token: String, requestId: Long, knopkaUserId: Long, paramName: String,
+    ): String {
+        val al = ArrayList<Long>()
+        al.add(knopkaUserId)
+        Log.d("AAAAAAAAAAAAAAAA", "$url/description/$requestId")
+        return SendGetRequest<Long>(
+                context,
+                "$url/description/$requestId",
+                token,
+                al,
+                paramName
+        ).execute()
+                .get()
+    }
 
     // posts
 
@@ -61,6 +79,18 @@ object Requests {
                 requestBodyMap.toString().replace("=", ":")
         )
         return SendPostRequest(context, url, token, knopkaDTO, id.toString(), "knopkaUserId").execute()
+                .get()
+    }
+
+    fun PutDescriptionRequest(context: Context,
+                              url: String, idButton: Long, token: String,
+                              requestBodyMap: Map<String, String>
+    ): String {
+        val descriptionDTO: RequestBody = RequestBody.create(
+                MediaType.parse("application/json"),
+                requestBodyMap.toString().replace("=", ":")
+        )
+        return SendPutRequest(context, "$url/$idButton", token, descriptionDTO, idButton.toString(), "").execute()
                 .get()
     }
 
@@ -107,6 +137,7 @@ object Requests {
 
             if (parameters != null && parameterName != null) {
                 for (param in parameters) {
+                    Log.d("pARARM", param.toString())
                     httpBuilder.addQueryParameter(parameterName, param.toString())
                 }
             }

@@ -19,5 +19,6 @@
     <string name="feed">Feed</string>
     <string name="following">Followings</string>
     <string name="myProfile">My profile</string>
+    <string name="searchIcon">Search</string>
 
 </resources>

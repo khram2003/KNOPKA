@@ -82,6 +82,7 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
         // toolbar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.AllComponentsColor)))
+        supportActionBar?.title = ""
 
         // slideout menu
         val dLayout = findViewById<DrawerLayout>(R.id.drawerLayout)
@@ -115,9 +116,9 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
             true
         }
 
-        units.textViewName = findViewById(R.id.textViewName)
-        units.textViewBio = findViewById(R.id.textViewBio)
-        units.imageViewProfilePic = findViewById(R.id.imageViewProfilePic)
+        units.textViewName = findViewById(R.id.textViewNameFriend)
+        units.textViewBio = findViewById(R.id.textViewBioFriend)
+        units.imageViewProfilePic = findViewById(R.id.imageViewProfilePicFriend)
 
         units.profilePicBitMap =
             BitmapFactory.decodeResource(resources, R.drawable.img) //get default picture bitmap
@@ -127,7 +128,6 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
 
         sendGetUserProfileInfo()
-
 
         // sendGetUserFriendsList() //TODO
 
@@ -201,26 +201,4 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
         item.pushes++
         Toast.makeText(this, item.pushes.toString(), Toast.LENGTH_SHORT).show()
     }
-
-
-    // toolbar
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.bio_toolbar_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (toggle.onOptionsItemSelected(item) == true) { //user clicked on toggle button
-            return true
-        }
-        when (item.itemId) {
-            R.id.logOutIcon -> {
-                val intent2 = Intent(this, ProfileActivity::class.java)
-                startActivity(intent2)
-            }
-        }
-        return true
-    }
-
 }

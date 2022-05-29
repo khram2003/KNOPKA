@@ -63,7 +63,7 @@ class FollowingActivity : AppCompatActivity(), OnFriendClickListener {
         // toolbar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.AllComponentsColor)))
-
+        supportActionBar?.title = "Followings"
         // slideout menu
         val dLayout = findViewById<DrawerLayout>(R.id.drawerLayoutFollowing)
         val navigationView =
