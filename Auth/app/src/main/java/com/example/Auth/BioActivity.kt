@@ -100,21 +100,8 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
         //items clicked on slideout menu
         navigationView.setNavigationItemSelectedListener {
-            when (it.itemId) {
-
-                R.id.feed -> {
-                    val intent2 = Intent(this, FeedActivity::class.java)
-                    startActivity(intent2)
-                }
-
-                R.id.following -> {
-                    val intent2 = Intent(this, FollowingActivity::class.java)
-                    startActivity(intent2)
-                }
-
-                R.id.myProfile -> dLayout.closeDrawer(navigationView)
-            }
-
+            val switcherSetter = WindowSwitcherSetter("Bio", it, this, dLayout, navigationView)
+            switcherSetter.set()
             true
         }
 
@@ -352,32 +339,33 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     // long click on knopka
     override fun onItemLongClick(item: Knopka, position: Int) {
 
-        dialog.setContentView(R.layout.activity_pop_up_info)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        val name = dialog.findViewById<TextView>(R.id.KnopkaName)
-        val result = GetUserProfileInfo(this, "http://10.0.2.2:8080/api/v1/profile", 1, "111", 1) //TODO NOT 1
-        val mapData: User = jsonFormat.decodeFromString(result.toString())
-        name.setText(item.name)
-
-        val author = dialog.findViewById<TextView>(R.id.AuthorName)
-        author.setText(mapData.nickname)
-        Log.d("-----", result)
-
-        author.setOnClickListener {
-            val intent2 = Intent(this, FriendBioActivity::class.java)
-            val t = item.authorId
-            Log.d("AUTHORID", t.toString())
-            intent2.putExtra("id", t.toString())
-            startActivity(intent2)
-        }
-        val result1 = GetKnopksaDescr(this, "http://10.0.2.2:8080/api/v1", "111", item.id /* NO TODO():::::()*/, 1, "knopkaUserId")
-
-        val descr = jsonFormat.decodeFromString<Description>(result1)
-        Log.d("RES", result1)
-        Log.d("ALL)", descr.toString())
-        val discriptionText = dialog.findViewById<TextView>(R.id.KnopkaDescriptionText)
-        discriptionText.setText(descr.text)
-        dialog.show()
+//        dialog.setContentView(R.layout.activity_pop_up_info)
+//        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+//        val name = dialog.findViewById<TextView>(R.id.KnopkaName)
+//        val userProfileInfo = GetUserProfileInfo(this, "http://10.0.2.2:8080/api/v1/profile", 1, "111", 1) //TODO NOT 1
+//        val mapData: User = jsonFormat.decodeFromString(userProfileInfo.toString())
+//        name.setText(item.name)
+//
+//        val author = dialog.findViewById<TextView>(R.id.AuthorName)
+//        author.setText(mapData.nickname)
+//
+//        author.setOnClickListener {
+//            val authorIntent = Intent(this, FriendBioActivity::class.java)
+//            val authId = item.authorId
+//            Log.d("AUTHORID", authId.toString())
+//            authorIntent.putExtra("id", authId.toString())
+//            startActivity(authorIntent)
+//        }
+//        val knopkaDescr = GetKnopksaDescr(this, "http://10.0.2.2:8080/api/v1", "111", item.id, 1, "knopkaUserId")
+//
+//        val descriptionText = jsonFormat.decodeFromString<Description>(knopkaDescr)
+//        Log.d("RES", knopkaDescr)
+//        Log.d("ALL)", descriptionText.toString())
+//        val discriptionText = dialog.findViewById<TextView>(R.id.KnopkaDescriptionText)
+//        discriptionText.setText(descriptionText.text)
+//        dialog.show()
+        val presenter = ShowDescription(dialog, item, this)
+        presenter.showDescription()
     }
 
     override fun onItemClick(item: Knopka, position: Int) {
@@ -400,19 +388,9 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         if (toggle.onOptionsItemSelected(item) == true) { //user clicked on toggle button
             return true
         }
-//        Log.d("OnOptMenu", "I'm here")
-//        ToolbarItemSetter("Bio", item, toggle, this)
-//        Log.d("OnOptMenu", "I'm here222")
-        when (item.itemId) {
-            R.id.logOutIcon -> {
-                val intentLogOut = Intent(this, ProfileActivity::class.java)
-                startActivity(intentLogOut)
-            }
-            R.id.addKnopkaIcon -> {
-                val intentCreateKnopka = Intent(this, CreateButtonActivity::class.java)
-                startActivityForResult(intentCreateKnopka, RequestCodes.CREATE_BUTTON_REQUEST_CODE)
-            }
-        }
+        val toolbarItemSetter = ToolbarItemSetter("Bio", item, this)
+        toolbarItemSetter.set()
+        Log.d("BIOTOOLBARSETTED", "Setted Icons")
         return true
     }
 

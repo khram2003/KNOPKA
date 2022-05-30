@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -19,6 +20,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Auth.databinding.ActivityFeedBinding
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import java.util.*
+import kotlin.collections.ArrayList
 
 private val jsonFormat = Json {
     coerceInputValues = true; ignoreUnknownKeys = true
@@ -27,6 +30,8 @@ private val jsonFormat = Json {
 class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
     lateinit var binding: ActivityFeedBinding
     lateinit var toggle: ActionBarDrawerToggle
+    lateinit var newList: ArrayList<Knopka>
+    lateinit var tmpList: ArrayList<Knopka>
     private val adapter = KnopkaFeedAdapter(this)
     lateinit var dialog: Dialog
 
@@ -35,12 +40,12 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         binding.RecyclerViewKnopkasFeed.layoutManager =
             LinearLayoutManager(this)
         binding.RecyclerViewKnopkasFeed.adapter = adapter
-//        adapter.addKnopka(Knopka("Btn1"))
-//        adapter.addKnopka(Knopka("Btn2"))
-//        adapter.addKnopka(Knopka("Btn3"))
-//        adapter.addKnopka(Knopka("Btn1"))
-//        adapter.addKnopka(Knopka("Btn2"))
-//        adapter.addKnopka(Knopka("Btn3"))
+        adapter.addKnopka(Knopka("Btn1"))
+        adapter.addKnopka(Knopka("Btn2"))
+        adapter.addKnopka(Knopka("Btn3"))
+        adapter.addKnopka(Knopka("Btn4"))
+        adapter.addKnopka(Knopka("Btn5"))
+        adapter.addKnopka(Knopka("Btn6"))
 
         showAllKnopkas()
 
@@ -57,6 +62,9 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
 
         dialog = Dialog(this)
 
+        newList = adapter.knopkaList
+        tmpList = arrayListOf<Knopka>()
+
         // toolbar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.AllComponentsColor)))
@@ -72,18 +80,8 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
 
 
         navigationView.setNavigationItemSelectedListener {
-            when (it.itemId) {
-                R.id.feed -> dLayout.closeDrawer(navigationView)
-                R.id.following -> {
-                    val intent2 = Intent(this, FollowingActivity::class.java)
-                    startActivity(intent2)
-                }
-                R.id.myProfile -> {
-                    val intent2 = Intent(this, BioActivity::class.java)
-                    startActivity(intent2)
-                }
-            }
-
+            val switcherSetter = WindowSwitcherSetter("Feed", it, this, dLayout, navigationView)
+            switcherSetter.set()
             true
         }
     }
@@ -106,27 +104,14 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         Log.d("KNOKAS", result.toString())
         val knopkasList =
             jsonFormat.decodeFromString<List<Knopka>>(result)
+        newList = knopkasList as ArrayList<Knopka>
         return knopkasList
     }
 
     override fun onItemLongClick(item: Knopka, position: Int) {
-//        val popUpActivity = findViewById<RelativeLayout>(R.layout.activity_pop_up_info)
-//        val knopkaName = popUpActivity.KnopkaName
-//        knopkaName.setText(item.name)
-//        val popUpInfo = CustomDialogFragment()
-//        popUpInfo.show(supportFragmentManager, "customDialog")
-        dialog.setContentView(R.layout.activity_pop_up_info)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        val name = dialog.findViewById<TextView>(R.id.KnopkaName)
-        name.setText(item.name)
-        val author = dialog.findViewById<TextView>(R.id.AuthorName)
-//        author.setText(item.)
-        //TODO return back to feed
-        author.setOnClickListener {
-            val intent2 = Intent(this, FriendBioActivity::class.java)
-            startActivity(intent2)
-        }
-        dialog.show()
+        //TODO doesnt work
+//        val presenter = ShowDescription(dialog, item, this)
+//        presenter.showDescription()
     }
 
     override fun onItemClick(item: Knopka, position: Int) {
@@ -137,6 +122,34 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.search_toolbar_menu, menu)
+        val searchItem = menu!!.findItem(R.id.searchKnopkaIcon)
+        val searchView = searchItem!!.actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(p0: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+                tmpList.clear()
+                val searchText = p0?.toLowerCase(Locale.getDefault())
+                if (searchText!!.isNotEmpty()) {
+                    newList.forEach {
+                        if (it.name.toLowerCase(Locale.getDefault()).contains(searchText)) {
+                            tmpList.add(it)
+                        }
+                    }
+                    adapter.knopkaList = tmpList
+                    adapter.notifyDataSetChanged()
+                } else {
+                    tmpList.clear()
+                    tmpList.addAll(newList)
+                    adapter.knopkaList = tmpList
+                    adapter.notifyDataSetChanged()
+                }
+                return false
+            }
+
+        })
         return true
     }
 
@@ -144,11 +157,11 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         if (toggle.onOptionsItemSelected(item) == true) { //user clicked on toggle button
             return true
         }
-        when (item.itemId) {
-            R.id.searchKnopkaIcon -> {
-                //todo
-            }
-        }
+//        when (item.itemId) {
+//            R.id.searchKnopkaIcon -> {
+//                //todo
+//            }
+//        }
         return true
     }
 }
