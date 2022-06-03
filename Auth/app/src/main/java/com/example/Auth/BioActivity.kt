@@ -1,9 +1,9 @@
 package com.example.Auth
 
-
-import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlarmManager
 import android.app.Dialog
+import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -14,7 +14,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -25,14 +27,17 @@ import com.example.Auth.Converters.bitMapToBase64String
 import com.example.Auth.Converters.stringToButtons
 import com.example.Auth.Requests.GetUserProfileInfo
 import com.example.Auth.Requests.PutAddFriendRequest
+import com.example.Auth.Requests.TESTcLICK
 import com.example.Auth.databinding.ActivityBioBinding
-import kotlinx.android.synthetic.main.activity_bio.*
-import kotlinx.android.synthetic.main.activity_pop_up_info.view.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.w3c.dom.Text
+import org.threeten.bp.DateTimeUtils.toLocalTime
+import org.threeten.bp.LocalTime
+import java.util.*
+import kotlin.collections.set
+
 
 private val jsonFormat = Json {
     coerceInputValues = true; ignoreUnknownKeys = true
@@ -43,6 +48,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     lateinit var toggle: ActionBarDrawerToggle
     private val adapter = KnopkaFeedAdapter(this)
     lateinit var dialog: Dialog
+//    val br: BatchReceiver = BatchReceiver
 //    private var ind: Int = 0;
 
     class MainActivityUnits {
@@ -75,6 +81,9 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalSerializationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+//        AndroidThreeTen.init(this)
+        setCalendar()
+
         super.onCreate(savedInstanceState)
 
         binding = ActivityBioBinding.inflate(layoutInflater)
@@ -128,7 +137,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
 
         storageInfoLoad()
-        sendGetUserProfileInfo()
+//        sendGetUserProfileInfo()
         storageInfoUpdate()
 
 
@@ -203,7 +212,15 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
                             //TODO
                             val knopka =
-                                adapter.addKnopka(Knopka(textViewLabel, "", 0, 0, 1)) // 1 = this userID
+                                adapter.addKnopka(
+                                    Knopka(
+                                        textViewLabel,
+                                        "",
+                                        0,
+                                        0,
+                                        1
+                                    )
+                                ) // 1 = this userID
 
                             val m: Map<String, String?> = mapOf(
                                 "\"name\"" to "\"" + mapData["name"] + "\"",
@@ -214,10 +231,11 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
                             )
 
                             sendPostButtonRequest(
-                                    m as Map<String, String>,
-                                    knopka,
-                                    knopka.knopkaList.size - 1
+                                m as Map<String, String>,
+                                knopka,
+                                knopka.knopkaList.size - 1
                             ) // the end of the knpokas list
+
                         }
                     }
                 }
@@ -342,10 +360,19 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         dialog.setContentView(R.layout.activity_pop_up_info)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val name = dialog.findViewById<TextView>(R.id.KnopkaName)
-        val result = GetUserProfileInfo(this, "http://10.0.2.2:8080/api/v1/profile", 1, "111", item.authorID)
+        val result =
+            GetUserProfileInfo(this, "http://10.0.2.2:8080/api/v1/profile", 1, "111", item.authorID)
         val mapData: User = jsonFormat.decodeFromString(result.toString())
         name.setText(item.name)
-
+//        val result1 = GetKnopksaDescr(
+//            this,
+//            "localhost:8080/api/v1/description",
+//            "111",
+//            1,
+//            item.id,
+//            "knopkaUserId"
+//        )
+//        Log.d("AAAAAAAAAAAAAAAA", result1)
         //TODO set bio, set author
         val author = dialog.findViewById<TextView>(R.id.AuthorName)
         author.setText(mapData.nickname)
@@ -360,9 +387,15 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     }
 
     override fun onItemClick(item: Knopka, position: Int) {
+        if(!ClickBatch.working){
+            setCalendar()
+        }
         Log.d("AAA", "REGISTERED SHORT CLICK")
         item.pushes++
-        Toast.makeText(this, item.pushes.toString(), Toast.LENGTH_SHORT).show()
+//        curBatch.clicks.put(item.id, 1)
+        ClickBatch.setClicks(item.id)
+//        TESTcLICK(this)
+
     }
 
 
@@ -391,5 +424,20 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         }
         return true
     }
+
+    fun  setCalendar() {
+        ClickBatch.working = true
+        val calendar: Calendar = Calendar.getInstance()
+        calendar.add(Calendar.SECOND, 10)
+
+        val myIntent = Intent(this@BioActivity, BatchReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(this@BioActivity, 0, myIntent, 0)
+
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        alarmManager[AlarmManager.RTC, calendar.getTimeInMillis()] = pendingIntent
+
+        Log.d("CAL", calendar.toString())
+    }
+
 
 }

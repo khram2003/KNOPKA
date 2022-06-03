@@ -29,15 +29,16 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.gms.plus.Plus;
+import com.jakewharton.threetenabp.AndroidThreeTen;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+//import org.apache.http.HttpResponse;
+//import org.apache.http.NameValuePair;
+//import org.apache.http.client.ClientProtocolException;
+//import org.apache.http.client.entity.UrlEncodedFormEntity;
+//import org.apache.http.client.methods.HttpPost;
+//import org.apache.http.impl.client.DefaultHttpClient;
+//import org.apache.http.message.BasicNameValuePair;
+//import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import java.io.DataOutputStream;
@@ -58,6 +59,9 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("AAA", "DDDDD");
+
+
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (account != null) {
             String idToken = account.getIdToken();
@@ -76,7 +80,6 @@ public class MainActivity extends Activity {
                 .build();
 
         gsc = GoogleSignIn.getClient(this, gso);
-
 
 
         googleButton.setOnClickListener(new View.OnClickListener() {
@@ -136,7 +139,7 @@ public class MainActivity extends Activity {
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("POST");
                     conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-                    conn.setRequestProperty("Accept","application/json");
+                    conn.setRequestProperty("Accept", "application/json");
                     conn.setDoOutput(true);
                     conn.setDoInput(true);
 
@@ -144,11 +147,10 @@ public class MainActivity extends Activity {
                     JSONObject profileParam = new JSONObject();
                     profileParam.put("nickname", account.getDisplayName());
                     profileParam.put("bio", null);
-                    profileParam.put("encodedPhoto",null);
+                    profileParam.put("encodedPhoto", null);
                     jsonParam.put("email", account.getEmail());
                     jsonParam.put("token", account.getIdToken());
                     jsonParam.put("profile", profileParam);
-
 
 
                     Log.i("JSON", jsonParam.toString());
@@ -160,7 +162,7 @@ public class MainActivity extends Activity {
                     os.close();
 
                     Log.i("STATUS", String.valueOf(conn.getResponseCode()));
-                    Log.i("MSG" , conn.getResponseMessage());
+                    Log.i("MSG", conn.getResponseMessage());
 
                     conn.disconnect();
                 } catch (Exception e) {
