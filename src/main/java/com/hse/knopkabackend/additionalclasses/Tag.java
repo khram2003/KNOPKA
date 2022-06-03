@@ -7,6 +7,4 @@ public interface Tag {
     Long getDescriptionId();
 
     String getTags();
-
-
 }

@@ -20,12 +20,6 @@ public interface EntityForClickRepository extends JpaRepository<EntityForClick, 
     @Query(value = "create table entityforclick (click_id bigint, clicked_knopka_id bigint, region varchar(255), time_of_click varchar(255)) engine Memory as select *", nativeQuery = true)
     void createTable();
 
-    @Modifying
-    @Query(value = "INSERT INTO entityforclick(click_id, clicked_knopka_id, region, time_of_click) values (:click_id, :clicked_knopka_id, :region, :time_of_click)", nativeQuery = true)
-    @Transactional
-    void insertClick(@Param("click_id") Long click_id, @Param("clicked_knopka_id") Long clicked_knopka_id, @Param("region") String region, @Param("time_of_click") String time_of_click);
-
     @Query(value = "select * from entityforclick where clicked_knopka_id = :knopka_id", nativeQuery = true)
     List<?> getNumberOfClicks(@Param("knopka_id") Long knopka_id);
-
 }

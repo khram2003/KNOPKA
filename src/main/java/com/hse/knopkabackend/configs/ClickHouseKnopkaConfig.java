@@ -17,9 +17,13 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 
 @Configuration
 @PropertySource({"classpath:application.properties"})
@@ -39,6 +43,16 @@ public class ClickHouseKnopkaConfig {
 //    public DataSource postgresKnopkaDataSource() {
 //        return DataSourceBuilder.create().build();
 //    }
+
+
+    public static Connection getConnection() throws SQLException {
+        Connection conn;
+        Properties connectionProps = new Properties();
+        connectionProps.put("user", "default");
+        connectionProps.put("password", "");
+        conn = DriverManager.getConnection("jdbc:clickhouse://localhost:8123/knopka", connectionProps);
+        return conn;
+    }
 
     @Primary
     @Bean

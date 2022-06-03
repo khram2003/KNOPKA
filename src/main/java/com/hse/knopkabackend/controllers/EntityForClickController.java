@@ -1,5 +1,6 @@
 package com.hse.knopkabackend.controllers;
 
+import com.hse.knopkabackend.DTO.BatchDTO;
 import com.hse.knopkabackend.services.EntityForClickService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +16,13 @@ public class EntityForClickController {
         this.entityForClickService = entityForClickService;
     }
 
-    @PostMapping
-    public void registerNewClick(@RequestParam Long knopkaId) {
-        entityForClickService.registerNewClick(knopkaId);
+
+    @PostMapping("batch/{knopkaUserId}")
+    public void registerNewBatch(@PathVariable("knopkaUserId") Long knopkaUserId,
+                                 @RequestHeader String token,
+                                 @RequestBody BatchDTO batchDTO){
+        entityForClickService.registerNewBatch(knopkaUserId, token, batchDTO);
+
     }
 
     @GetMapping("/{knopkaId}")
