@@ -10,7 +10,7 @@ import com.example.Auth.databinding.KnopkaItemBinding
 
 class KnopkaFeedAdapter(var clickListener: OnKnopkaClickListener) :
     RecyclerView.Adapter<KnopkaFeedAdapter.KnopkaHolder>() {
-    val knopkaList = ArrayList<Knopka>()
+    var knopkaList = ArrayList<Knopka>()
 
     class KnopkaHolder(item: View) : RecyclerView.ViewHolder(item) {
         val binding = KnopkaItemBinding.bind(item)

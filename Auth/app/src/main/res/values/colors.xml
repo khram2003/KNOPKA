@@ -7,4 +7,5 @@
     <color name="BackgroundColor">#E3000000</color>
     <color name="TextHintColor">#A3C5C5C5</color>
     <color name="AllComponentsColor">#FF373737</color>
+    <color name="SeparatorColor">#9CC5C5C5</color>
 </resources>

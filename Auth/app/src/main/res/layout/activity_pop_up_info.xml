@@ -31,7 +31,7 @@
                 app:layout_constraintVertical_bias="0.05" />
 
             <RelativeLayout
-                android:id="@+id/BlockAnnotation"
+                android:id="@+id/BlockDescription"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
 
@@ -47,7 +47,7 @@
                 app:layout_constraintVertical_bias="0.05">
 
                 <TextView
-                    android:id="@+id/KnopkaAnnotationText"
+                    android:id="@+id/KnopkaDescriptionText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_alignParentStart="true"
@@ -70,7 +70,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.959"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/BlockAnnotation"
+                app:layout_constraintTop_toBottomOf="@+id/BlockDescription"
                 app:layout_constraintVertical_bias="0.021">
 
                 <TextView

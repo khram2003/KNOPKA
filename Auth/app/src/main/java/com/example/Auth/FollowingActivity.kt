@@ -63,7 +63,7 @@ class FollowingActivity : AppCompatActivity(), OnFriendClickListener {
         // toolbar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.AllComponentsColor)))
-
+        supportActionBar?.title = "Followings"
         // slideout menu
         val dLayout = findViewById<DrawerLayout>(R.id.drawerLayoutFollowing)
         val navigationView =
@@ -74,18 +74,8 @@ class FollowingActivity : AppCompatActivity(), OnFriendClickListener {
 
 
         navigationView.setNavigationItemSelectedListener {
-            when (it.itemId) {
-                R.id.feed -> {
-                    val intent2 = Intent(this, FeedActivity::class.java)
-                    startActivity(intent2)
-                }
-                R.id.following -> dLayout.closeDrawer(navigationView)
-                R.id.myProfile -> {
-                    val intent2 = Intent(this, BioActivity::class.java)
-                    startActivity(intent2)
-                }
-            }
-
+            val switcherSetter = WindowSwitcherSetter("Following", it, this, dLayout, navigationView)
+            switcherSetter.set()
             true
         }
     }

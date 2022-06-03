@@ -2,6 +2,7 @@ package com.example.Auth
 
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -34,6 +35,7 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
     lateinit var binding: ActivityFriendBioBinding
     lateinit var toggle: ActionBarDrawerToggle
     private val adapter = KnopkaFeedAdapter(this)
+    lateinit var dialog: Dialog
 
     class MainActivityUnits {
         var textViewName: TextView? = null
@@ -79,45 +81,31 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
         initRecyclerView()
 
+        dialog = Dialog(this)
+
         // toolbar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.AllComponentsColor)))
+        supportActionBar?.title = ""
 
         // slideout menu
-        val dLayout = findViewById<DrawerLayout>(R.id.drawerLayout)
+        val dLayout = findViewById<DrawerLayout>(R.id.drawerLayoutFriend)
         val navigationView =
-            findViewById<com.google.android.material.navigation.NavigationView>(R.id.navView)
+            findViewById<com.google.android.material.navigation.NavigationView>(R.id.navViewFriend)
         toggle = ActionBarDrawerToggle(this, dLayout, R.string.open, R.string.close)
         dLayout?.addDrawerListener(toggle)
         toggle.syncState()
 
 
         navigationView.setNavigationItemSelectedListener {
-            when (it.itemId) {
-
-                R.id.feed -> {
-                    val intent2 = Intent(this, FeedActivity::class.java)
-                    startActivity(intent2)
-                }
-
-                R.id.following -> {
-                    val intent2 = Intent(this, FollowingActivity::class.java)
-                    startActivity(intent2)
-                }
-
-                R.id.myProfile -> {
-                    val intent2 = Intent(this, BioActivity::class.java)
-                    startActivity(intent2)
-                }
-
-            }
-
+            val switcherSetter = WindowSwitcherSetter("Bio", it, this, dLayout, navigationView)
+            switcherSetter.set()
             true
         }
 
-        units.textViewName = findViewById(R.id.textViewName)
-        units.textViewBio = findViewById(R.id.textViewBio)
-        units.imageViewProfilePic = findViewById(R.id.imageViewProfilePic)
+        units.textViewName = findViewById(R.id.textViewNameFriend)
+        units.textViewBio = findViewById(R.id.textViewBioFriend)
+        units.imageViewProfilePic = findViewById(R.id.imageViewProfilePicFriend)
 
         units.profilePicBitMap =
             BitmapFactory.decodeResource(resources, R.drawable.img) //get default picture bitmap
@@ -127,7 +115,6 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
 
         sendGetUserProfileInfo()
-
 
         // sendGetUserFriendsList() //TODO
 
@@ -151,7 +138,7 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
     fun sendGetUserProfileInfo() {
         val result =
             Requests.GetUserProfileInfo(
-                this,"http://10.0.2.2:8080/api/v1/profile",
+                this, "http://10.0.2.2:8080/api/v1/profile",
                 1,
                 "111",
                 units.id
@@ -181,7 +168,13 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendGetUserKnopkas(knopkasIdList: List<Long>): List<Knopka> {
         val result =
-            Requests.GetUserKnopkas(this, "http://10.0.2.2:8080/api/v1/knopka", 1, "111", knopkasIdList)
+            Requests.GetUserKnopkas(
+                this,
+                "http://10.0.2.2:8080/api/v1/knopka",
+                1,
+                "111",
+                knopkasIdList
+            )
         Log.d("KNOPKAS", result.toString())
         val knopkaIdsList = stringToButtons(result.toString())
         return knopkaIdsList
@@ -190,10 +183,16 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
 //    @RequiresApi(Build.VERSION_CODES.N)
 //    fun sendGetUserFriendsList() = getUserFriendsList().execute()
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (toggle.onOptionsItemSelected(item) == true) { //user clicked on toggle button
+            return true
+        }
+        return true
+    }
+
     override fun onItemLongClick(item: Knopka, position: Int) {
-        Log.d("AAA", "REGISTERED LONG CLICK")
-        Log.d("AAA", item.id.toString())
-        Toast.makeText(this, item.name, Toast.LENGTH_SHORT).show()
+        val presenter = ShowDescription(dialog, item, this)
+        presenter.showDescription()
     }
 
     override fun onItemClick(item: Knopka, position: Int) {
@@ -201,26 +200,4 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
         item.pushes++
         Toast.makeText(this, item.pushes.toString(), Toast.LENGTH_SHORT).show()
     }
-
-
-    // toolbar
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.bio_toolbar_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (toggle.onOptionsItemSelected(item) == true) { //user clicked on toggle button
-            return true
-        }
-        when (item.itemId) {
-            R.id.logOutIcon -> {
-                val intent2 = Intent(this, ProfileActivity::class.java)
-                startActivity(intent2)
-            }
-        }
-        return true
-    }
-
 }
