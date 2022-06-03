@@ -30,8 +30,8 @@ private val jsonFormat = Json {
 class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
     lateinit var binding: ActivityFeedBinding
     lateinit var toggle: ActionBarDrawerToggle
-    lateinit var newList: ArrayList<Knopka>
-    lateinit var tmpList: ArrayList<Knopka>
+//    lateinit var newList: ArrayList<Knopka>
+//    lateinit var tmpList: ArrayList<Knopka>
     private val adapter = KnopkaFeedAdapter(this)
     lateinit var dialog: Dialog
 
@@ -62,8 +62,8 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
 
         dialog = Dialog(this)
 
-        newList = adapter.knopkaList
-        tmpList = arrayListOf<Knopka>()
+//        newList = adapter.knopkaList
+//        tmpList = arrayListOf<Knopka>()
 
         // toolbar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -92,7 +92,7 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         Log.d("----------", knopkasList.toString())
         if (knopkasList.isNotEmpty()) {
             for (knopka in knopkasList) {
-                adapter.addKnopka(Knopka(knopka.name, knopka.style, knopka.pushes, knopka.id))
+                adapter.addKnopka(Knopka(knopka.name, knopka.style, knopka.pushes, knopka.id, knopka.authorId))
             }
         }
     }
@@ -104,14 +104,13 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         Log.d("KNOKAS", result.toString())
         val knopkasList =
             jsonFormat.decodeFromString<List<Knopka>>(result)
-        newList = knopkasList as ArrayList<Knopka>
+//        newList = knopkasList as ArrayList<Knopka>
         return knopkasList
     }
 
     override fun onItemLongClick(item: Knopka, position: Int) {
-        //TODO doesnt work
-//        val presenter = ShowDescription(dialog, item, this)
-//        presenter.showDescription()
+        val presenter = ShowDescription(dialog, item, this)
+        presenter.showDescription()
     }
 
     override fun onItemClick(item: Knopka, position: Int) {
@@ -121,35 +120,35 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.search_toolbar_menu, menu)
-        val searchItem = menu!!.findItem(R.id.searchKnopkaIcon)
-        val searchView = searchItem!!.actionView as SearchView
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(p0: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(p0: String?): Boolean {
-                tmpList.clear()
-                val searchText = p0?.toLowerCase(Locale.getDefault())
-                if (searchText!!.isNotEmpty()) {
-                    newList.forEach {
-                        if (it.name.toLowerCase(Locale.getDefault()).contains(searchText)) {
-                            tmpList.add(it)
-                        }
-                    }
-                    adapter.knopkaList = tmpList
-                    adapter.notifyDataSetChanged()
-                } else {
-                    tmpList.clear()
-                    tmpList.addAll(newList)
-                    adapter.knopkaList = tmpList
-                    adapter.notifyDataSetChanged()
-                }
-                return false
-            }
-
-        })
+//        menuInflater.inflate(R.menu.search_toolbar_menu, menu)
+//        val searchItem = menu!!.findItem(R.id.searchKnopkaIcon)
+//        val searchView = searchItem!!.actionView as SearchView
+//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+//            override fun onQueryTextSubmit(p0: String?): Boolean {
+//                return false
+//            }
+//
+//            override fun onQueryTextChange(p0: String?): Boolean {
+//                tmpList.clear()
+//                val searchText = p0?.toLowerCase(Locale.getDefault())
+//                if (searchText!!.isNotEmpty()) {
+//                    newList.forEach {
+//                        if (it.name.toLowerCase(Locale.getDefault()).contains(searchText)) {
+//                            tmpList.add(it)
+//                        }
+//                    }
+//                    adapter.knopkaList = tmpList
+//                    adapter.notifyDataSetChanged()
+//                } else {
+//                    tmpList.clear()
+//                    tmpList.addAll(newList)
+//                    adapter.knopkaList = tmpList
+//                    adapter.notifyDataSetChanged()
+//                }
+//                return false
+//            }
+//
+//        })
         return true
     }
 

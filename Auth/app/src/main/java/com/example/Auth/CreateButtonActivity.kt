@@ -4,8 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import kotlinx.android.synthetic.main.activity_create_button.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -25,12 +27,17 @@ class CreateButtonActivity : AppCompatActivity() {
         createButton.setOnClickListener {
             val labelString: String = editTextLabel.text.toString()
             val descrString: String = editTextDescr.text.toString()
+            val tagsString: String = editTags.text.toString()
+            var tagList: List<String> = tagsString.split(Regex("\\s*#"))
+            tagList = tagList.slice(IntRange(1, tagList.size-1))
+            Log.d("splited tags", tagList.toString())
+            val descriptionCls = Description(descrString, null, tagList)
 
             val returnIntent = Intent()
             val mapData = mapOf(
                 "name" to labelString,
                 "style" to "", // TODO
-                "descr" to descrString
+                "descr" to Json.encodeToString(descriptionCls)
             )
             val jsonData = Json.encodeToString(mapData)
 

@@ -10,7 +10,7 @@ import com.example.Auth.databinding.FriendItemBinding
 
 class FriendFeedAdapter(var clickListener: OnFriendClickListener) :
     RecyclerView.Adapter<FriendFeedAdapter.FriendHolder>() {
-    val friendList = ArrayList<User>()
+    var friendList = ArrayList<User>()
 
     class FriendHolder(item: View) : RecyclerView.ViewHolder(item) {
         val binding = FriendItemBinding.bind(item)

@@ -84,12 +84,14 @@ object Requests {
 
     fun PutDescriptionRequest(context: Context,
                               url: String, idButton: Long, token: String,
-                              requestBodyMap: Map<String, String>
+                              requestBodyMap: Map<String, Any?>
     ): String {
+        Log.d("req", requestBodyMap.toString())
         val descriptionDTO: RequestBody = RequestBody.create(
                 MediaType.parse("application/json"),
                 requestBodyMap.toString().replace("=", ":")
         )
+        Log.d("re1", descriptionDTO.toString())
         return SendPutRequest(context, "$url/$idButton", token, descriptionDTO, idButton.toString(), "").execute()
                 .get()
     }

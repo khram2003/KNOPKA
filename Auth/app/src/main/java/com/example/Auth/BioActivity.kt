@@ -6,7 +6,6 @@ import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
@@ -22,7 +21,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Auth.Converters.base64StringToBitMap
 import com.example.Auth.Converters.bitMapToBase64String
 import com.example.Auth.Converters.stringToButtons
-import com.example.Auth.Requests.GetKnopksaDescr
 import com.example.Auth.Requests.GetUserProfileInfo
 import com.example.Auth.Requests.PutAddFriendRequest
 import com.example.Auth.databinding.ActivityBioBinding
@@ -188,7 +186,10 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
                             mapData = Json.decodeFromString(jsonData)
                             Log.d("EXPECTED JSON", mapData.toString())
                             val textViewLabel = mapData["name"].toString()
-                            val textViewDescr = mapData["descr"].toString()
+                            val descriptionCls = Json.decodeFromString<Description>(mapData["descr"]!!)
+                            val textViewDescr = descriptionCls.text
+                            val tagsList = descriptionCls.tags?.map{x -> '"'+ x + '"'}
+                            Log.d("LISTTAGS", tagsList.toString())
 
                             val m: Map<String, String?> = mapOf(
                                     "\"name\"" to "\"" + mapData["name"] + "\"",
@@ -206,15 +207,15 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
                             val knopka =
                                     adapter.addKnopka(Knopka(textViewLabel, "", 0, res, 1)) // 1 = this userID
 
-                            val mDiscr: Map<String, String?> = mapOf(
+                            val mDiscr: Map<String, Any?> = mapOf(
                                     "\"text\"" to "\"" + textViewDescr + "\"",
                                     "\"image\"" to null,
-                                    "\"tags\"" to null,
+                                    "\"tags\"" to tagsList
                             )
 
                             Log.d("MAPDISCR", mDiscr.toString())
 
-                            val res1 = sendPostDescriptionRequest(mDiscr as Map<String, String>, knopka, res)
+                            val res1 = sendPostDescriptionRequest(mDiscr as Map<String, Any?>, knopka, res)
                             Log.d("RESPONSEPUTDISCR", res1.toString())
                         }
                     }
@@ -286,7 +287,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    fun sendPostDescriptionRequest(param: Map<String, String>, knopka: KnopkaFeedAdapter, idBtn: Long) : String {
+    fun sendPostDescriptionRequest(param: Map<String, Any?>, knopka: KnopkaFeedAdapter, idBtn: Long) : String {
         val result =
                 Requests.PutDescriptionRequest(this, "http://10.0.2.2:8080/api/v1/description", idBtn, "111", param)
         return result
