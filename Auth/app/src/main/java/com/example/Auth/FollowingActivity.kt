@@ -13,7 +13,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.Auth.databinding.ActivityBioBinding
 import com.example.Auth.databinding.ActivityFollowingBinding
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -82,7 +81,8 @@ class FollowingActivity : AppCompatActivity(), OnFriendClickListener {
 
 
         navigationView.setNavigationItemSelectedListener {
-            val switcherSetter = WindowSwitcherSetter("Following", it, this, dLayout, navigationView)
+            val switcherSetter =
+                WindowSwitcherSetter("Following", it, this, dLayout, navigationView)
             switcherSetter.set()
             true
         }
@@ -132,7 +132,7 @@ class FollowingActivity : AppCompatActivity(), OnFriendClickListener {
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendGetUserFriendsIds(): List<Long>? {
         val result = Requests.GetUserFriendsIds(
-            this,"http://10.0.2.2:8080/api/v1/user",
+            this, "http://10.0.2.2:8080/api/v1/user",
             1,
             1,
             "111"
@@ -152,7 +152,8 @@ class FollowingActivity : AppCompatActivity(), OnFriendClickListener {
             this, "http://10.0.2.2:8080/api/v1/user",
             1,
             "111",
-            friendIdsList)
+            friendIdsList
+        )
         Log.d("FRIENDS", result.toString())
         val friendsList = Converters.stringToUsers(result.toString())
         newList = friendsList as ArrayList<User>

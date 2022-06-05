@@ -4,19 +4,36 @@ import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.startActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+
 
 private val jsonFormat = Json {
     coerceInputValues = true; ignoreUnknownKeys = true
 }
 
-class ShowDescription(val dialog: Dialog, val item: Knopka, val context: AppCompatActivity) {
-    fun showDescription() {
+class ShowDescription : AppCompatActivity() {
+    //    lateinit private var binding: ActivityPopUpInfoBinding
+    private val adapter = TagAdapter()
+
+
+    public override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+//        val inflater = this.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+//        Log.d("layoutinfl", inflater.toString())
+//        binding = ActivityPopUpInfoBinding.inflate(inflater)
+    }
+
+    public fun showDescription(dialog: Dialog, item: Knopka, context: AppCompatActivity) {
+
+
         dialog.setContentView(R.layout.activity_pop_up_info)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val name = dialog.findViewById<TextView>(R.id.KnopkaName)
@@ -40,7 +57,7 @@ class ShowDescription(val dialog: Dialog, val item: Knopka, val context: AppComp
             authorIntent.putExtra("id", authId.toString())
             startActivity(context, authorIntent, null)
         }
-        val knopkaDescr = Requests.GetKnopksaDescr(
+        val responseDescr = Requests.GetKnopkaDescription(
             context,
             "http://10.0.2.2:8080/api/v1",
             "111",
@@ -49,11 +66,25 @@ class ShowDescription(val dialog: Dialog, val item: Knopka, val context: AppComp
             "knopkaUserId"
         )
 
-        val descriptionText = jsonFormat.decodeFromString<Description>(knopkaDescr)
-        Log.d("RES", knopkaDescr)
-        Log.d("ALL)", descriptionText.toString())
-        val discriptionText = dialog.findViewById<TextView>(R.id.KnopkaDescriptionText)
-        discriptionText.setText(descriptionText.text)
+        val descriptionDTO = jsonFormat.decodeFromString<Description>(responseDescr)
+        Log.d("RES", responseDescr)
+        Log.d("ALL)", descriptionDTO.toString())
+        Log.d("ALL)", descriptionDTO.tags.toString())
+
+        val knopkaDescriptionText = dialog.findViewById<TextView>(R.id.KnopkaDescriptionText)
+        knopkaDescriptionText.setText(descriptionDTO.text)
+
+        val rcView = dialog.findViewById<RecyclerView>(R.id.RecyclerViewTags)
+        rcView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        rcView.adapter = adapter
+
+        val tgs = descriptionDTO.tags
+        if (tgs != null) {
+            for (t in tgs) {
+                adapter.addTag(t)
+            }
+        }
+
         dialog.show()
     }
 }

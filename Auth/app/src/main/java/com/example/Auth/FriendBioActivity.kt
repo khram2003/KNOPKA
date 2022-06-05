@@ -183,16 +183,33 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
 //    @RequiresApi(Build.VERSION_CODES.N)
 //    fun sendGetUserFriendsList() = getUserFriendsList().execute()
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.add_friend_menu, menu)
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (toggle.onOptionsItemSelected(item) == true) { //user clicked on toggle button
             return true
+        }
+        when (item.itemId) {
+            R.id.addFriendIcon -> {
+                //TODO
+                Requests.PutAddFriendRequest(
+                    this,
+                    "http://10.0.2.2:8080/api/v1/user",
+                    1,
+                    "111",
+                    units.id
+                )
+            }
         }
         return true
     }
 
     override fun onItemLongClick(item: Knopka, position: Int) {
-        val presenter = ShowDescription(dialog, item, this)
-        presenter.showDescription()
+        val presenter = ShowDescription()
+        presenter.showDescription(dialog, item, this)
     }
 
     override fun onItemClick(item: Knopka, position: Int) {

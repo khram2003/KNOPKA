@@ -49,7 +49,7 @@ import java.util.List;
 
 public class MainActivity extends Activity {
 
-    private static final String TAG = "myLogs";
+    private static final String TAG = "Login";
 
     GoogleSignInOptions gso;
     GoogleSignInClient gsc;
@@ -63,7 +63,7 @@ public class MainActivity extends Activity {
             String idToken = account.getIdToken();
             goToNextPage(idToken);
         }
-        Log.d("HDHDHDH", "HERENOW");
+        Log.d(TAG, "LOGGED IN");
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
