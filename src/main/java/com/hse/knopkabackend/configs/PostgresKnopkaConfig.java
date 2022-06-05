@@ -75,7 +75,7 @@ public class PostgresKnopkaConfig {
         em.setJpaVendorAdapter(vendorAdapter);
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("hibernate.hbm2ddl.auto",
-                "create");
+                "none");
         properties.put("hibernate.dialect",
                 "org.hibernate.dialect.PostgreSQLDialect");
         em.setJpaPropertyMap(properties);
@@ -95,26 +95,26 @@ public class PostgresKnopkaConfig {
         return transactionManager;
     }
 
-    @Bean
-    CommandLineRunner commandLineRunner(KnopkaUserRepository repository) {
-        return args -> {
-            Profile BibaProfile = new Profile("Biba");
-            KnopkaUser Biba = new KnopkaUser("biba.com");
-            Biba.setToken("111");
-            Biba.setProfile(BibaProfile);
-            BibaProfile.setUser(Biba);
-            Profile BobaProfile = new Profile("Boba");
-            KnopkaUser Boba = new KnopkaUser("boba.com");
-            Boba.setToken("121");
-            Boba.setProfile(BobaProfile);
-            BobaProfile.setUser(Boba);
-            Profile AbobaProfile = new Profile("Aboba");
-            KnopkaUser Aboba = new KnopkaUser("aboba.com");
-            Aboba.setToken("333");
-            Aboba.setProfile(AbobaProfile);
-            AbobaProfile.setUser(Aboba);
-
-            repository.saveAll(List.of(Biba, Boba, Aboba));
-        };
-    }
+//    @Bean
+//    CommandLineRunner commandLineRunner(KnopkaUserRepository repository) {
+//        return args -> {
+//            Profile BibaProfile = new Profile("Biba");
+//            KnopkaUser Biba = new KnopkaUser("biba.com");
+//            Biba.setToken("111");
+//            Biba.setProfile(BibaProfile);
+//            BibaProfile.setUser(Biba);
+//            Profile BobaProfile = new Profile("Boba");
+//            KnopkaUser Boba = new KnopkaUser("boba.com");
+//            Boba.setToken("121");
+//            Boba.setProfile(BobaProfile);
+//            BobaProfile.setUser(Boba);
+//            Profile AbobaProfile = new Profile("Aboba");
+//            KnopkaUser Aboba = new KnopkaUser("aboba.com");
+//            Aboba.setToken("333");
+//            Aboba.setProfile(AbobaProfile);
+//            AbobaProfile.setUser(Aboba);
+//
+//            repository.saveAll(List.of(Biba, Boba, Aboba));
+//        };
+//    }
 }

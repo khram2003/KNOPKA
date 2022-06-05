@@ -1,17 +1,22 @@
 package com.hse.knopkabackend.services;
 
 import com.hse.knopkabackend.DTO.BatchDTO;
+import com.hse.knopkabackend.additionalclasses.Click;
 import com.hse.knopkabackend.configs.ClickHouseKnopkaConfig;
 import com.hse.knopkabackend.models.knopkauser.KnopkaUser;
 import com.hse.knopkabackend.repositories.entityforclick.EntityForClickRepository;
 import com.hse.knopkabackend.repositories.knopkauser.KnopkaUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class EntityForClickService {
@@ -29,11 +34,16 @@ public class EntityForClickService {
         return entityForClickRepository.getNumberOfClicks(knopkaId).size();
     }
 
-    public void registerNewBatch(Long knopkaUserId, String token, BatchDTO batchDTO) {
+    public ResponseEntity<String> registerNewBatch(Long knopkaUserId, String token, BatchDTO batchDTO) {
         KnopkaUser knopkaUserById = knopkaUserRepository.findById(knopkaUserId).orElseThrow(() -> {
             throw new IllegalStateException("Invalid id");
         });
         if (Objects.equals(token, knopkaUserById.getToken())) {
+
+            if (isAlreadyWritten(batchDTO)) {
+                return new ResponseEntity<>(batchDTO.getTime(), HttpStatus.OK);
+            }
+
             StringBuilder queryBuffer = new StringBuilder("INSERT INTO entityforclick (click_id, clicked_knopka_id, region, time_of_click) FORMAT Values ");
             Long pushes = batchDTO.getPushes();
             while (pushes > 0) {
@@ -56,5 +66,11 @@ public class EntityForClickService {
         } else {
             throw new IllegalStateException("Token is invalid");
         }
+        return new ResponseEntity<>(batchDTO.getTime(), HttpStatus.OK);
+    }
+
+    boolean isAlreadyWritten(BatchDTO batchDTO) {
+        return !entityForClickRepository.getBatchByTime(batchDTO.getTime(), batchDTO.getClickedKnopkaId()).isEmpty();
+
     }
 }

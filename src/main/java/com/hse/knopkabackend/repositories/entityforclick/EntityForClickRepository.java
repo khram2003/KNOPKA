@@ -1,5 +1,6 @@
 package com.hse.knopkabackend.repositories.entityforclick;
 
+import com.hse.knopkabackend.additionalclasses.Click;
 import com.hse.knopkabackend.models.entityforclick.EntityForClick;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -20,6 +21,9 @@ public interface EntityForClickRepository extends JpaRepository<EntityForClick, 
     @Query(value = "create table entityforclick (click_id bigint, clicked_knopka_id bigint, region varchar(255), time_of_click varchar(255)) engine Memory as select *", nativeQuery = true)
     void createTable();
 
-    @Query(value = "select * from entityforclick where clicked_knopka_id = :knopka_id", nativeQuery = true)
-    List<?> getNumberOfClicks(@Param("knopka_id") Long knopka_id);
+    @Query(value = "select * from entityforclick where clicked_knopka_id = :knopkaId", nativeQuery = true)
+    List<?> getNumberOfClicks(@Param("knopkaId") Long knopkaId);
+
+    @Query(value = "select * from entityforclick where time_of_click = :timeOfClick AND clicked_knopka_id = :clickedKnopkaId", nativeQuery = true)
+    List<Click> getBatchByTime(@Param("timeOfClick") String timeOfClick, @Param("clickedKnopkaId") Long clickedKnopkaId);
 }
