@@ -12,23 +12,20 @@ import java.util.List;
 public class Description {
     @Id
     @Column(
-            name = "description_knopka_id",
-            updatable = true
+            name = "description_knopka_id"
     )
     private Long knopkaWithThisKnopkaId;
 
     @Column(
             name = "description_text",
-            nullable = true,
             columnDefinition = "VARCHAR(2048)"
     )
     private String text;
 
     @Column(
-            name = "encoded_image",
-            nullable = true
+            name = "encoded_image"
     )
-    private byte[] encodedImage; //for now just one picture
+    private byte[] encodedImage;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(

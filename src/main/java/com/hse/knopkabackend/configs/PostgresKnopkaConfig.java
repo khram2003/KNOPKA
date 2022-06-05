@@ -1,10 +1,6 @@
 package com.hse.knopkabackend.configs;
 
-import com.hse.knopkabackend.models.knopkauser.KnopkaUser;
-import com.hse.knopkabackend.models.profile.Profile;
-import com.hse.knopkabackend.repositories.knopkauser.KnopkaUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -16,7 +12,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
 @Configuration
@@ -35,13 +30,6 @@ public class PostgresKnopkaConfig {
     @Autowired
     private Environment env;
 
-//    @Primary
-//    @Bean
-//    @ConfigurationProperties(prefix = "spring.datasource")
-//    public DataSource postgresKnopkaDataSource() {
-//        return DataSourceBuilder.create().build();
-//    }
-
     @Primary
     @Bean
     public DataSource postgresKnopkaDataSource() {
@@ -53,7 +41,6 @@ public class PostgresKnopkaConfig {
         dataSource.setUrl(env.getProperty("spring.datasource.url"));
         dataSource.setUsername(env.getProperty("spring.datasource.username"));
         dataSource.setPassword(env.getProperty("spring.datasource.password"));
-//        dataSource.setConnectionProperties();
 
         return dataSource;
     }

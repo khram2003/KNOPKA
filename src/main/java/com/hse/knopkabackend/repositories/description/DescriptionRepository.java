@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface DescriptionRepository extends JpaRepository<Description, Long> {
-    //через пот и слезы
+
     @Query(value = "SELECT v.description_knopka_id as descriptionId, v.tags as tags FROM tags v where v.tags = ?1", nativeQuery = true)
     List<Tag> findByTag(String tag);
 }

@@ -13,8 +13,7 @@ import javax.persistence.*;
 public class Profile {
     @Id
     @Column(
-            name = "profile_user_id",
-            updatable = true
+            name = "profile_user_id"
     )
     private Long userWithThisProfileId;
 
@@ -42,10 +41,9 @@ public class Profile {
 
     @Column(
             name = "encoded_image",
-            nullable = true,
             columnDefinition = "TEXT"
     )
-    String encodedPhoto; //smth strange
+    String encodedPhoto;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId

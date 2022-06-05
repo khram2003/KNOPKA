@@ -9,6 +9,5 @@ import java.util.Optional;
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
-//    @Query("SELECT s FROM profile s WHERE s.nickname = ?1")
     Optional<Profile> findProfileByNickname(String nickname);
 }

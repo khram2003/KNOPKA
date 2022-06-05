@@ -27,8 +27,7 @@ public class KnopkaUserController {
         this.knopkaUserService = knopkaUserService;
     }
 
-
-    //it's here just for me. It will be removed later
+    //TODO: it's here just for me. It will be removed later
     @GetMapping
     public List<KnopkaUser> getUsers() {
         return knopkaUserService.getKnopkaUsers();
@@ -36,8 +35,8 @@ public class KnopkaUserController {
 
     @GetMapping("{knopkaUserId}/{friendsOfId}/friendsId")
     public List<Long> getFriendsId(@PathVariable("knopkaUserId") Long knopkaUserId,
-                                  @PathVariable("friendsOfId") Long friendsOfId,
-                                  @RequestHeader String token) {
+                                   @PathVariable("friendsOfId") Long friendsOfId,
+                                   @RequestHeader String token) {
         return knopkaUserService.getKnopkaUsersFriends(knopkaUserId, friendsOfId, token);
     }
 

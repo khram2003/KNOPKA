@@ -1,18 +1,13 @@
 package com.hse.knopkabackend.models.entityforclick;
 
-import com.hse.knopkabackend.additionalclasses.Style;
-import org.hibernate.annotations.Type;
-
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity(name = "entityforclick")
 public class EntityForClick {
     @Id
     @Column(
             name = "click_id",
-            updatable = false,
-            nullable = true
+            updatable = false
     )
     private Long clickId;
 

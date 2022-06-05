@@ -3,7 +3,6 @@ package com.hse.knopkabackend.DTO;
 import com.hse.knopkabackend.additionalclasses.Style;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 public class KnopkaDTO implements Serializable {
     private String name;
@@ -11,7 +10,6 @@ public class KnopkaDTO implements Serializable {
     private Long pushes;
     private Long id;
     private Long authorId;
-//    private LocalDateTime createdAt;
 
 
     public Long getAuthorId() {
@@ -31,7 +29,6 @@ public class KnopkaDTO implements Serializable {
         this.pushes = pushes;
         this.id = id;
         this.authorId = authorId;
-//        this.createdAt = createdAt;
     }
 
     public Long getId() {
@@ -66,11 +63,4 @@ public class KnopkaDTO implements Serializable {
         this.pushes = pushes;
     }
 
-//    public LocalDateTime getCreatedAt() {
-//        return createdAt;
-//    }
-
-//    public void setCreatedAt(LocalDateTime createdAt) {
-//        this.createdAt = createdAt;
-//    }
 }

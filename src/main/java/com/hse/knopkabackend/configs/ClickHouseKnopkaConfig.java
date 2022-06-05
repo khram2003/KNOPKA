@@ -1,10 +1,6 @@
 package com.hse.knopkabackend.configs;
 
-import com.hse.knopkabackend.models.entityforclick.EntityForClick;
-import com.hse.knopkabackend.models.knopkauser.KnopkaUser;
-import com.hse.knopkabackend.models.profile.Profile;
 import com.hse.knopkabackend.repositories.entityforclick.EntityForClickRepository;
-import com.hse.knopkabackend.repositories.knopkauser.KnopkaUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.*;
@@ -15,13 +11,11 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
-
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -36,14 +30,6 @@ public class ClickHouseKnopkaConfig {
 
     @Autowired
     private Environment env;
-
-//    @Primary
-//    @Bean
-//    @ConfigurationProperties(prefix = "spring.datasource")
-//    public DataSource postgresKnopkaDataSource() {
-//        return DataSourceBuilder.create().build();
-//    }
-
 
     public static Connection getConnection() throws SQLException {
         Connection conn;
@@ -65,7 +51,6 @@ public class ClickHouseKnopkaConfig {
         dataSource.setUrl(env.getProperty("spring.clickhouse-datasource.url"));
         dataSource.setUsername(env.getProperty("spring.clickhouse-datasource.username"));
         dataSource.setPassword(env.getProperty("spring.clickhouse-datasource.password"));
-//        dataSource.setConnectionProperties();
 
         return dataSource;
     }

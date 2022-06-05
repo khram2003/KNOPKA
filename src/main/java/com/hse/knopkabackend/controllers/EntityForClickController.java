@@ -20,13 +20,14 @@ public class EntityForClickController {
 
     @PostMapping("batch/{knopkaUserId}")
     public ResponseEntity<String> registerNewBatch(@PathVariable("knopkaUserId") Long knopkaUserId,
-                                           @RequestHeader String token,
-                                           @RequestBody BatchDTO batchDTO){
+                                                   @RequestHeader String token,
+                                                   @RequestBody BatchDTO batchDTO) {
         return entityForClickService.registerNewBatch(knopkaUserId, token, batchDTO);
     }
 
+    //TODO: token check
     @GetMapping("/{knopkaId}")
-    public int getKnopkasByIds(@PathVariable("knopkaId") Long knopkaId){
+    public int getClicksByKnopkaId(@PathVariable("knopkaId") Long knopkaId) {
         return entityForClickService.getClicks(knopkaId);
     }
 }

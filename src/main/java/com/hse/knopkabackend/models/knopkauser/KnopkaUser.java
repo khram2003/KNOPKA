@@ -3,9 +3,6 @@ package com.hse.knopkabackend.models.knopkauser;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hse.knopkabackend.models.profile.Profile;
 import com.hse.knopkabackend.models.knopka.Knopka;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.*;
 import java.util.List;
 import java.util.Set;
@@ -48,7 +45,6 @@ public class KnopkaUser {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "friends_ids",
             joinColumns = @JoinColumn(name = "knopkauser_id"))
-//    @Column(name = "friends_id")
     private List<Long> friends;
 
 
@@ -58,7 +54,6 @@ public class KnopkaUser {
     )
     private Set<Long> knopkaIds;
 
-    //oh no, cringe
     @PostLoad
     private void postLoad() {
         knopkaIds = knopkas.stream().map(Knopka::getKnopkaId).collect(Collectors.toSet());

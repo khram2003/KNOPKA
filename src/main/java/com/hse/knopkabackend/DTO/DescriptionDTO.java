@@ -2,7 +2,6 @@ package com.hse.knopkabackend.DTO;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
 public class DescriptionDTO implements Serializable {
     private String text;

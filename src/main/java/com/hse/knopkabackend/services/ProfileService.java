@@ -89,7 +89,6 @@ public class ProfileService {
         );
         if (!Objects.equals(profile.getUser().getToken(), token))
             throw new IllegalStateException("Token is invalid");
-        //photo up to 2MB
         if (photo.length() <= 2097152) {
             profile.setEncodedPhoto(photo);
         } else {
