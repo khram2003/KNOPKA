@@ -33,7 +33,11 @@ public class EntityForClickService {
     }
 
 
-    public int getClicks(Long knopkaId) {
+    public int getClicks(Long knopkaId, Long knopkaUserId, String token) {
+        KnopkaUser knopkaUserById = knopkaUserRepository.findById(knopkaUserId).orElseThrow(() -> {
+            throw new IllegalStateException("Invalid id");
+        });
+        if (!Objects.equals(token, knopkaUserById.getToken())) throw new IllegalStateException("Invalid token");
         return entityForClickRepository.getNumberOfClicks(knopkaId).size();
     }
 

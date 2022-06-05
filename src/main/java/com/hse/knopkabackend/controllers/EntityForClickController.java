@@ -25,9 +25,10 @@ public class EntityForClickController {
         return entityForClickService.registerNewBatch(knopkaUserId, token, batchDTO);
     }
 
-    //TODO: token check
     @GetMapping("/{knopkaId}")
-    public int getClicksByKnopkaId(@PathVariable("knopkaId") Long knopkaId) {
-        return entityForClickService.getClicks(knopkaId);
+    public int getClicksByKnopkaId(@PathVariable("knopkaId") Long knopkaId,
+                                   @RequestParam Long knopkaUserId,
+                                   @RequestHeader String token) {
+        return entityForClickService.getClicks(knopkaId, knopkaUserId, token);
     }
 }
