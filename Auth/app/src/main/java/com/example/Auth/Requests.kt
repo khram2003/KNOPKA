@@ -117,8 +117,8 @@ object Requests {
         ).execute().get()
 
     }
-    // posts
 
+    // posts
     fun PostKnopkaRequest(
         context: Context,
         url: String, id: Int, token: String,
@@ -139,6 +139,56 @@ object Requests {
             .get()
     }
 
+    fun PostDescriptionRequest(context: Context,
+                               url: String, idButton: Long, token: String,
+                               requestBodyMap: Map<String, String>
+    ): String {
+        val descriptionDTO: RequestBody = RequestBody.create(
+            MediaType.parse("application/json"),
+            requestBodyMap.toString().replace("=", ":")
+        )
+        return SendPostRequest(context, "$url/$idButton", token, descriptionDTO, idButton.toString(), "").execute()
+            .get()
+    }
+
+    fun PostBatchRequest(
+        url: String, id: Int, token: String,
+        requestBodyMap: Map<String, Any?>
+    ): String {
+        val batchDTO: RequestBody = RequestBody.create(
+            MediaType.parse("application/json"),
+            requestBodyMap.toString().replace("=", ":")
+        )
+        return SendPostRequest(
+            null,
+            "$url/$id",
+            token,
+            batchDTO,
+           null,
+            null
+        ).execute()
+            .get()
+    }
+
+    fun TESTcLICK(
+        context: Context
+    ): String {
+        val knopkaDTO: RequestBody = RequestBody.create(
+            MediaType.parse("application/json"),
+            "requestBodyMap".toString().replace("=", ":")
+        )
+        return SendPostRequest(
+            context,
+            "http://10.0.2.2:8080/api/v1/click",
+            "111",
+            knopkaDTO,
+            "1",
+            "knopkaId"
+        ).execute()
+            .get()
+    }
+
+    // puts
     fun PutDescriptionRequest(
         context: Context,
         url: String, idButton: Long, token: String,
@@ -159,8 +209,7 @@ object Requests {
         ).execute()
             .get()
     }
-
-    // puts
+    
     fun PutChangeInfoRequest(
         context: Context,
         url: String, id: Int, token: String,
@@ -242,7 +291,7 @@ object Requests {
     }
 
     internal class SendPostRequest(
-        private val context: Context,
+        private val context: Context?,
         private val url: String,
         private val token: String,
         private val requestDTO: RequestBody,

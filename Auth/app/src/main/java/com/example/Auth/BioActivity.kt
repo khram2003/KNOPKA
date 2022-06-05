@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
@@ -35,9 +36,6 @@ private val jsonFormat = Json {
 
 class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     lateinit var binding: ActivityBioBinding
-
-    //    lateinit var dialogBinding: ActivityPopUpInfoBinding
-//    private val adapterTag = TagAdapter()
     lateinit var toggle: ActionBarDrawerToggle
     private val adapter = KnopkaFeedAdapter(this)
     lateinit var dialog: Dialog
@@ -59,7 +57,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     @RequiresApi(Build.VERSION_CODES.N)
     private fun initRecyclerView() {
         binding.RecyclerViewKnopkasFeed.layoutManager =
-            LinearLayoutManager(this)
+                LinearLayoutManager(this)
         binding.RecyclerViewKnopkasFeed.adapter = adapter
 
         showUserKnopkas()
@@ -78,12 +76,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.d("layoutinfl", layoutInflater.toString())
-
         binding = ActivityBioBinding.inflate(layoutInflater)
-
-//        dialogBinding = ActivityPopUpInfoBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
 
         initRecyclerView()
@@ -116,7 +109,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         units.imageViewProfilePic = findViewById(R.id.imageViewProfilePic)
 
         units.profilePicBitMap =
-            BitmapFactory.decodeResource(resources, R.drawable.img) //get default picture bitmap
+                BitmapFactory.decodeResource(resources, R.drawable.img) //get default picture bitmap
 
         units.token = intent.getStringExtra("token")
 
@@ -134,11 +127,11 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
             val bioString: String = units.textViewBio?.text.toString()
 
             val mapData =
-                mapOf(
-                    "nickname" to nameString,
-                    "bio" to bioString,
-                    "photo" to imageString
-                )
+                    mapOf(
+                            "nickname" to nameString,
+                            "bio" to bioString,
+                            "photo" to imageString
+                    )
 
             val jsonData = Json.encodeToString(mapData)
 
@@ -164,15 +157,15 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
                         if (jsonData != null) {
                             mapData = Json.decodeFromString(jsonData)
                             val param: Map<String, String?> = mapOf(
-                                "\"nickname\"" to
-                                        if (mapData["nickname"] == units.textViewName?.text) null
-                                        else "\"" + mapData["nickname"] + "\"",
-                                "\"bio\"" to
-                                        if (mapData["bio"] == units.textViewBio?.text) null
-                                        else "\"" + mapData["bio"].toString() + "\"",
-                                "\"photo\"" to
-                                        if (base64StringToBitMap(mapData["photo"]) == units.profilePicBitMap) null
-                                        else "\"" + mapData["photo"] + "\""
+                                    "\"nickname\"" to
+                                            if (mapData["nickname"] == units.textViewName?.text) null
+                                            else "\"" + mapData["nickname"] + "\"",
+                                    "\"bio\"" to
+                                            if (mapData["bio"] == units.textViewBio?.text) null
+                                            else "\"" + mapData["bio"].toString() + "\"",
+                                    "\"photo\"" to
+                                            if (base64StringToBitMap(mapData["photo"]) == units.profilePicBitMap) null
+                                            else "\"" + mapData["photo"] + "\""
                             )
 
                             units.textViewName?.text = mapData["nickname"] // set with new values
