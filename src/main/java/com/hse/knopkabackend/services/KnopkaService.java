@@ -11,7 +11,8 @@ import com.hse.knopkabackend.repositories.knopkauser.KnopkaUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -116,7 +117,7 @@ public class KnopkaService {
         }
     }
 
-    @Transactional
+    @Transactional("postgresKnopkaTransactionManager")
     public void updatePushesCount(Long knopkaUserId, Long knopkaId, Long n, String token) {
         Knopka knopka = knopkaRepository.findById(knopkaId).orElseThrow(
                 () -> new IllegalStateException("knopka with id: " + knopkaId + " doesn't exist")
@@ -128,9 +129,9 @@ public class KnopkaService {
 
         if (n != null) {
             if (Objects.equals(knopkaUser.getToken(), token)) {
-                knopka.setPushesCounter(n);
+                knopka.setPushesCounter(knopka.getPushesCounter() + n);
                 System.out.println("Changed Knopka's pushes with id: " +
-                        knopkaId + " to: '" + n + "'"
+                        knopkaId + " to: '" + knopka.getPushesCounter() + n + "'"
                 );
             } else {
                 throw new IllegalStateException("Your token is invalid. Please chose another one"

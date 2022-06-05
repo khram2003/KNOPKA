@@ -1,10 +1,11 @@
 package com.hse.knopkabackend.services;
 
 import com.hse.knopkabackend.DTO.BatchDTO;
-import com.hse.knopkabackend.additionalclasses.Click;
 import com.hse.knopkabackend.configs.ClickHouseKnopkaConfig;
+import com.hse.knopkabackend.models.knopka.Knopka;
 import com.hse.knopkabackend.models.knopkauser.KnopkaUser;
 import com.hse.knopkabackend.repositories.entityforclick.EntityForClickRepository;
+import com.hse.knopkabackend.repositories.knopka.KnopkaRepository;
 import com.hse.knopkabackend.repositories.knopkauser.KnopkaUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,19 +15,21 @@ import org.springframework.stereotype.Service;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class EntityForClickService {
     private final EntityForClickRepository entityForClickRepository;
     private final KnopkaUserRepository knopkaUserRepository;
+    private final KnopkaRepository knopkaRepository;
+    private final KnopkaService knopkaService;
 
     @Autowired
-    public EntityForClickService(EntityForClickRepository entityForClickRepository, KnopkaUserRepository knopkaUserRepository) {
+    public EntityForClickService(EntityForClickRepository entityForClickRepository, KnopkaUserRepository knopkaUserRepository, KnopkaService knopkaService, KnopkaRepository knopkaRepository) {
         this.entityForClickRepository = entityForClickRepository;
         this.knopkaUserRepository = knopkaUserRepository;
+        this.knopkaService = knopkaService;
+        this.knopkaRepository = knopkaRepository;
     }
 
 
@@ -38,6 +41,9 @@ public class EntityForClickService {
         KnopkaUser knopkaUserById = knopkaUserRepository.findById(knopkaUserId).orElseThrow(() -> {
             throw new IllegalStateException("Invalid id");
         });
+        Knopka knopka = knopkaRepository.findById(batchDTO.getClickedKnopkaId()).orElseThrow(
+                () -> new IllegalStateException("knopka with id: " + batchDTO.getClickedKnopkaId() + " doesn't exist")
+        );
         if (Objects.equals(token, knopkaUserById.getToken())) {
 
             if (isAlreadyWritten(batchDTO)) {
@@ -58,6 +64,7 @@ public class EntityForClickService {
                 Statement statement = conn.createStatement();
                 statement.executeQuery(queryBuffer.toString());
                 conn.close();
+                knopkaService.updatePushesCount(knopkaUserId, batchDTO.getClickedKnopkaId(), batchDTO.getPushes(), token);
             } catch (SQLException e) {
                 throw new IllegalStateException("ClickHouse connection problems", e);
             }
