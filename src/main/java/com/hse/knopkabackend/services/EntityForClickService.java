@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -83,5 +84,13 @@ public class EntityForClickService {
     boolean isAlreadyWritten(BatchDTO batchDTO) {
         return !entityForClickRepository.getBatchByTime(batchDTO.getTime(), batchDTO.getClickedKnopkaId()).isEmpty();
 
+    }
+
+    public List<Long> getTopByRegion(Long knopkaUserId, String token, String region) {
+        KnopkaUser knopkaUserById = knopkaUserRepository.findById(knopkaUserId).orElseThrow(() -> {
+            throw new IllegalStateException("Invalid id");
+        });
+        if (!Objects.equals(token, knopkaUserById.getToken())) throw new IllegalStateException("Token is invalid");
+        return entityForClickRepository.getTopByRegion(region);
     }
 }

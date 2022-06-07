@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(path = "api/v1/click")
 public class EntityForClickController {
@@ -30,5 +32,12 @@ public class EntityForClickController {
                                    @RequestParam Long knopkaUserId,
                                    @RequestHeader String token) {
         return entityForClickService.getClicks(knopkaId, knopkaUserId, token);
+    }
+
+    @GetMapping("/top/{region}")
+    public List<Long> getTopByRegion(@PathVariable("region") String region,
+                                     @RequestParam Long knopkaUserId,
+                                     @RequestHeader String token){
+        return  entityForClickService.getTopByRegion(knopkaUserId, token, region);
     }
 }
