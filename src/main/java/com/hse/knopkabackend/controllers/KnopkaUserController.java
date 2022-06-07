@@ -34,7 +34,7 @@ public class KnopkaUserController {
     }
 
     @GetMapping("{knopkaUserId}/{friendsOfId}/friendsId")
-    public List<Long> getFriendsId(@PathVariable("knopkaUserId") Long knopkaUserId,
+    public Set<Long> getFriendsId(@PathVariable("knopkaUserId") Long knopkaUserId,
                                    @PathVariable("friendsOfId") Long friendsOfId,
                                    @RequestHeader String token) {
         return knopkaUserService.getKnopkaUsersFriends(knopkaUserId, friendsOfId, token);

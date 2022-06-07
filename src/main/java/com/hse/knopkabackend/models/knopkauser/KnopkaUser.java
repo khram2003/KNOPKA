@@ -45,7 +45,7 @@ public class KnopkaUser {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "friends_ids",
             joinColumns = @JoinColumn(name = "knopkauser_id"))
-    private List<Long> friends;
+    private Set<Long> friends;
 
 
     @Transient
@@ -131,7 +131,7 @@ public class KnopkaUser {
     }
 
 
-    public List<Long> getFriends() {
+    public Set<Long> getFriends() {
         return friends;
     }
 
@@ -144,7 +144,7 @@ public class KnopkaUser {
     }
 
 
-    public void setFriends(List<Long> friends) {
+    public void setFriends(Set<Long> friends) {
         this.friends = friends;
     }
 

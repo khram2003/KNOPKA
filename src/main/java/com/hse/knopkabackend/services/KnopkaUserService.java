@@ -77,7 +77,7 @@ public class KnopkaUserService {
         }
     }
 
-    public List<Long> getKnopkaUsersFriends(Long knopkaUserId, Long friendsOfId, String token) {
+    public Set<Long> getKnopkaUsersFriends(Long knopkaUserId, Long friendsOfId, String token) {
 
 
         KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
