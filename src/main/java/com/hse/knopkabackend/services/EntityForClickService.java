@@ -92,11 +92,10 @@ public class EntityForClickService {
 
     }
 
-    public List<Long> getTopByRegion(Long knopkaUserId, String token, String region) {
-        KnopkaUser knopkaUserById = knopkaUserRepository.findById(knopkaUserId).orElseThrow(() -> {
-            throw new IllegalStateException("Invalid id");
+    public List<Long> getTopByRegion(String token, String region) {
+        KnopkaUser knopkaUserById = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(() -> {
+            throw new IllegalStateException("Invalid token");
         });
-        if (!Objects.equals(token, knopkaUserById.getToken())) throw new IllegalStateException("Token is invalid");
         return entityForClickRepository.getTopByRegion(region);
     }
 }

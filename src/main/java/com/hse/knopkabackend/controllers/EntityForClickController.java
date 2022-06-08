@@ -36,8 +36,7 @@ public class EntityForClickController {
 
     @GetMapping("/top/{region}")
     public List<Long> getTopByRegion(@PathVariable("region") String region,
-                                     @RequestParam Long knopkaUserId,
                                      @RequestHeader String token){
-        return  entityForClickService.getTopByRegion(knopkaUserId, token, region);
+        return  entityForClickService.getTopByRegion(token, region);
     }
 }
