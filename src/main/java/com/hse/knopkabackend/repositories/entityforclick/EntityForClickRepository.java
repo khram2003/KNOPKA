@@ -13,20 +13,20 @@ import java.util.List;
 
 @Repository
 public interface EntityForClickRepository extends JpaRepository<EntityForClick, Long> {
-    @Query(value = "EXISTS TABLE entityforclick", nativeQuery = true)
+    @Query(value = "EXISTS TABLE entityforbatch", nativeQuery = true)
     List<Integer> checkTable();
 
     @Modifying
     @Transactional
-    @Query(value = "create table entityforclick (click_id bigint, clicked_knopka_id bigint, region varchar(255), time_of_click varchar(255)) engine Memory as select *", nativeQuery = true)
+    @Query(value = "create table entityforbatch (author_id bigint, clicked_knopka_id bigint, pushes bigint, region varchar(255), time_of_click DateTime('UTC')) engine Memory as select *", nativeQuery = true)
     void createTable();
 
-    @Query(value = "select * from entityforclick where clicked_knopka_id = :knopkaId", nativeQuery = true)
-    List<?> getNumberOfClicks(@Param("knopkaId") Long knopkaId);
+    @Query(value = "select sum(pushes) from entityforbatch where clicked_knopka_id = :knopkaId", nativeQuery = true)
+    Long getNumberOfClicks(@Param("knopkaId") Long knopkaId);
 
-    @Query(value = "select * from entityforclick where time_of_click = :timeOfClick AND clicked_knopka_id = :clickedKnopkaId", nativeQuery = true)
-    List<Click> getBatchByTime(@Param("timeOfClick") String timeOfClick, @Param("clickedKnopkaId") Long clickedKnopkaId);
+    @Query(value = "select count() from (select * from entityforbatch where time_of_click = :timeOfClick AND clicked_knopka_id = :clickedKnopkaId AND author_id = :authorId) as e ", nativeQuery = true)
+    Long getBatchByTime(@Param("timeOfClick") String timeOfClick, @Param("clickedKnopkaId") Long clickedKnopkaId, @Param("authorId") Long authorId);
 
-    @Query(value = "select clicked_knopka_id from (select count(clicked_knopka_id) as val, clicked_knopka_id, region from entityforclick group by region, clicked_knopka_id order by val desc) where region = :clickRegion", nativeQuery = true)
+    @Query(value = "select clicked_knopka_id from (select count(clicked_knopka_id) as val, clicked_knopka_id, region from entityforbatch group by region, clicked_knopka_id order by val desc) as e where region = :clickRegion", nativeQuery = true)
     List<Long> getTopByRegion(@Param("clickRegion") String clickRegion);
 }

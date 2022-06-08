@@ -1,6 +1,7 @@
 package com.hse.knopkabackend.services;
 
 import com.hse.knopkabackend.DTO.BatchDTO;
+import com.hse.knopkabackend.DTO.BatchResponseDTO;
 import com.hse.knopkabackend.configs.ClickHouseKnopkaConfig;
 import com.hse.knopkabackend.models.knopka.Knopka;
 import com.hse.knopkabackend.models.knopkauser.KnopkaUser;
@@ -34,17 +35,17 @@ public class EntityForClickService {
     }
 
 
-    public int getClicks(Long knopkaId, Long knopkaUserId, String token) {
-        KnopkaUser knopkaUserById = knopkaUserRepository.findById(knopkaUserId).orElseThrow(() -> {
+    public Long getClicks(Long knopkaId, String token) {
+        KnopkaUser knopkaUserById = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(() -> {
             throw new IllegalStateException("Invalid id");
         });
         if (!Objects.equals(token, knopkaUserById.getToken())) throw new IllegalStateException("Invalid token");
-        return entityForClickRepository.getNumberOfClicks(knopkaId).size();
+        return entityForClickRepository.getNumberOfClicks(knopkaId);
     }
 
-    public ResponseEntity<String> registerNewBatch(Long knopkaUserId, String token, BatchDTO batchDTO) {
-        KnopkaUser knopkaUserById = knopkaUserRepository.findById(knopkaUserId).orElseThrow(() -> {
-            throw new IllegalStateException("Invalid id");
+    public ResponseEntity<BatchResponseDTO> registerNewBatch(String token, BatchDTO batchDTO) {
+        KnopkaUser knopkaUserById = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(() -> {
+            throw new IllegalStateException("Invalid token");
         });
         Knopka knopka = knopkaRepository.findById(batchDTO.getClickedKnopkaId()).orElseThrow(
                 () -> new IllegalStateException("knopka with id: " + batchDTO.getClickedKnopkaId() + " doesn't exist")
@@ -52,24 +53,29 @@ public class EntityForClickService {
         if (Objects.equals(token, knopkaUserById.getToken())) {
 
             if (isAlreadyWritten(batchDTO)) {
-                return new ResponseEntity<>(batchDTO.getTime(), HttpStatus.OK);
+                return new ResponseEntity<>(new BatchResponseDTO(batchDTO.getTime(), batchDTO.getAuthorId()), HttpStatus.OK);
             }
 
-            StringBuilder queryBuffer = new StringBuilder("INSERT INTO entityforclick (click_id, clicked_knopka_id, region, time_of_click) FORMAT Values ");
-            Long pushes = batchDTO.getPushes();
-            while (pushes > 0) {
-                StringBuilder queryPart = new StringBuilder("(" + "1, '" + batchDTO.getClickedKnopkaId() + "', '" + batchDTO.getRegion() + "', '" + batchDTO.getTime() + "')");
-                pushes--;
-                if (pushes != 0) queryPart.append(", ");
-                queryBuffer.append(queryPart);
-            }
+
+            StringBuilder queryBuffer = new StringBuilder("INSERT INTO entityforbatch (author_id, clicked_knopka_id, pushes, region, time_of_click) values ");
+            queryBuffer.append("('")
+                    .append(batchDTO.getAuthorId())
+                    .append("', '")
+                    .append(batchDTO.getClickedKnopkaId())
+                    .append("', '")
+                    .append(batchDTO.getPushes())
+                    .append("', '")
+                    .append(batchDTO.getRegion())
+                    .append("', '")
+                    .append(batchDTO.getTime())
+                    .append("')");
             System.out.println(queryBuffer);
             try {
                 Connection conn = ClickHouseKnopkaConfig.getConnection();
                 Statement statement = conn.createStatement();
                 statement.executeQuery(queryBuffer.toString());
                 conn.close();
-                knopkaService.updatePushesCount(knopkaUserId, batchDTO.getClickedKnopkaId(), batchDTO.getPushes(), token);
+                knopkaService.updatePushesCount(batchDTO.getClickedKnopkaId(), batchDTO.getPushes(), token);
             } catch (SQLException e) {
                 throw new IllegalStateException("ClickHouse connection problems", e);
             }
@@ -78,11 +84,11 @@ public class EntityForClickService {
         } else {
             throw new IllegalStateException("Token is invalid");
         }
-        return new ResponseEntity<>(batchDTO.getTime(), HttpStatus.OK);
+        return new ResponseEntity<>(new BatchResponseDTO(batchDTO.getTime(), batchDTO.getAuthorId()), HttpStatus.OK);
     }
 
     boolean isAlreadyWritten(BatchDTO batchDTO) {
-        return !entityForClickRepository.getBatchByTime(batchDTO.getTime(), batchDTO.getClickedKnopkaId()).isEmpty();
+        return entityForClickRepository.getBatchByTime(batchDTO.getTime(), batchDTO.getClickedKnopkaId(), batchDTO.getAuthorId()) != 0;
 
     }
 

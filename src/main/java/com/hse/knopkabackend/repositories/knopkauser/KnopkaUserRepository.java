@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface KnopkaUserRepository extends JpaRepository<KnopkaUser, Long> {
     Optional<KnopkaUser> findKnopkaUserByEmail(String email);
+    Optional<KnopkaUser> findKnopkaUserByToken(String token);
 }

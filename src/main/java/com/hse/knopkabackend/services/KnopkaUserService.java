@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 
 @Service
@@ -43,16 +44,13 @@ public class KnopkaUserService {
     }
 
 
-    public void deleteKnopkaUser(Long knopkaUserId, String token) {
-        KnopkaUser knopkaUserById = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
-                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+    public void deleteKnopkaUser(String token) {
+        KnopkaUser knopkaUserById = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(
+                () -> new IllegalStateException("Token is not valid")
         );
-        if (Objects.equals(token, knopkaUserById.getToken())) {
-            knopkaUserRepository.deleteById(knopkaUserId);
-            System.out.println("Deleted KnopkaUser with id: " + knopkaUserId);
-        } else {
-            throw new IllegalStateException("Token is not valid");
-        }
+
+        knopkaUserRepository.deleteById(knopkaUserById.getId());
+
     }
 
 
@@ -77,70 +75,55 @@ public class KnopkaUserService {
         }
     }
 
-    public Set<Long> getKnopkaUsersFriends(Long knopkaUserId, Long friendsOfId, String token) {
+    public Set<Long> getKnopkaUsersFriends(Long friendsOfId, String token) {
 
-
-        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
-                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+        KnopkaUser knopkaUser = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(
+                () -> new IllegalStateException("Your token is invalid.")
         );
 
         KnopkaUser friendsOfUser = knopkaUserRepository.findById(friendsOfId).orElseThrow(
                 () -> new IllegalStateException("KnopkaUser with id: " + friendsOfId + " doesn't exist")
         );
-
-        if (Objects.equals(token, knopkaUser.getToken())) {
-            return friendsOfUser.getFriends();
-        } else {
-            throw new IllegalStateException("Your token is invalid.");
-        }
+        return friendsOfUser.getFriends();
     }
 
-    public Set<Long> getKnopkaUsersKnopkaIds(Long knopkaUserId, Long knopkasOfId, String token) {
-        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
-                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+    public Set<Long> getKnopkaUsersKnopkaIds(Long knopkasOfId, String token) {
+        KnopkaUser knopkaUser = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(
+                () -> new IllegalStateException("Token is invalid")
         );
         KnopkaUser knopkasOfUser = knopkaUserRepository.findById(knopkasOfId).orElseThrow(
                 () -> new IllegalStateException("KnopkaUser with id: " + knopkasOfId + " doesn't exist")
         );
-        if (Objects.equals(token, knopkaUser.getToken())) {
-            return knopkasOfUser.getKnopkaIds();
-        } else {
-            throw new IllegalStateException("Your token is invalid. Please chose another one");
-        }
+        return knopkasOfUser.getKnopkaIds();
     }
 
-    public void deleteKnopkaUserFriend(Long knopkaUserId, Long friendId, String token) {
-        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
-                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+    public void deleteKnopkaUserFriend(Long friendId, String token) {
+        KnopkaUser knopkaUser = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(
+                () -> new IllegalStateException("token is invalid")
         );
         KnopkaUser friend = knopkaUserRepository.findById(friendId).orElseThrow(
-                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+                () -> new IllegalStateException("KnopkaUser with id: " + friendId + " doesn't exist")
         );
-        if (Objects.equals(token, knopkaUser.getToken())) {
-            if (knopkaUser.getFriends().contains(friendId)) {
-                knopkaUser.getFriends().remove(friendId);
-            } else {
-                throw new IllegalStateException("It is not friend");
-            }
+        if (knopkaUser.getFriends().contains(friendId)) {
+            knopkaUser.getFriends().remove(friendId);
         } else {
-            throw new IllegalStateException("Your token is invalid. Please chose another one");
+            throw new IllegalStateException("It is not friend");
         }
+
     }
 
-    public Set<KnopkaUserResponseDTO> getKnopkaUsersFriendsDTOs(Long knopkaUserId, String token, List<Long> friendsId) {
-        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
-                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+
+    public Set<KnopkaUserResponseDTO> getKnopkaUsersFriendsDTOs(String token, List<Long> friendsId) {
+        KnopkaUser knopkaUser = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(
+                () -> new IllegalStateException("Token is not valid")
         );
 
-        if (!Objects.equals(knopkaUser.getToken(), token)) {
-            throw new IllegalStateException("Token is not valid");
-        }
         Set<KnopkaUserResponseDTO> resSet = new HashSet<>();
 
         for (var id : friendsId) {
             if (knopkaUser.getFriends().contains(id)) {
                 KnopkaUser friend = knopkaUserRepository.findById(id).orElseThrow(
-                        () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+                        () -> new IllegalStateException("KnopkaUser with id: " + id + " doesn't exist")
                 );
                 resSet.add(new KnopkaUserResponseDTO(friend.getProfile().getNickname(), friend.getProfile().getEncodedPhoto(), id));
             }

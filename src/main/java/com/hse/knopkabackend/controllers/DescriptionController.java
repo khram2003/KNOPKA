@@ -24,17 +24,15 @@ public class DescriptionController {
 
     @GetMapping("/{knopkaId}")
     public DescriptionDTO getDescription(@PathVariable("knopkaId") Long knopkaId,
-                                         @RequestParam("knopkaUserId") Long knopkaUserId,
                                          @RequestHeader String token) {
-        Description description = descriptionService.getDescription(knopkaId, token, knopkaUserId);
+        Description description = descriptionService.getDescription(knopkaId, token);
         return new DescriptionDTO(description.getText(), description.getEncodedImage(), description.getTags());
     }
 
     @GetMapping("/tag")
     public List<Long> getKnopkaIdsByTag(@RequestParam("tag") String tag,
-                                        @RequestParam("knopkaUserId") Long knopkaUserId,
                                         @RequestHeader String token) {
-        List<Tag> descriptionList = descriptionService.getDescriptionsByTag(tag, token, knopkaUserId);
+        List<Tag> descriptionList = descriptionService.getDescriptionsByTag(tag, token);
         return descriptionList.stream().map(Tag::getDescriptionId).collect(Collectors.toList());
     }
 

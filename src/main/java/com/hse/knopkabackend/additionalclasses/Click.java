@@ -3,11 +3,13 @@ package com.hse.knopkabackend.additionalclasses;
 
 import javax.persistence.Table;
 
-@Table(name = "entityforclick")
+@Table(name = "entityforbatch")
 public interface Click {
-    Long getClickId();
+    Long getAuthorId();
 
     Long getClickedKnopkaId();
+
+    Long getPushes();
 
     String getRegion();
 

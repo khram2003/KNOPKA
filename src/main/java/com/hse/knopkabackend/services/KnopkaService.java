@@ -31,13 +31,11 @@ public class KnopkaService {
         this.descriptionRepository = descriptionRepository;
     }
 
-    public List<KnopkaDTO> getKnopkas(Long knopkaUserId, String token) {
-        KnopkaUser knopkaUserById = knopkaUserRepository.findById(knopkaUserId).orElseThrow(() -> {
-            throw new IllegalStateException("Invalid id");
-        });
-        if (!Objects.equals(token, knopkaUserById.getToken())) {
+    public List<KnopkaDTO> getKnopkas(String token) {
+        KnopkaUser knopkaUserById = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(() -> {
             throw new IllegalStateException("Invalid token");
-        }
+        });
+
         List<Knopka> knopkaList = knopkaRepository.findAll();
         List<KnopkaDTO> knopkaDTOList = new ArrayList<>();
         for (var knopka : knopkaList)
@@ -45,11 +43,10 @@ public class KnopkaService {
         return knopkaDTOList;
     }
 
-    public void addNewKnopka(Knopka knopka, String token, Long knopkaUserId, Description description) {
-        KnopkaUser knopkaUserById = knopkaUserRepository.findById(knopkaUserId).orElseThrow(() -> {
-            throw new IllegalStateException("Invalid id");
+    public void addNewKnopka(Knopka knopka, String token,Description description) {
+        KnopkaUser knopkaUserById = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(() -> {
+            throw new IllegalStateException("Invalid token");
         });
-        if (Objects.equals(token, knopkaUserById.getToken())) {
             knopka.setCreatedAt(LocalDateTime.now());
             knopka.setUser(knopkaUserById);
             knopkaRepository.save(knopka);
@@ -58,9 +55,6 @@ public class KnopkaService {
             descriptionRepository.save(description);
 
             System.out.println("Added knopka to user with nickname: " + knopka.getUser().getProfile().getNickname());
-        } else {
-            throw new IllegalStateException("Token is invalid");
-        }
     }
 
 
@@ -118,12 +112,12 @@ public class KnopkaService {
     }
 
     @Transactional("postgresKnopkaTransactionManager")
-    public void updatePushesCount(Long knopkaUserId, Long knopkaId, Long n, String token) {
+    public void updatePushesCount(Long knopkaId, Long n, String token) {
         Knopka knopka = knopkaRepository.findById(knopkaId).orElseThrow(
                 () -> new IllegalStateException("knopka with id: " + knopkaId + " doesn't exist")
         );
 
-        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
+        KnopkaUser knopkaUser = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(
                 () -> new IllegalStateException("User with id: " + knopkaId + " doesn't exist")
         );
 
@@ -141,14 +135,10 @@ public class KnopkaService {
         }
     }
 
-    public Set<KnopkaDTO> getKnopkaDTOs(Long knopkaUserId, String token, List<Long> ids) {
-        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
-                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+    public Set<KnopkaDTO> getKnopkaDTOs(String token, List<Long> ids) {
+        KnopkaUser knopkaUser = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(
+                () -> new IllegalStateException("Token is not valid")
         );
-
-        if (!Objects.equals(knopkaUser.getToken(), token)) {
-            throw new IllegalStateException("Token is not valid");
-        }
 
         Set<KnopkaDTO> resSet = new HashSet<>();
 

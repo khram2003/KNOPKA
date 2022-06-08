@@ -26,28 +26,27 @@ public class KnopkaController {
 
 
     //it will be removed later
-    @GetMapping("/{knopkaUserId}/getall")
-    public List<KnopkaDTO> getKnopkas(@PathVariable("knopkaUserId") Long knopkaUserId,
-                                      @RequestHeader String token) {
-        return knopkaService.getKnopkas(knopkaUserId, token);
+    @GetMapping("/getall")
+    public List<KnopkaDTO> getKnopkas(
+            @RequestHeader String token) {
+        return knopkaService.getKnopkas(token);
     }
 
-    @GetMapping("/{knopkaUserId}/getbyids")
-    public Set<KnopkaDTO> getKnopkasByIds(@PathVariable("knopkaUserId") Long knopkaUserId,
-                                          @RequestHeader String token,
-                                          @RequestParam List<Long> ids) {
-        return knopkaService.getKnopkaDTOs(knopkaUserId, token, ids);
+    @GetMapping("/getbyids")
+    public Set<KnopkaDTO> getKnopkasByIds(
+            @RequestHeader String token,
+            @RequestParam List<Long> ids) {
+        return knopkaService.getKnopkaDTOs(token, ids);
     }
 
     @PostMapping
     public ResponseEntity<Long> createNewKnopka(@RequestBody KnopkaDTO knopkaDTO,
-                                                @RequestHeader String token,
-                                                @RequestParam Long knopkaUserId) {
+                                                @RequestHeader String token) {
         Knopka knopka = new Knopka(knopkaDTO.getName(), knopkaDTO.getPushes(), knopkaDTO.getStyle());
         Description description = new Description();
         description.setKnopka(knopka);
         knopka.setDescription(description);
-        knopkaService.addNewKnopka(knopka, token, knopkaUserId, description);
+        knopkaService.addNewKnopka(knopka, token, description);
         return new ResponseEntity<>(knopka.getKnopkaId(), HttpStatus.OK);
     }
 
@@ -58,17 +57,17 @@ public class KnopkaController {
     }
 
 
-    @PutMapping(path = "/{knopkaUserId}/{knopkaId}")
-    public void updateButton(@PathVariable("knopkaUserId") Long knopkaUserId,
-                             @PathVariable("knopkaId") Long knopkaId,
-                             @RequestBody KnopkaDTO knopkaDTO,
-                             @RequestHeader String token) {
+    @PutMapping(path = "/{knopkaId}")
+    public void updateButton(
+            @PathVariable("knopkaId") Long knopkaId,
+            @RequestBody KnopkaDTO knopkaDTO,
+            @RequestHeader String token) {
         if (knopkaDTO.getName() != null)
             knopkaService.updateKnopkaName(knopkaId, knopkaDTO.getName(), token);
         if (knopkaDTO.getStyle() != null)
             knopkaService.updateKnopkaStyle(knopkaId, knopkaDTO.getStyle(), token);
         if (knopkaDTO.getPushes() != null)
-            knopkaService.updatePushesCount(knopkaUserId, knopkaId, knopkaDTO.getPushes(), token);
+            knopkaService.updatePushesCount(knopkaId, knopkaDTO.getPushes(), token);
     }
 
 }

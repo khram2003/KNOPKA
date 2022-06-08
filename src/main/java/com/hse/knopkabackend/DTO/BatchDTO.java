@@ -7,6 +7,7 @@ public class BatchDTO implements Serializable {
     private Long pushes;
     private String region;
     private Long clickedKnopkaId;
+    private Long authorId;
 
     public BatchDTO() {
     }
@@ -47,5 +48,13 @@ public class BatchDTO implements Serializable {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public Long getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
     }
 }

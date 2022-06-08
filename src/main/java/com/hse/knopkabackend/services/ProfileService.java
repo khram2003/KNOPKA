@@ -23,21 +23,16 @@ public class ProfileService {
         this.knopkaUserRepository = knopkaUserRepository;
     }
 
-    public Profile getProfile(Long profileId, Long knopkaUserId, String token) {
+    public Profile getProfile(Long profileId, String token) {
 
         Profile profile = profileRepository.findById(profileId).orElseThrow(
-                () -> new IllegalStateException("profileKnopkaUser with id: " + knopkaUserId + " doesn't exist")
+                () -> new IllegalStateException("profileKnopkaUser with id: " + profileId + " doesn't exist")
         );
 
-        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
-                () -> new IllegalStateException("KnopkaUser with id: " + knopkaUserId + " doesn't exist")
+        KnopkaUser knopkaUser = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(
+                () -> new IllegalStateException("token is invalid")
         );
-
-        if (Objects.equals(token, knopkaUser.getToken())) {
-            return profile;
-        } else {
-            throw new IllegalStateException("Token is invalid");
-        }
+        return profile;
     }
 
 

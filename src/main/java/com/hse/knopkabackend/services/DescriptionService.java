@@ -25,21 +25,17 @@ public class DescriptionService {
         this.knopkaUserRepository = knopkaUserRepository;
     }
 
-    public Description getDescription(Long knopkaId, String token, Long knopkaUserId) {
+    public Description getDescription(Long knopkaId, String token) {
 
         Description description = descriptionRepository.findById(knopkaId).orElseThrow(
                 () -> new IllegalStateException("descriptionKnopka with id: " + knopkaId + " doesn't exist")
         );
 
-        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
-                () -> new IllegalStateException("no user with this id")
+        KnopkaUser knopkaUser = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(
+                () -> new IllegalStateException("token is invalid")
         );
 
-        if (Objects.equals(token, knopkaUser.getToken())) {
-            return description;
-        } else {
-            throw new IllegalStateException("Token is invalid");
-        }
+        return description;
     }
 
 
@@ -91,15 +87,12 @@ public class DescriptionService {
 
     }
 
-    public List<Tag> getDescriptionsByTag(String tag, String token, Long knopkaUserId) {
-        KnopkaUser knopkaUser = knopkaUserRepository.findById(knopkaUserId).orElseThrow(
+    public List<Tag> getDescriptionsByTag(String tag, String token) {
+        KnopkaUser knopkaUser = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(
                 () -> new IllegalStateException("no user with this id")
         );
-        if (Objects.equals(knopkaUser.getToken(), token)) {
-            return descriptionRepository.findByTag(tag);
-        } else {
-            throw new IllegalStateException("token is invalid");
-        }
+        return descriptionRepository.findByTag(tag);
+
     }
 }
 

@@ -33,25 +33,22 @@ public class KnopkaUserController {
         return knopkaUserService.getKnopkaUsers();
     }
 
-    @GetMapping("{knopkaUserId}/{friendsOfId}/friendsId")
-    public Set<Long> getFriendsId(@PathVariable("knopkaUserId") Long knopkaUserId,
-                                   @PathVariable("friendsOfId") Long friendsOfId,
-                                   @RequestHeader String token) {
-        return knopkaUserService.getKnopkaUsersFriends(knopkaUserId, friendsOfId, token);
-    }
-
-    @GetMapping("{knopkaUserId}/friends")
-    public Set<KnopkaUserResponseDTO> getFriendsIdDTOs(@PathVariable("knopkaUserId") Long knopkaUserId,
-                                                       @RequestHeader String token,
-                                                       @RequestParam List<Long> friendsId) {
-        return knopkaUserService.getKnopkaUsersFriendsDTOs(knopkaUserId, token, friendsId);
-    }
-
-    @GetMapping("{knopkaUserId}/{knopkasOfId}/knopkasId")
-    public Set<Long> getKnopkasId(@PathVariable("knopkaUserId") Long knopkaUserId,
-                                  @PathVariable("knopkasOfId") Long knopkasOfId,
+    @GetMapping("{friendsOfId}/friendsId")
+    public Set<Long> getFriendsId(@PathVariable("friendsOfId") Long friendsOfId,
                                   @RequestHeader String token) {
-        return knopkaUserService.getKnopkaUsersKnopkaIds(knopkaUserId, knopkasOfId, token);
+        return knopkaUserService.getKnopkaUsersFriends(friendsOfId, token);
+    }
+
+    @GetMapping("/friends")
+    public Set<KnopkaUserResponseDTO> getFriendsIdDTOs(@RequestHeader String token,
+                                                       @RequestParam List<Long> friendsId) {
+        return knopkaUserService.getKnopkaUsersFriendsDTOs(token, friendsId);
+    }
+
+    @GetMapping("{knopkasOfId}/knopkasId")
+    public Set<Long> getKnopkasId(@PathVariable("knopkasOfId") Long knopkasOfId,
+                                  @RequestHeader String token) {
+        return knopkaUserService.getKnopkaUsersKnopkaIds(knopkasOfId, token);
     }
 
 
@@ -68,17 +65,17 @@ public class KnopkaUserController {
         return new ResponseEntity<>(knopkaUser.getId(), HttpStatus.OK);
     }
 
-    @DeleteMapping(path = "/{knopkaUserId}")
-    public void deleteKnopkaUser(@PathVariable("knopkaUserId") Long knopkaUserId,
-                                 @RequestHeader String token) {
-        knopkaUserService.deleteKnopkaUser(knopkaUserId, token);
+    @DeleteMapping
+    public void deleteKnopkaUser(
+            @RequestHeader String token) {
+        knopkaUserService.deleteKnopkaUser(token);
     }
 
-    @DeleteMapping(path = "/{knopkaUserId}/friends")
-    public void deleteKnopkaUserFriend(@PathVariable("knopkaUserId") Long knopkaUserId,
+    @DeleteMapping(path = "/friends")
+    public void deleteKnopkaUserFriend(
                                        @RequestParam Long friendId,
                                        @RequestHeader String token) {
-        knopkaUserService.deleteKnopkaUserFriend(knopkaUserId, friendId, token);
+        knopkaUserService.deleteKnopkaUserFriend(friendId, token);
     }
 
     @PutMapping(path = "/{knopkaUserId}")

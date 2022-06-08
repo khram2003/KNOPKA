@@ -3,13 +3,17 @@ package com.hse.knopkabackend.models.knopkauser;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hse.knopkabackend.models.profile.Profile;
 import com.hse.knopkabackend.models.knopka.Knopka;
+
 import javax.persistence.*;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity(name = "knopka_user")
-@Table(name = "knopka_user", indexes = @Index(name = "unique_email_indexes", columnList = "email", unique = true))
+@Table(name = "knopka_user", indexes = {
+        @Index(name = "unique_email_indexes", columnList = "email", unique = true),
+        @Index(name = "unique_token", columnList = "token", unique = true)
+})
 public class KnopkaUser {
     @Id
     @SequenceGenerator(
