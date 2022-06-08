@@ -53,6 +53,7 @@ public class EntityForClickService {
         if (Objects.equals(token, knopkaUserById.getToken())) {
 
             if (isAlreadyWritten(batchDTO)) {
+                System.out.println("Bebra");
                 return new ResponseEntity<>(new BatchResponseDTO(batchDTO.getTime(), batchDTO.getAuthorId()), HttpStatus.OK);
             }
 
