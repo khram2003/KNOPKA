@@ -27,6 +27,6 @@ public interface EntityForClickRepository extends JpaRepository<EntityForClick, 
     @Query(value = "select count() from (select * from entityforbatch where time_of_click = :timeOfClick AND clicked_knopka_id = :clickedKnopkaId AND author_id = :authorId) as e ", nativeQuery = true)
     Long getBatchByTime(@Param("timeOfClick") String timeOfClick, @Param("clickedKnopkaId") Long clickedKnopkaId, @Param("authorId") Long authorId);
 
-    @Query(value = "select clicked_knopka_id from (select count(clicked_knopka_id) as val, clicked_knopka_id, region from entityforbatch group by region, clicked_knopka_id order by val desc) as e where region = :clickRegion", nativeQuery = true)
+    @Query(value = "select clicked_knopka_id from (select sum(pushes) as val, clicked_knopka_id, region from entityforbatch group by region, clicked_knopka_id order by val desc) as e where region = :clickRegion", nativeQuery = true)
     List<Long> getTopByRegion(@Param("clickRegion") String clickRegion);
 }
