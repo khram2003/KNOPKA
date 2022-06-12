@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class KnopkaService {
@@ -140,15 +141,8 @@ public class KnopkaService {
                 () -> new IllegalStateException("Token is not valid")
         );
 
-        Set<KnopkaDTO> resSet = new HashSet<>();
-
-        for (var id : ids) {
-            Knopka knopka = knopkaRepository.findById(id).orElseThrow(
-                    () -> new IllegalStateException("knopka with id: " + id + " doesn't exist")
-            );
-            resSet.add(new KnopkaDTO(knopka.getName(), knopka.getStyle(), knopka.getPushesCounter(), knopka.getKnopkaId(), knopka.getUser().getId()));
-        }
-        return resSet;
+        List<Knopka> knopkaList = knopkaRepository.findAllById(ids);
+        return knopkaList.stream().map(x -> new KnopkaDTO(x.getName(), x.getStyle(), x.getPushesCounter(), x.getKnopkaId(), x.getUser().getId())).collect(Collectors.toSet());
     }
 }
 
