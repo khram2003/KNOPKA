@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface EntityForClickRepository extends JpaRepository<EntityForClick, Long> {
@@ -29,4 +30,7 @@ public interface EntityForClickRepository extends JpaRepository<EntityForClick, 
 
     @Query(value = "select clicked_knopka_id from (select sum(pushes) as val, clicked_knopka_id, region from entityforbatch group by region, clicked_knopka_id order by val desc) as e where region = :clickRegion", nativeQuery = true)
     List<Long> getTopByRegion(@Param("clickRegion") String clickRegion);
+
+    @Query(value = "select distinct region from entityforbatch", nativeQuery = true)
+    Set<String> getRegions();
 }

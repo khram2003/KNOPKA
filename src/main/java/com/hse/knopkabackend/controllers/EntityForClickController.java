@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(path = "api/v1/click")
@@ -38,5 +39,10 @@ public class EntityForClickController {
     public List<Long> getTopByRegion(@PathVariable("region") String region,
                                      @RequestHeader String token){
         return  entityForClickService.getTopByRegion(token, region);
+    }
+
+    @GetMapping("/validregions")
+    public Set<String> getValidRegions(@RequestHeader String token){
+        return entityForClickService.getValidRegions(token);
     }
 }

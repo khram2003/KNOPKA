@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class EntityForClickService {
@@ -98,5 +99,12 @@ public class EntityForClickService {
             throw new IllegalStateException("Invalid token");
         });
         return entityForClickRepository.getTopByRegion(region);
+    }
+
+    public Set<String> getValidRegions(String token) {
+        KnopkaUser knopkaUserById = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(() -> {
+            throw new IllegalStateException("Invalid token");
+        });
+        return entityForClickRepository.getRegions();
     }
 }
