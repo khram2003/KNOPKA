@@ -13,7 +13,7 @@ public class BatchDTO implements Serializable {
     }
 
     public BatchDTO(String time, Long pushes, String region) {
-        this.time = time.replace('T',' ');
+        this.time = time;
         this.pushes = pushes;
         this.region = region;
     }
@@ -27,7 +27,8 @@ public class BatchDTO implements Serializable {
     }
 
     public String getTime() {
-        return time;
+        String s = time.replace('T',' ');
+        return s.substring(0, s.length()-4);
     }
 
     public void setTime(String time) {
