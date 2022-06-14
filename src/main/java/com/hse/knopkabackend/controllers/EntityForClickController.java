@@ -23,26 +23,26 @@ public class EntityForClickController {
 
 
     @PostMapping("/batch")
-    public ResponseEntity<BatchResponseDTO> registerNewBatch(
-                                                             @RequestHeader String token,
-                                                             @RequestBody BatchDTO batchDTO) {
+    public ResponseEntity<String> registerNewBatch(
+            @RequestHeader String token,
+            @RequestBody BatchDTO batchDTO) {
         return entityForClickService.registerNewBatch(token, batchDTO);
     }
 
     @GetMapping("/{knopkaId}")
     public Long getClicksByKnopkaId(@PathVariable("knopkaId") Long knopkaId,
-                                   @RequestHeader String token) {
+                                    @RequestHeader String token) {
         return entityForClickService.getClicks(knopkaId, token);
     }
 
     @GetMapping("/top/{region}")
     public List<Long> getTopByRegion(@PathVariable("region") String region,
-                                     @RequestHeader String token){
-        return  entityForClickService.getTopByRegion(token, region);
+                                     @RequestHeader String token) {
+        return entityForClickService.getTopByRegion(token, region);
     }
 
     @GetMapping("/validregions")
-    public Set<String> getValidRegions(@RequestHeader String token){
+    public Set<String> getValidRegions(@RequestHeader String token) {
         return entityForClickService.getValidRegions(token);
     }
 }

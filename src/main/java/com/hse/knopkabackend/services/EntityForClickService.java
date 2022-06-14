@@ -44,7 +44,7 @@ public class EntityForClickService {
         return entityForClickRepository.getNumberOfClicks(knopkaId);
     }
 
-    public ResponseEntity<BatchResponseDTO> registerNewBatch(String token, BatchDTO batchDTO) {
+    public ResponseEntity<String> registerNewBatch(String token, BatchDTO batchDTO) {
         KnopkaUser knopkaUserById = knopkaUserRepository.findKnopkaUserByToken(token).orElseThrow(() -> {
             throw new IllegalStateException("Invalid token");
         });
@@ -55,7 +55,7 @@ public class EntityForClickService {
 
             if (isAlreadyWritten(batchDTO)) {
                 System.out.println("Bebra");
-                return new ResponseEntity<>(new BatchResponseDTO(batchDTO.getTime(), batchDTO.getAuthorId()), HttpStatus.OK);
+                return new ResponseEntity<>(batchDTO.getTime()+"/"+batchDTO.getAuthorId(), HttpStatus.OK);
             }
 
 
@@ -86,7 +86,7 @@ public class EntityForClickService {
         } else {
             throw new IllegalStateException("Token is invalid");
         }
-        return new ResponseEntity<>(new BatchResponseDTO(batchDTO.getTime(), batchDTO.getAuthorId()), HttpStatus.OK);
+        return new ResponseEntity<>(batchDTO.getTime()+"/"+batchDTO.getAuthorId(), HttpStatus.OK);
     }
 
     boolean isAlreadyWritten(BatchDTO batchDTO) {
