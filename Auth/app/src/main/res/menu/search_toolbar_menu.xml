@@ -4,7 +4,7 @@
     <item
         android:id="@+id/searchKnopkaIcon"
         android:icon="@drawable/knopka_search_24"
-        android:orderInCategory="100"
+        android:orderInCategory="200"
         android:title="@string/searchIcon"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="ifRoom" />

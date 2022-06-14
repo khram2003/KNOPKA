@@ -7,13 +7,15 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.SearchView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.Auth.Requests.GetAllExistingRegions
+import com.example.Auth.Requests.GetKnopkasByRegion
 import com.example.Auth.Requests.GetKnopkasByTag
 import com.example.Auth.Requests.GetUserKnopkas
 import com.example.Auth.databinding.ActivityFeedBinding
@@ -31,6 +33,13 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
     lateinit var toggle: ActionBarDrawerToggle
     lateinit var newList: ArrayList<Knopka>
     lateinit var tmpList: ArrayList<Knopka>
+
+    lateinit var newListReg: ArrayList<Knopka>
+    lateinit var tmpListReg: ArrayList<Knopka>
+    lateinit var a: ArrayAdapter<String>
+
+    lateinit var existingRegions: Set<String>
+
 
     private val adapter = KnopkaFeedAdapter(this)
     lateinit var dialog: Dialog
@@ -58,6 +67,16 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
 
         newList = adapter.knopkaList
         tmpList = arrayListOf<Knopka>()
+
+        newListReg = adapter.knopkaList
+        tmpListReg = arrayListOf<Knopka>()
+        val t = listOf<String>("Russia", "Bebrostan", "ggg")
+        a = ArrayAdapter<String>(this, R.layout.region_item, t)
+
+        val res = GetAllExistingRegions("http://10.0.2.2:8080/api/v1/click/validregions", "111")
+        Log.d("EXISTING REGIONS", res.toString())
+        existingRegions = jsonFormat.decodeFromString<Set<String>>(res)
+        Log.d("EXISTING REGIONS", existingRegions.toString())
 
         // toolbar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -120,17 +139,19 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
             ) // todo knopkauserId 1
             val foundKnopkasIds = jsonFormat.decodeFromString<List<Long>>(result)
             Log.d("tagseerch", foundKnopkasIds.toString())
-            tmpList = jsonFormat.decodeFromString(
-                GetUserKnopkas(
-                    null, "http://10.0.2.2:8080/api/v1/knopka",
-                    1, /*todo not 1*/
-                    "111",
-                    foundKnopkasIds
+            if (foundKnopkasIds.isNotEmpty()) {
+                tmpList = jsonFormat.decodeFromString(
+                    GetUserKnopkas(
+                        null, "http://10.0.2.2:8080/api/v1",
+                        1, /*todo not 1*/
+                        "111",
+                        foundKnopkasIds
+                    )
                 )
-            )
-            Log.d("knopkasFound", tmpList.toString())
-            adapter.knopkaList = tmpList
-            adapter.notifyDataSetChanged()
+                Log.d("knopkasFound", tmpList.toString())
+                adapter.knopkaList = tmpList
+                adapter.notifyDataSetChanged()
+            }
         } else {
             tmpList.clear()
             tmpList.addAll(newList)
@@ -138,6 +159,35 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
             adapter.notifyDataSetChanged()
         }
     }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun showKnopkasByRegion(p0: String) {
+        tmpListReg.clear()
+        if (existingRegions.contains(p0)) {
+            val result = GetKnopkasByRegion("http://10.0.2.2:8080/api/v1", p0, "111")
+            val foundKnopkasIds = jsonFormat.decodeFromString<List<Long>>(result)
+            if (foundKnopkasIds.isNotEmpty()) {
+                Log.d("REGION FILTER", foundKnopkasIds.toString())
+                tmpList = jsonFormat.decodeFromString(
+                    GetUserKnopkas(
+                        null, "http://10.0.2.2:8080/api/v1/knopka",
+                        1, /*todo not 1*/
+                        "111",
+                        foundKnopkasIds
+                    )
+                )
+                Log.d("knopkasFound", tmpList.toString())
+                adapter.knopkaList = tmpList
+                adapter.notifyDataSetChanged()
+            }
+        } else {
+            tmpList.clear()
+            tmpList.addAll(newList)
+            adapter.knopkaList = tmpList
+            adapter.notifyDataSetChanged()
+        }
+    }
+
 
     override fun onItemLongClick(item: Knopka, position: Int) {
         val presenter = ShowDescription()
@@ -152,7 +202,7 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.search_toolbar_menu, menu)
+        menuInflater.inflate(R.menu.feed_toolbar_menu, menu)
         val searchItem = menu!!.findItem(R.id.searchKnopkaIcon)
         val searchView = searchItem!!.actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -166,6 +216,27 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
             }
 
         })
+        val filterRegionItem = menu.findItem(R.id.regionKnopkaIcon)
+        val filterRegionView = filterRegionItem!!.actionView as Spinner
+        filterRegionView.adapter = a
+        filterRegionView.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                adapterView: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val region = adapterView?.getItemAtPosition(position).toString()
+                Log.d("spinner click", region)
+                showKnopkasByRegion(region)
+
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+
+        }
         return true
     }
 

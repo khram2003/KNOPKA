@@ -333,7 +333,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         val result =
             Requests.GetUserKnopkas(
                 this,
-                "http://10.0.2.2:8080/api/v1/knopka",
+                "http://10.0.2.2:8080/api/v1",
                 1,
                 "111",
                 knopkasIdList
