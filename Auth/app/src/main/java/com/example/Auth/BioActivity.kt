@@ -1,8 +1,9 @@
 package com.example.Auth
 
-
 import android.app.Activity
+import android.app.AlarmManager
 import android.app.Dialog
+import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -29,6 +30,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.threeten.bp.DateTimeUtils.toLocalTime
+import org.threeten.bp.LocalTime
+import java.util.*
+import kotlin.collections.set
+
 
 private val jsonFormat = Json {
     coerceInputValues = true; ignoreUnknownKeys = true
@@ -39,6 +45,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     lateinit var toggle: ActionBarDrawerToggle
     private val adapter = KnopkaFeedAdapter(this)
     lateinit var dialog: Dialog
+//    val br: BatchReceiver = BatchReceiver
 //    private var ind: Int = 0;
 
     class MainActivityUnits {
@@ -57,7 +64,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     @RequiresApi(Build.VERSION_CODES.N)
     private fun initRecyclerView() {
         binding.RecyclerViewKnopkasFeed.layoutManager =
-                LinearLayoutManager(this)
+            LinearLayoutManager(this)
         binding.RecyclerViewKnopkasFeed.adapter = adapter
 
         showUserKnopkas()
@@ -66,7 +73,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
         }
 
-        PutAddFriendRequest(this, "http://10.0.2.2:8080/api/v1/user", 1, "111", 3)
+//        PutAddFriendRequest(this, "http://10.0.2.2:8080/api/v1/user", 1, "111", 3)
 
     }
 
@@ -74,6 +81,9 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalSerializationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+//        AndroidThreeTen.init(this)
+        setCalendar()
+
         super.onCreate(savedInstanceState)
 
         binding = ActivityBioBinding.inflate(layoutInflater)
@@ -109,7 +119,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         units.imageViewProfilePic = findViewById(R.id.imageViewProfilePic)
 
         units.profilePicBitMap =
-                BitmapFactory.decodeResource(resources, R.drawable.img) //get default picture bitmap
+            BitmapFactory.decodeResource(resources, R.drawable.img) //get default picture bitmap
 
         units.token = intent.getStringExtra("token")
 
@@ -127,11 +137,11 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
             val bioString: String = units.textViewBio?.text.toString()
 
             val mapData =
-                    mapOf(
-                            "nickname" to nameString,
-                            "bio" to bioString,
-                            "photo" to imageString
-                    )
+                mapOf(
+                    "nickname" to nameString,
+                    "bio" to bioString,
+                    "photo" to imageString
+                )
 
             val jsonData = Json.encodeToString(mapData)
 
@@ -157,15 +167,15 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
                         if (jsonData != null) {
                             mapData = Json.decodeFromString(jsonData)
                             val param: Map<String, String?> = mapOf(
-                                    "\"nickname\"" to
-                                            if (mapData["nickname"] == units.textViewName?.text) null
-                                            else "\"" + mapData["nickname"] + "\"",
-                                    "\"bio\"" to
-                                            if (mapData["bio"] == units.textViewBio?.text) null
-                                            else "\"" + mapData["bio"].toString() + "\"",
-                                    "\"photo\"" to
-                                            if (base64StringToBitMap(mapData["photo"]) == units.profilePicBitMap) null
-                                            else "\"" + mapData["photo"] + "\""
+                                "\"nickname\"" to
+                                        if (mapData["nickname"] == units.textViewName?.text) null
+                                        else "\"" + mapData["nickname"] + "\"",
+                                "\"bio\"" to
+                                        if (mapData["bio"] == units.textViewBio?.text) null
+                                        else "\"" + mapData["bio"].toString() + "\"",
+                                "\"photo\"" to
+                                        if (base64StringToBitMap(mapData["photo"]) == units.profilePicBitMap) null
+                                        else "\"" + mapData["photo"] + "\""
                             )
 
                             units.textViewName?.text = mapData["nickname"] // set with new values
@@ -278,7 +288,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     @RequiresApi(Build.VERSION_CODES.O)
     fun sendGetUserProfileInfo() {
         val result = GetUserProfileInfo(this, "http://10.0.2.2:8080/api/v1/profile", 1, "111", 1)
-        val mapData: User = jsonFormat.decodeFromString(result.toString())
+        val mapData: User = jsonFormat.decodeFromString(result)
         units.textViewName?.text = mapData.nickname
         units.textViewBio?.text = mapData.bio
         if (mapData.photo != "") {
@@ -372,9 +382,12 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     }
 
     override fun onItemClick(item: Knopka, position: Int) {
+        if (!CurBatch.working) {
+            setCalendar()
+        }
         Log.d("AAA", "REGISTERED SHORT CLICK")
         item.pushes++
-        Toast.makeText(this, item.pushes.toString(), Toast.LENGTH_SHORT).show()
+        CurBatch.setClicks(item.id)
     }
 
 
@@ -393,8 +406,45 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         }
         val toolbarItemSetter = ToolbarItemSetter("Bio", item, this)
         toolbarItemSetter.set()
-        Log.d("BIOTOOLBARSETTED", "Setted Icons")
+        Log.d("BIOTOOLBARSET", "Set Icons")
         return true
     }
 
+    fun setCalendar() {
+        CurBatch.working = true
+        val calendar: Calendar = Calendar.getInstance()
+        calendar.add(Calendar.SECOND, 10)
+
+        val myIntent = Intent(this@BioActivity, BatchReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(this@BioActivity, 0, myIntent, 0)
+
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        alarmManager[AlarmManager.RTC, calendar.getTimeInMillis()] = pendingIntent
+
+        Log.d("CAL", calendar.toString())
+        if (BatchesToAdd.clicks.isNotEmpty()) {
+            for (i in BatchesToAdd.clicks) {
+                addBatchToStorage(i)
+            }
+        }
+
+    }
+
+    fun addBatchToStorage(batch: Batch) {
+        val sharedPref = getSharedPreferences("mypref1", 0)
+        val editor = sharedPref.edit()
+        val batches: List<Batch> =
+            jsonFormat.decodeFromString(sharedPref.getString("batches", "").toString())
+        batches.plus(batch);
+        editor.putString("batches", jsonFormat.encodeToString(batches))
+        editor.apply()
+    }
+
+    fun removeBatchesFromStorage(){
+        val sharedPref = getSharedPreferences("mypref1", 0)
+        val editor = sharedPref.edit()
+
+        editor.putString("batches", jsonFormat.encodeToString(BatchesToAdd.clicks))
+        editor.apply()
+    }
 }

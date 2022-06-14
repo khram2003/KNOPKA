@@ -180,7 +180,7 @@ object Requests {
         )
         return SendPostRequest(
             null,
-            "$url/$id",
+            url,
             token,
             batchDTO,
             null,
@@ -321,7 +321,7 @@ object Requests {
         private val parameterName: String?
     ) :
         AsyncTask<Void, Void, Response>() {
-        private val pdia = ProgressDialog(context);
+//        private val pdia = ProgressDialog(context);
 
         override fun doInBackground(vararg params: Void?): Response? {
             val client = OkHttpClient()
@@ -347,12 +347,12 @@ object Requests {
 
         override fun onPreExecute() {
             super.onPreExecute()
-            pdia.setMessage("Loading...")
-            pdia.show()
+//            pdia.setMessage("Loading...")
+//            pdia.show()
         }
 
         override fun onPostExecute(result: Response) {
-            pdia.dismiss()
+//            pdia.dismiss()
         }
     }
 
@@ -415,7 +415,6 @@ object Requests {
     fun checkStatusCode(code: Int) {
         Log.d("RESPONSE STATUS CODE", code.toString())
 
-
         when (code) {
             400 -> {
 
@@ -425,4 +424,6 @@ object Requests {
             }
         }
     }
+
+
 }

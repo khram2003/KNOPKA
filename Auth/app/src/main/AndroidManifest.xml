@@ -16,12 +16,19 @@
         android:theme="@style/Theme.Auth"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <receiver android:name=".BatchReceiver"  android:exported="true">
+        <activity
+            android:name=".test"
+            android:exported="false" />
+
+        <receiver
+            android:name=".BatchReceiver"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.INPUT_METHOD_CHANGED" />
             </intent-filter>
         </receiver>
+
         <activity
             android:name=".CreateButtonActivity"
             android:exported="false" />
