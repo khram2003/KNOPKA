@@ -49,7 +49,7 @@ class BatchReceiver : BroadcastReceiver() {
                 "\"clickedKnopkaId\"" to i.key,
                 "\"authorId\"" to 1
             )
-            Log.d("ddddd", bodyMap.toString())
+            Log.d("BATCH SENT", bodyMap.toString())
             val res = Requests.PostBatchRequest(
                 "http://10.0.2.2:8080/api/v1/click/batch",
                 1,

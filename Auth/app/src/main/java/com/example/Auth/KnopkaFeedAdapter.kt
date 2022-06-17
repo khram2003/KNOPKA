@@ -15,7 +15,8 @@ class KnopkaFeedAdapter(var clickListener: OnKnopkaClickListener) :
     class KnopkaHolder(item: View) : RecyclerView.ViewHolder(item) {
         val binding = KnopkaItemBinding.bind(item)
         fun bind(knopka: Knopka, action: OnKnopkaClickListener) = with(binding) { // simplify binding. access
-            button.setText(knopka.name)
+            button.text = knopka.name
+            clicksOnButton.text = (knopka.pushes.toString())
             button.setOnLongClickListener {
                 action.onItemLongClick(knopka, adapterPosition)
                 return@setOnLongClickListener true

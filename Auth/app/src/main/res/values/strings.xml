@@ -22,5 +22,6 @@
     <string name="searchIcon">Search</string>
     <string name="knopka_tags">Knopka\'s tags</string>
     <string name="add_friend">Add Friend</string>
+    <string name="filterRegionIcon">Filter by region</string>
 
 </resources>

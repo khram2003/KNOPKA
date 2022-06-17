@@ -2,7 +2,9 @@ package com.example.Auth
 
 
 import android.app.Activity
+import android.app.AlarmManager
 import android.app.Dialog
+import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -14,7 +16,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -25,7 +26,9 @@ import com.example.Auth.Converters.base64StringToBitMap
 import com.example.Auth.Converters.stringToButtons
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.util.*
 
 private val jsonFormat = Json {
     coerceInputValues = true; ignoreUnknownKeys = true
@@ -98,8 +101,8 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
 
         navigationView.setNavigationItemSelectedListener {
-            val switcherSetter = WindowSwitcherSetter("Bio", it, this, dLayout, navigationView)
-            switcherSetter.set()
+            val switcher = WindowSwitcher(it, this)
+            switcher.set()
             true
         }
 
@@ -170,7 +173,7 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
         val result =
             Requests.GetUserKnopkas(
                 this,
-                "http://10.0.2.2:8080/api/v1/knopka",
+                "http://10.0.2.2:8080/api/v1",
                 1,
                 "111",
                 knopkasIdList
@@ -213,8 +216,50 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
     }
 
     override fun onItemClick(item: Knopka, position: Int) {
+        if (!CurBatch.working) {
+            setCalendar()
+        }
         Log.d("AAA", "REGISTERED SHORT CLICK")
         item.pushes++
-        Toast.makeText(this, item.pushes.toString(), Toast.LENGTH_SHORT).show()
+        CurBatch.setClicks(item.id)
+        adapter.notifyDataSetChanged()
+    }
+
+    fun setCalendar() {
+        CurBatch.working = true
+        val calendar: Calendar = Calendar.getInstance()
+        calendar.add(Calendar.SECOND, 10)
+
+        val myIntent = Intent(this@FriendBioActivity, BatchReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(this@FriendBioActivity, 0, myIntent, 0)
+
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        alarmManager[AlarmManager.RTC, calendar.getTimeInMillis()] = pendingIntent
+
+        Log.d("CAL", calendar.toString())
+        if (BatchesToAdd.clicks.isNotEmpty()) {
+            for (i in BatchesToAdd.clicks) {
+                addBatchToStorage(i)
+            }
+        }
+
+    }
+
+    fun addBatchToStorage(batch: Batch) {
+        val sharedPref = getSharedPreferences("mypref1", 0)
+        val editor = sharedPref.edit()
+        val batches: List<Batch> =
+            jsonFormat.decodeFromString(sharedPref.getString("batches", "").toString())
+        batches.plus(batch);
+        editor.putString("batches", jsonFormat.encodeToString(batches))
+        editor.apply()
+    }
+
+    fun removeBatchesFromStorage(){
+        val sharedPref = getSharedPreferences("mypref1", 0)
+        val editor = sharedPref.edit()
+
+        editor.putString("batches", jsonFormat.encodeToString(BatchesToAdd.clicks))
+        editor.apply()
     }
 }

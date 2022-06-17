@@ -17,7 +17,6 @@ import com.example.Auth.databinding.ActivityFollowingBinding
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import java.util.*
-import java.util.Arrays.asList
 
 private val jsonFormat = Json {
     coerceInputValues = true; ignoreUnknownKeys = true
@@ -81,9 +80,8 @@ class FollowingActivity : AppCompatActivity(), OnFriendClickListener {
 
 
         navigationView.setNavigationItemSelectedListener {
-            val switcherSetter =
-                WindowSwitcherSetter("Following", it, this, dLayout, navigationView)
-            switcherSetter.set()
+            val switcher = WindowSwitcher(it, this)
+            switcher.set()
             true
         }
     }

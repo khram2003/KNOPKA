@@ -4,7 +4,6 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.os.AsyncTask
 import android.util.Log
-import android.widget.SearchView
 import kotlinx.serialization.json.Json
 import okhttp3.*
 import java.util.concurrent.TimeUnit
@@ -38,7 +37,7 @@ object Requests {
         knopkasIdList: List<Long>
     ):
             String =
-        SendGetRequest<Long>(context, "$url/getbyids", token, knopkasIdList, "ids").execute()
+        SendGetRequest<Long>(context, "$url/knopka/getbyids", token, knopkasIdList, "ids").execute()
             .get()
 
     fun GetUserFriendsIds(
@@ -119,6 +118,14 @@ object Requests {
 
     }
 
+    fun GetAllExistingRegions(
+        url: String, token: String
+    ): String = SendGetRequest<Void>(null, url, token, null, null).execute().get()
+
+    fun GetKnopkasByRegion(url: String, region: String, token: String): String {
+        return SendGetRequest<Long>(null, "$url/click/top/$region", token, null, null).execute().get()
+    }
+
     // posts
     fun PostKnopkaRequest(
         context: Context,
@@ -140,6 +147,7 @@ object Requests {
             .get()?.body()
             ?.string().toString()
     }
+
 
     fun PostDescriptionRequest(
         context: Context,
