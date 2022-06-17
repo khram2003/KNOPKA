@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/addKnopkaIcon"
+        android:icon="@drawable/knopka_add_24"
+        android:title="@string/add_knopka"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="100"/>
+
+    <item
+        android:id="@+id/logOutIcon"
+        android:icon="@drawable/knopka_log_out_24"
+        android:title="@string/log_out"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="200"/>
+</menu>
