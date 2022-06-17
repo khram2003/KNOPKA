@@ -19,10 +19,10 @@ private val jsonFormat = Json {
     coerceInputValues = true; ignoreUnknownKeys = true
 }
 
-class ShowDescription : AppCompatActivity() {
+class ShowDescription : AppCompatActivity(), OnTagClickListener {
     //    lateinit private var binding: ActivityPopUpInfoBinding
-    private val adapter = TagAdapter()
-
+    private val adapter = TagAdapter(this)
+    lateinit var context: AppCompatActivity
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,8 +31,8 @@ class ShowDescription : AppCompatActivity() {
 //        binding = ActivityPopUpInfoBinding.inflate(inflater)
     }
 
-    public fun showDescription(dialog: Dialog, item: Knopka, context: AppCompatActivity) {
-
+    fun showDescription(dialog: Dialog, item: Knopka, cnxt: AppCompatActivity) {
+        context = cnxt
 
         dialog.setContentView(R.layout.activity_pop_up_info)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -45,10 +45,10 @@ class ShowDescription : AppCompatActivity() {
             1
         ) //TODO NOT 1
         val mapData: User = jsonFormat.decodeFromString(userProfileInfo.toString())
-        name.setText(item.name)
+        name.text = item.name
 
         val author = dialog.findViewById<TextView>(R.id.AuthorName)
-        author.setText(mapData.nickname)
+        author.text = mapData.nickname
 
         author.setOnClickListener {
             val authorIntent = Intent(context, FriendBioActivity::class.java)
@@ -86,5 +86,20 @@ class ShowDescription : AppCompatActivity() {
         }
 
         dialog.show()
+    }
+
+    override fun onItemLongClick(item: String, position: Int) {
+//        Log.d("Tag","long click")
+        Log.d("in click", position.toString())
+        val intent = Intent(context, FeedActivity::class.java)
+        intent.putExtra("tag", adapter.tagList[position])
+        startActivity(context, intent, null)
+    }
+
+    override fun onItemClick(item: String, position: Int) {
+        Log.d("in click", position.toString())
+        val intent = Intent(context, FeedActivity::class.java)
+        intent.putExtra("tag", adapter.tagList[position])
+        startActivity(context, intent, null)
     }
 }

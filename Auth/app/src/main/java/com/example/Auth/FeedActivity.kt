@@ -36,7 +36,7 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
     lateinit var binding: ActivityFeedBinding
     lateinit var toggle: ActionBarDrawerToggle
     lateinit var newList: ArrayList<Knopka>
-    lateinit var tmpList: ArrayList<Knopka>
+    private var tmpList = arrayListOf<Knopka>()
 
     lateinit var newListReg: ArrayList<Knopka>
     lateinit var tmpListReg: ArrayList<Knopka>
@@ -44,6 +44,7 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
 
     lateinit var existingRegions: MutableList<String>
 
+    lateinit var tag: String
 
     private val adapter = KnopkaFeedAdapter(this)
     lateinit var dialog: Dialog
@@ -54,7 +55,12 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
             LinearLayoutManager(this)
         binding.RecyclerViewKnopkasFeed.adapter = adapter
 
-        showAllKnopkas()
+        tag = intent.getStringExtra("tag").toString()
+        if (tag != "null") {
+            showKnopkasByTag(tag)
+        } else {
+            showAllKnopkas()
+        }
 
     }
 
@@ -70,7 +76,7 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         dialog = Dialog(this)
 
         newList = adapter.knopkaList
-        tmpList = arrayListOf<Knopka>()
+//        tmpList = arrayListOf<Knopka>()
 
         newListReg = adapter.knopkaList
         tmpListReg = arrayListOf<Knopka>()
@@ -165,6 +171,10 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun showKnopkasByRegion(p0: String) {
+        if (tag != "null") {
+
+            return
+        }
         if (p0 == "World") {
             adapter.knopkaList.clear()
             showAllKnopkas()

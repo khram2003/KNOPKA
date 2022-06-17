@@ -6,14 +6,21 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.Auth.databinding.TagItemBinding
 
-class TagAdapter : RecyclerView.Adapter<TagAdapter.TagHolder>() {
+class TagAdapter(var clickListener: OnTagClickListener) : RecyclerView.Adapter<TagAdapter.TagHolder>() {
     var tagList = ArrayList<String>()
 
     class TagHolder(item: View) : RecyclerView.ViewHolder(item) {
         var pos = 0;
         val binding = TagItemBinding.bind(item)
-        fun bind(s: String) {
-            binding.tagName.setText(s)
+        fun bind(s: String, action: OnTagClickListener) {
+            binding.tagName.text = s
+            binding.tagName.setOnLongClickListener {
+                action.onItemLongClick(s, adapterPosition)
+                return@setOnLongClickListener true
+            }
+            binding.tagName.setOnClickListener {
+                action.onItemLongClick(s, adapterPosition)
+            }
         }
     }
 
@@ -23,7 +30,7 @@ class TagAdapter : RecyclerView.Adapter<TagAdapter.TagHolder>() {
     }
 
     override fun onBindViewHolder(holder: TagHolder, position: Int) {
-        holder.bind(tagList[position])
+        holder.bind(tagList[position], clickListener)
     }
 
     override fun getItemCount(): Int {
@@ -34,4 +41,9 @@ class TagAdapter : RecyclerView.Adapter<TagAdapter.TagHolder>() {
         tagList.add(tag)
         notifyDataSetChanged()
     }
+}
+
+interface OnTagClickListener {
+    fun onItemLongClick(item: String, position: Int)
+    fun onItemClick(item: String, position: Int)
 }
