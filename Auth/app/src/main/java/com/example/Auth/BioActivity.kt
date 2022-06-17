@@ -7,7 +7,6 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
@@ -24,16 +23,12 @@ import com.example.Auth.Converters.base64StringToBitMap
 import com.example.Auth.Converters.bitMapToBase64String
 import com.example.Auth.Converters.stringToButtons
 import com.example.Auth.Requests.GetUserProfileInfo
-import com.example.Auth.Requests.PutAddFriendRequest
 import com.example.Auth.databinding.ActivityBioBinding
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.threeten.bp.DateTimeUtils.toLocalTime
-import org.threeten.bp.LocalTime
 import java.util.*
-import kotlin.collections.set
 
 
 private val jsonFormat = Json {
@@ -108,8 +103,8 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
         //items clicked on slideout menu
         navigationView.setNavigationItemSelectedListener {
-            val switcherSetter = WindowSwitcherSetter("Bio", it, this, dLayout, navigationView)
-            switcherSetter.set()
+            val switcher = WindowSwitcher(it, this)
+            switcher.set()
             true
         }
 
@@ -302,7 +297,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendPostButtonRequest(param: Map<String, String>): Long {
         val result =
-            Requests.PostKnopkaRequest(this, "http://10.0.2.2:8080/api/v1/knopka", 1, "111", param)
+            Requests.PostKnopkaRequest(this, "http://10.0.2.2:8080/api/v1", 1, "111", param)
         return result.toLong()
     }
 
@@ -388,6 +383,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         Log.d("AAA", "REGISTERED SHORT CLICK")
         item.pushes++
         CurBatch.setClicks(item.id)
+        adapter.notifyDataSetChanged()
     }
 
 

@@ -45,11 +45,11 @@ class BatchReceiver : BroadcastReceiver() {
             val bodyMap = mapOf<String, Any?>(
                 "\"time\"" to '"' + CurBatch.clickBatch.startTime.toString() + '"',
                 "\"pushes\"" to i.value,
-                "\"region\"" to '"' + "ggg" + '"',
+                    "\"region\"" to '"' + "bebrostan" + '"',
                 "\"clickedKnopkaId\"" to i.key,
                 "\"authorId\"" to 1
             )
-            Log.d("ddddd", bodyMap.toString())
+            Log.d("BATCH SENT", bodyMap.toString())
             val res = Requests.PostBatchRequest(
                 "http://10.0.2.2:8080/api/v1/click/batch",
                 1,

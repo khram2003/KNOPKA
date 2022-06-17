@@ -1,6 +1,9 @@
 package com.example.Auth
 
+import android.app.AlarmManager
 import android.app.Dialog
+import android.app.PendingIntent
+import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
@@ -20,6 +23,7 @@ import com.example.Auth.Requests.GetKnopkasByTag
 import com.example.Auth.Requests.GetUserKnopkas
 import com.example.Auth.databinding.ActivityFeedBinding
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.*
 import kotlin.collections.ArrayList
@@ -38,7 +42,7 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
     lateinit var tmpListReg: ArrayList<Knopka>
     lateinit var a: ArrayAdapter<String>
 
-    lateinit var existingRegions: Set<String>
+    lateinit var existingRegions: MutableList<String>
 
 
     private val adapter = KnopkaFeedAdapter(this)
@@ -70,14 +74,13 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
 
         newListReg = adapter.knopkaList
         tmpListReg = arrayListOf<Knopka>()
-        val t = listOf<String>("Russia", "Bebrostan", "ggg")
-        a = ArrayAdapter<String>(this, R.layout.region_item, t)
 
         val res = GetAllExistingRegions("http://10.0.2.2:8080/api/v1/click/validregions", "111")
-        Log.d("EXISTING REGIONS", res.toString())
-        existingRegions = jsonFormat.decodeFromString<Set<String>>(res)
+        Log.d("EXISTING REGIONS", res)
+        existingRegions = mutableListOf("World")
+        existingRegions.addAll(jsonFormat.decodeFromString<List<String>>(res))
         Log.d("EXISTING REGIONS", existingRegions.toString())
-
+        a = ArrayAdapter<String>(this, R.layout.region_item, existingRegions)
         // toolbar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setBackgroundDrawable(ColorDrawable(resources.getColor(R.color.AllComponentsColor)))
@@ -93,8 +96,8 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
 
 
         navigationView.setNavigationItemSelectedListener {
-            val switcherSetter = WindowSwitcherSetter("Feed", it, this, dLayout, navigationView)
-            switcherSetter.set()
+            val switcher = WindowSwitcher(it, this)
+            switcher.set()
             true
         }
     }
@@ -162,29 +165,34 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun showKnopkasByRegion(p0: String) {
-        tmpListReg.clear()
-        if (existingRegions.contains(p0)) {
-            val result = GetKnopkasByRegion("http://10.0.2.2:8080/api/v1", p0, "111")
-            val foundKnopkasIds = jsonFormat.decodeFromString<List<Long>>(result)
-            if (foundKnopkasIds.isNotEmpty()) {
-                Log.d("REGION FILTER", foundKnopkasIds.toString())
-                tmpList = jsonFormat.decodeFromString(
-                    GetUserKnopkas(
-                        null, "http://10.0.2.2:8080/api/v1/knopka",
-                        1, /*todo not 1*/
-                        "111",
-                        foundKnopkasIds
+        if (p0 == "World") {
+            adapter.knopkaList.clear()
+            showAllKnopkas()
+        } else {
+            tmpListReg.clear()
+            if (existingRegions.contains(p0)) {
+                val result = GetKnopkasByRegion("http://10.0.2.2:8080/api/v1", p0, "111")
+                val foundKnopkasIds = jsonFormat.decodeFromString<List<Long>>(result)
+                if (foundKnopkasIds.isNotEmpty()) {
+                    Log.d("REGION FILTER", foundKnopkasIds.toString())
+                    tmpList = jsonFormat.decodeFromString(
+                        GetUserKnopkas(
+                            null, "http://10.0.2.2:8080/api/v1",
+                            1, /*todo not 1*/
+                            "111",
+                            foundKnopkasIds
+                        )
                     )
-                )
-                Log.d("knopkasFound", tmpList.toString())
+                    Log.d("knopkasFound", tmpList.toString())
+                    adapter.knopkaList = tmpList
+                    adapter.notifyDataSetChanged()
+                }
+            } else {
+                tmpList.clear()
+                tmpList.addAll(newList)
                 adapter.knopkaList = tmpList
                 adapter.notifyDataSetChanged()
             }
-        } else {
-            tmpList.clear()
-            tmpList.addAll(newList)
-            adapter.knopkaList = tmpList
-            adapter.notifyDataSetChanged()
         }
     }
 
@@ -195,9 +203,13 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
     }
 
     override fun onItemClick(item: Knopka, position: Int) {
-        Log.d("FEED", "REGISTERED SHORT CLICK")
+        if (!CurBatch.working) {
+            setCalendar()
+        }
+        Log.d("AAA", "REGISTERED SHORT CLICK")
         item.pushes++
-        Toast.makeText(this, item.pushes.toString(), Toast.LENGTH_SHORT).show()
+        CurBatch.setClicks(item.id)
+        adapter.notifyDataSetChanged()
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -218,7 +230,7 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         })
         val filterRegionItem = menu.findItem(R.id.regionKnopkaIcon)
         val filterRegionView = filterRegionItem!!.actionView as Spinner
-        filterRegionView.adapter = a
+        filterRegionView.adapter = a // existing countries
         filterRegionView.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 adapterView: AdapterView<*>?,
@@ -233,7 +245,7 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
-
+                Log.d("--------", p0.toString())
             }
 
         }
@@ -244,11 +256,44 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         if (toggle.onOptionsItemSelected(item) == true) { //user clicked on toggle button
             return true
         }
-//        when (item.itemId) {
-//            R.id.searchKnopkaIcon -> {
-//                //todo
-//            }
-//        }
         return true
+    }
+
+    fun setCalendar() {
+        CurBatch.working = true
+        val calendar: Calendar = Calendar.getInstance()
+        calendar.add(Calendar.SECOND, 10)
+
+        val myIntent = Intent(this@FeedActivity, BatchReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(this@FeedActivity, 0, myIntent, 0)
+
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        alarmManager[AlarmManager.RTC, calendar.getTimeInMillis()] = pendingIntent
+
+        Log.d("CAL", calendar.toString())
+        if (BatchesToAdd.clicks.isNotEmpty()) {
+            for (i in BatchesToAdd.clicks) {
+                addBatchToStorage(i)
+            }
+        }
+
+    }
+
+    fun addBatchToStorage(batch: Batch) {
+        val sharedPref = getSharedPreferences("mypref1", 0)
+        val editor = sharedPref.edit()
+        val batches: List<Batch> =
+            jsonFormat.decodeFromString(sharedPref.getString("batches", "").toString())
+        batches.plus(batch);
+        editor.putString("batches", jsonFormat.encodeToString(batches))
+        editor.apply()
+    }
+
+    fun removeBatchesFromStorage(){
+        val sharedPref = getSharedPreferences("mypref1", 0)
+        val editor = sharedPref.edit()
+
+        editor.putString("batches", jsonFormat.encodeToString(BatchesToAdd.clicks))
+        editor.apply()
     }
 }

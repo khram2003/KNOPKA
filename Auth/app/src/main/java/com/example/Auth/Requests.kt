@@ -123,7 +123,7 @@ object Requests {
     ): String = SendGetRequest<Void>(null, url, token, null, null).execute().get()
 
     fun GetKnopkasByRegion(url: String, region: String, token: String): String {
-        return SendGetRequest<Long>(null, "$url/top/$region", token, null, null).execute().get()
+        return SendGetRequest<Long>(null, "$url/click/top/$region", token, null, null).execute().get()
     }
 
     // posts
