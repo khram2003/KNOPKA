@@ -45,7 +45,7 @@ class BatchReceiver : BroadcastReceiver() {
             val bodyMap = mapOf<String, Any?>(
                 "\"time\"" to '"' + CurBatch.clickBatch.startTime.toString() + '"',
                 "\"pushes\"" to i.value,
-                "\"region\"" to '"' + "ggg" + '"',
+                "\"region\"" to '"' + ThisUser.userInfo.location + '"',
                 "\"clickedKnopkaId\"" to i.key,
                 "\"authorId\"" to 1
             )
@@ -59,7 +59,13 @@ class BatchReceiver : BroadcastReceiver() {
             Log.d("RESS", res.toString())
             if (res.code() != 200 || res.toString() == ""
             ) {
-                BatchesToAdd.clicks.plus(Batch(i.key, i.value, CurBatch.clickBatch.startTime.toString()))
+                BatchesToAdd.clicks.plus(
+                    Batch(
+                        i.key,
+                        i.value,
+                        CurBatch.clickBatch.startTime.toString()
+                    )
+                )
             }
         }
 

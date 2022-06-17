@@ -1,16 +1,23 @@
 package com.example.Auth
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.Dialog
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.location.Address
+import android.location.Location
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -18,6 +25,8 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.location.LocationManagerCompat.getCurrentLocation
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Auth.Converters.base64StringToBitMap
@@ -26,6 +35,7 @@ import com.example.Auth.Converters.stringToButtons
 import com.example.Auth.Requests.GetUserProfileInfo
 import com.example.Auth.Requests.PutAddFriendRequest
 import com.example.Auth.databinding.ActivityBioBinding
+import com.google.android.gms.location.LocationServices
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -34,6 +44,11 @@ import org.threeten.bp.DateTimeUtils.toLocalTime
 import org.threeten.bp.LocalTime
 import java.util.*
 import kotlin.collections.set
+import android.widget.Toast
+
+import android.location.Geocoder
+import android.widget.Toast.LENGTH_LONG
+import java.io.IOException
 
 
 private val jsonFormat = Json {
@@ -81,7 +96,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalSerializationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-//        AndroidThreeTen.init(this)
+        ThisUser.userInfo = UserInfo()
         setCalendar()
 
         super.onCreate(savedInstanceState)
@@ -123,6 +138,8 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
         units.token = intent.getStringExtra("token")
 
+        getCurrentLocation()
+        Log.d("DDDSDS", ThisUser.userInfo.location)
 
         storageInfoLoad()
         sendGetUserProfileInfo()
@@ -151,7 +168,6 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
             startActivityForResult(intent1, RequestCodes.CHANGE_INFO_REQUEST_CODE)
         }
-
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -440,11 +456,93 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         editor.apply()
     }
 
-    fun removeBatchesFromStorage(){
+    fun removeBatchesFromStorage() {
         val sharedPref = getSharedPreferences("mypref1", 0)
         val editor = sharedPref.edit()
 
         editor.putString("batches", jsonFormat.encodeToString(BatchesToAdd.clicks))
         editor.apply()
+    }
+
+
+    fun getCurrentLocation() {
+        val locationProvider = LocationServices.getFusedLocationProviderClient(this)
+        if (checkPermission()) {
+            if (isLocationEnabled()) {
+                locationProvider.lastLocation.addOnCompleteListener(this) { task ->
+                    val location: Location? = task.result
+                    if (location == null) {
+                        //world
+                    } else {
+                        ThisUser.userInfo.location =
+                            getAddress(location.latitude, location.longitude)
+                        Log.d("D", ThisUser.userInfo.location)
+                    }
+
+                }
+            } else {
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
+            }
+        } else {
+            requestPermission()
+        }
+    }
+
+    fun isLocationEnabled(): Boolean {
+        val locationManager: LocationManager =
+            getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
+    }
+
+    fun requestPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ),
+            400
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 400) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getCurrentLocation()
+            } else {
+                Log.d("PROBLEM DETECTED", "A")
+            }
+        }
+    }
+
+    fun checkPermission(): Boolean {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+            == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            return true
+        }
+        return false
+    }
+
+    fun getAddress(lat: Double, lng: Double): String {
+        val geocoder = Geocoder(this, Locale.getDefault())
+        val addresses: List<Address> =
+            geocoder.getFromLocation(lat, lng, 1)
+        return addresses[0].countryName
     }
 }
