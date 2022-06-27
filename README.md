@@ -1,2 +1,0 @@
-# KNOPKA
-HSE Java project
