@@ -7,7 +7,7 @@ import com.hse.knopkabackend.repositories.profile.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -36,7 +36,7 @@ public class ProfileService {
     }
 
 
-    @Transactional
+    @Transactional("postgresKnopkaTransactionManager")
     public void updateProfileNickname(Long profileKnopkaUserId, String nickname, String token) {
         Profile profile = profileRepository.findById(profileKnopkaUserId).orElseThrow(
                 () -> new IllegalStateException("profileKnopkaUser with id: " + profileKnopkaUserId + " doesn't exist")
@@ -64,7 +64,7 @@ public class ProfileService {
         }
     }
 
-    @Transactional
+    @Transactional("postgresKnopkaTransactionManager")
     public void updateProfileBio(Long profileKnopkaUserId, String bio, String token) {
         Profile profile = profileRepository.findById(profileKnopkaUserId).orElseThrow(
                 () -> new IllegalStateException("profileKnopkaUser with id: " + profileKnopkaUserId + " doesn't exist")
@@ -77,7 +77,7 @@ public class ProfileService {
 
     }
 
-    @Transactional
+    @Transactional("postgresKnopkaTransactionManager")
     public void updateProfilePhoto(Long profileKnopkaUserId, String photo, String token) {
         Profile profile = profileRepository.findById(profileKnopkaUserId).orElseThrow(
                 () -> new IllegalStateException("profileKnopkaUser with id: " + profileKnopkaUserId + " doesn't exist")
