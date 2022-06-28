@@ -144,8 +144,8 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         val searchText = p0?.toLowerCase(Locale.getDefault())
         if (searchText!!.isNotEmpty()) {
             val result = GetKnopkasByTag(
-                searchText, 1, "tag", "knopkaUserId"
-            ) // todo knopkauserId 1
+                searchText, ThisUser.userInfo.id, "tag", "knopkaUserId"
+            )
             val foundKnopkasIds = jsonFormat.decodeFromString<List<Long>>(result)
             Log.d("tagseerch", foundKnopkasIds.toString())
             if (foundKnopkasIds.isNotEmpty()) {
@@ -288,7 +288,6 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         }
 //        Log.d("Cal reg", regions.toString())
 //        existingRegions.addAll(regions)
-
 
 
     }

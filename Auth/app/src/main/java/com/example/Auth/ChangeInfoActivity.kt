@@ -34,7 +34,7 @@ class ChangeInfoActivity : AppCompatActivity() {
     fun bitMapToBase64String(bitMap: Bitmap?): String? {
         val byteArrayOutputStream = ByteArrayOutputStream()
         bitMap?.compress(Bitmap.CompressFormat.JPEG, 10, byteArrayOutputStream)
-        // TODO: what quality to use?
+
         val imageBytes: ByteArray = byteArrayOutputStream.toByteArray()
         return Base64.getEncoder().encodeToString(imageBytes)
     }

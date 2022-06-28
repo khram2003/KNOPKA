@@ -3,8 +3,6 @@ package com.example.Auth
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-//import androidx.work.Worker
 import org.threeten.bp.LocalDateTime
 import java.util.*
 import kotlin.collections.HashMap
@@ -42,11 +40,11 @@ class BatchReceiver : BroadcastReceiver() {
                 "\"clickedKnopkaId\"" to i.key,
                 "\"authorId\"" to 1
             )
-            Log.d("BATCH SENT", bodyMap.toString())
+
             val res = Requests.PostBatchRequest(
                 bodyMap
             )
-            Log.d("RESS", res.toString())
+
             if (res.code() != 200 || res.toString() == ""
             ) {
                 BatchesToAdd.clicks.plus(
@@ -66,19 +64,16 @@ class BatchReceiver : BroadcastReceiver() {
                 "\"region\"" to '"' + "ggg" + '"',
                 "\"clickedKnopkaId\"" to i.id
             )
-            Log.d("ddddd", bodyMap.toString())
+
             val res = Requests.PostBatchRequest(
                 bodyMap
             )
-            Log.d("RESS", res.toString())
+
             if (res.code() == 200) {
                 BatchesToAdd.clicks.remove(i)
             }
         }
 
-
-        Log.d("CLICKS", CurBatch.clickBatch.clicks.toString())
-        Log.d("ASASASASS", "WORKING))))")
 
         CurBatch.working = false
         CurBatch.clickBatch.startTime = LocalDateTimeEx.getNow(0)

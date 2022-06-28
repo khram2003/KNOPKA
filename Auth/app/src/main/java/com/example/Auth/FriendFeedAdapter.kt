@@ -14,10 +14,6 @@ class FriendFeedAdapter(var clickListener: OnFriendClickListener) :
         val binding = FriendItemBinding.bind(item)
         fun bind(friend: User, action: OnFriendClickListener) = with(binding) { // simplify binding. access
             nicknameTextView.setText(friend.nickname)
-            nicknameTextView.setOnLongClickListener {
-                action.onItemLongClick(friend, adapterPosition)
-                return@setOnLongClickListener true
-            }
             nicknameTextView.setOnClickListener {
                 action.onItemClick(friend, adapterPosition)
             }
@@ -45,6 +41,5 @@ class FriendFeedAdapter(var clickListener: OnFriendClickListener) :
 }
 
 interface OnFriendClickListener {
-    fun onItemLongClick(item: User, position: Int)
     fun onItemClick(item: User, position: Int)
 }

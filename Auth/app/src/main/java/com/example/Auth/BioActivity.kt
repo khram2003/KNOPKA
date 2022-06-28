@@ -1,6 +1,6 @@
 package com.example.Auth
 
-import android.Manifest
+
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.Dialog
@@ -38,10 +38,8 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.*
-
 import android.location.Geocoder
-import android.widget.Toast.LENGTH_LONG
-import java.io.IOException
+import com.example.Auth.RequestCodes.GET_PERMISSIONS_REQUEST_CODE
 
 
 private val jsonFormat = Json {
@@ -53,8 +51,6 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     lateinit var toggle: ActionBarDrawerToggle
     private val adapter = KnopkaFeedAdapter(this)
     lateinit var dialog: Dialog
-//    val br: BatchReceiver = BatchReceiver
-//    private var ind: Int = 0;
 
     class MainActivityUnits {
 
@@ -76,12 +72,6 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         binding.RecyclerViewKnopkasFeed.adapter = adapter
 
         showUserKnopkas()
-        for (k in adapter.knopkaList) {
-            Log.d("--------------------", k.toString())
-
-        }
-
-//        PutAddFriendRequest(this, "http://10.0.2.2:8080/api/v1/user", 1, "111", 3)
 
     }
 
@@ -132,7 +122,6 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         units.token = intent.getStringExtra("token")
 
         getCurrentLocation()
-        Log.d("DDDSDS", ThisUser.userInfo.location)
 
         storageInfoLoad()
         sendGetUserProfileInfo()
@@ -203,20 +192,18 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
                         val mapData: Map<String, String>
                         if (jsonData != null) {
                             mapData = Json.decodeFromString(jsonData)
-                            Log.d("EXPECTED JSON", mapData.toString())
+
                             val textViewLabel = mapData["name"].toString()
                             val descriptionCls =
                                 Json.decodeFromString<Description>(mapData["descr"]!!)
                             val textViewDescr = descriptionCls.text
                             val tagsList = descriptionCls.tags?.map { x -> '"' + x + '"' }
-                            Log.d("LISTTAGS", tagsList.toString())
 
                             val m: Map<String, String?> = mapOf(
                                 "\"name\"" to "\"" + mapData["name"] + "\"",
                                 "\"style\"" to /*"\"" + mapData["style"].toString() + "\""*/ null,
                                 "\"pushes\"" to "0",
                                 "\"id\"" to units.id.toString()
-//                                "\"LocalDateTime\"" to "\"" + mapData["LocalDateTime"] + "\""
                             )
 
                             val res = sendPostButtonRequest(
@@ -232,7 +219,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
                                         res,
                                         ThisUser.userInfo.id
                                     )
-                                ) // 1 = this userID
+                                )
 
                             val mDiscr: Map<String, Any?> = mapOf(
                                 "\"text\"" to "\"" + textViewDescr + "\"",
@@ -240,11 +227,9 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
                                 "\"tags\"" to tagsList
                             )
 
-                            Log.d("MAPDISCR", mDiscr.toString())
 
                             val res1 =
-                                sendPostDescriptionRequest(mDiscr as Map<String, Any?>, knopka, res)
-                            Log.d("RESPONSEPUTDISCR", res1.toString())
+                                sendPostDescriptionRequest(mDiscr, knopka, res)
                         }
                     }
                 }
@@ -350,7 +335,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
                 this,
                 ThisUser.userInfo.id,
             )
-        Log.d("KNOKA IDS", result)
+
         val knopkaIdsList =
             jsonFormat.decodeFromString<List<Long>>(result)
         return knopkaIdsList
@@ -362,7 +347,6 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
             Requests.GetUserKnopkas(
                 knopkasIdList
             )
-        Log.d("KNOPKAS", result)
         val knopkasList = stringToButtons(result)
         return knopkasList
     }
@@ -374,7 +358,6 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
             val knopkasList = sendGetUserKnopkas(knopkaIdsList)
 
             for (knopka in knopkasList) {
-                Log.d("showUserKnopkasIN", knopka.toString())
                 adapter.addKnopka(
                     Knopka(
                         knopka.name,
@@ -421,7 +404,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         }
         val toolbarItemSetter = ToolbarItemSetter("Bio", item, this)
         toolbarItemSetter.set()
-        Log.d("BIOTOOLBARSET", "Set Icons")
+
         return true
     }
 
@@ -436,7 +419,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
         alarmManager[AlarmManager.RTC, calendar.getTimeInMillis()] = pendingIntent
 
-        Log.d("CAL", calendar.toString())
+
         if (BatchesToAdd.clicks.isNotEmpty()) {
             for (i in BatchesToAdd.clicks) {
                 addBatchToStorage(i)
@@ -507,7 +490,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
                 android.Manifest.permission.ACCESS_COARSE_LOCATION,
                 android.Manifest.permission.ACCESS_FINE_LOCATION
             ),
-            400
+            GET_PERMISSIONS_REQUEST_CODE
         )
     }
 
@@ -517,7 +500,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 400) {
+        if (requestCode == GET_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getCurrentLocation()
             } else {

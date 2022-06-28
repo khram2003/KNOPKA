@@ -34,11 +34,6 @@ class FollowingActivity : AppCompatActivity(), OnFriendClickListener {
         binding.RecyclerViewFriendsFeed.layoutManager =
             LinearLayoutManager(this)
         binding.RecyclerViewFriendsFeed.adapter = adapter
-//        adapter.addFriend(User("name1"))
-//        adapter.addFriend(User("name2"))
-//        adapter.addFriend(User("name3"))
-//        adapter.addFriend(User("name4"))
-
         showUserFriends()
     }
 
@@ -48,7 +43,7 @@ class FollowingActivity : AppCompatActivity(), OnFriendClickListener {
         if (friendIdsList?.isNotEmpty() == true) {
             val friendsList = sendGetUserFriends(friendIdsList)
             for (friend in friendsList) {
-                Log.d("ID", friend.id.toString())
+
                 adapter.addFriend(User(friend.nickname, friend.bio, friend.photo, friend.id))
             }
         }
@@ -59,7 +54,6 @@ class FollowingActivity : AppCompatActivity(), OnFriendClickListener {
         super.onCreate(savedInstanceState)
 
         binding = ActivityFollowingBinding.inflate(layoutInflater)
-//        setContentView(R.layout.activity_following)
         setContentView(binding.root)
         initRecyclerView()
 
@@ -130,13 +124,10 @@ class FollowingActivity : AppCompatActivity(), OnFriendClickListener {
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendGetUserFriendsIds(): List<Long>? {
         val result = Requests.GetUserFriendsIds(
-            this, "http://10.0.2.2:8080/api/v1/user",
-            1,
-            1,
-            "111"
+            ThisUser.userInfo.id
         )
-        Log.d("FRIENDS IDS", result.toString())
-        if (result.length > 2) { // TODO: try???
+
+        if (result.length > 2) {
             val friendIdsList =
                 jsonFormat.decodeFromString<List<Long>>(result)
             return friendIdsList
@@ -147,26 +138,17 @@ class FollowingActivity : AppCompatActivity(), OnFriendClickListener {
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendGetUserFriends(friendIdsList: List<Long>): List<User> {
         val result = Requests.GetUserFriends(
-            this, "http://10.0.2.2:8080/api/v1/user",
-            1,
-            "111",
             friendIdsList
         )
-        Log.d("FRIENDS", result.toString())
         val friendsList = Converters.stringToUsers(result.toString())
         newList = friendsList as ArrayList<User>
         return friendsList
     }
 
-
-    override fun onItemLongClick(item: User, position: Int) {
-        Log.d("AAA", "REGISTERED LONG CLICK")
-    }
-
     override fun onItemClick(item: User, position: Int) {
-        Log.d("AAA", "REGISTERED SHORT CLICK")
+
         val intent2 = Intent(this, FriendBioActivity::class.java)
-        Log.d("ITEMID", item.id.toString())
+
         intent2.putExtra("id", item.id.toString())
         startActivity(intent2)
     }

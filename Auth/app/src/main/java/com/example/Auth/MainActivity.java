@@ -16,14 +16,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 
-//import org.apache.http.HttpResponse;
-//import org.apache.http.NameValuePair;
-//import org.apache.http.client.ClientProtocolException;
-//import org.apache.http.client.entity.UrlEncodedFormEntity;
-//import org.apache.http.client.methods.HttpPost;
-//import org.apache.http.impl.client.DefaultHttpClient;
-//import org.apache.http.message.BasicNameValuePair;
-//import org.apache.http.util.EntityUtils;
+
 import org.json.JSONObject;
 
 import java.io.DataOutputStream;
@@ -41,8 +34,6 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("AAA", "DDDDD");
-
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (account != null) {
@@ -81,13 +72,6 @@ public class MainActivity extends Activity {
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
-//            try {
-//                task.getResult(ApiException.class);
-//                goToNextPage();
-//            } catch (ApiException e) {
-//                Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT)
-//                        .show();
-//            }
         }
     }
 
@@ -105,9 +89,7 @@ public class MainActivity extends Activity {
 
     private void goToNextPage(String token) {
         Intent intent = new Intent(MainActivity.this, BioActivity.class);
-//        Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
         intent.putExtra("token", token);
-//        intent.putExtra("id", id);
         startActivity(intent);
         finish();
     }
@@ -117,7 +99,7 @@ public class MainActivity extends Activity {
             @Override
             public void run() {
                 try {
-                    URL url = new URL("http://10.0.2.2:8080/api/v1/user");
+                    URL url = new URL(ThisDb.dbInfo.getUrl() + "api/v1/user");
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("POST");
                     conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
@@ -137,7 +119,6 @@ public class MainActivity extends Activity {
 
                     Log.i("JSON", jsonParam.toString());
                     DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-                    //os.writeBytes(URLEncoder.encode(jsonParam.toString(), "UTF-8"));
                     os.writeBytes(jsonParam.toString());
 
                     os.flush();

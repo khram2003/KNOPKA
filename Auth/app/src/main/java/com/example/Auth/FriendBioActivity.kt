@@ -112,14 +112,11 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
         units.profilePicBitMap =
             BitmapFactory.decodeResource(resources, R.drawable.img) //get default picture bitmap
-//        units.googleLogOutButton = findViewById(R.id.googleLogOutButton)
 
         units.token = intent.getStringExtra("token")
 
 
         sendGetUserProfileInfo()
-
-        // sendGetUserFriendsList() //TODO
 
     }
 
@@ -143,8 +140,8 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
             Requests.GetUserProfileInfo(
                 units.id
             )
-        val mapData: User = jsonFormat.decodeFromString(result.toString())
-        Log.d("AAAAAAAAAAAAAAAAAAA", mapData.toString())
+        val mapData: User = jsonFormat.decodeFromString(result)
+
         units.textViewName?.text = mapData.nickname
         units.textViewBio?.text = mapData.bio
         if (mapData.photo != "") {
@@ -159,7 +156,7 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
     fun sendGetUserKnopkaIds(): List<Long> {
         val result =
             Requests.GetUserKnopkaIds(this, units.id)
-        Log.d("KNOKA IDS", result.toString())
+
         val knopkaIdsList =
             jsonFormat.decodeFromString<List<Long>>(result)
         return knopkaIdsList
@@ -171,8 +168,8 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
             Requests.GetUserKnopkas(
                 knopkasIdList
             )
-        Log.d("KNOPKAS", result.toString())
-        val knopkaIdsList = stringToButtons(result.toString())
+
+        val knopkaIdsList = stringToButtons(result)
         return knopkaIdsList
     }
 
@@ -188,7 +185,6 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
         }
         when (item.itemId) {
             R.id.addFriendIcon -> {
-                //TODO
                 Requests.PutAddFriendRequest(
                     this,
                     units.id
@@ -207,7 +203,7 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
         if (!CurBatch.working) {
             setCalendar()
         }
-        Log.d("AAA", "REGISTERED SHORT CLICK")
+
         item.pushes++
         CurBatch.setClicks(item.id)
         adapter.notifyDataSetChanged()
@@ -224,7 +220,7 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
         alarmManager[AlarmManager.RTC, calendar.getTimeInMillis()] = pendingIntent
 
-        Log.d("CAL", calendar.toString())
+
         if (BatchesToAdd.clicks.isNotEmpty()) {
             for (i in BatchesToAdd.clicks) {
                 addBatchToStorage(i)

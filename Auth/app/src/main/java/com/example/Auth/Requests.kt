@@ -4,7 +4,6 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.os.AsyncTask
 import android.util.Log
-import android.widget.Toast
 import kotlinx.serialization.json.Json
 import okhttp3.*
 import java.util.concurrent.TimeUnit
@@ -45,7 +44,7 @@ object Requests {
             .get()
 
     fun GetUserFriendsIds(
-        idOwner: Int,
+        idOwner: Long,
     ):
             String =
         SendGetRequest<Nothing>(
@@ -173,7 +172,7 @@ object Requests {
         idButton: Long,
         requestBodyMap: Map<String, Any?>
     ): String {
-        Log.d("req", requestBodyMap.toString())
+
         val descriptionDTO: RequestBody = RequestBody.create(
             MediaType.parse("application/json"),
             requestBodyMap.toString().replace("=", ":")
@@ -250,7 +249,7 @@ object Requests {
             } else {
                 if (parameters != null && parameterName != null) {
                     for (param in parameters) {
-                        Log.d("pARARM", param.toString())
+
                         httpBuilder.addQueryParameter(parameterName, param.toString())
                     }
                 }
@@ -359,8 +358,6 @@ object Requests {
 
 
     fun checkStatusCode(code: Int) {
-        Log.d("RESPONSE STATUS CODE", code.toString())
-
         when (code) {
             in 400..505 -> {
                 TODO()

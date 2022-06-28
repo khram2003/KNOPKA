@@ -37,7 +37,7 @@ class ShowDescription : AppCompatActivity(), OnTagClickListener {
         val userProfileInfo = Requests.GetUserProfileInfo(
             item.authorId
         )
-        val mapData: User = jsonFormat.decodeFromString(userProfileInfo.toString())
+        val mapData: User = jsonFormat.decodeFromString(userProfileInfo)
         name.text = item.name
 
         val author = dialog.findViewById<TextView>(R.id.AuthorName)
@@ -46,7 +46,7 @@ class ShowDescription : AppCompatActivity(), OnTagClickListener {
         author.setOnClickListener {
             val authorIntent = Intent(context, FriendBioActivity::class.java)
             val authId = item.authorId
-            Log.d("AUTHORID", authId.toString())
+
             authorIntent.putExtra("id", authId.toString())
             startActivity(context, authorIntent, null)
         }
@@ -57,9 +57,7 @@ class ShowDescription : AppCompatActivity(), OnTagClickListener {
         )
 
         val descriptionDTO = jsonFormat.decodeFromString<Description>(responseDescr)
-        Log.d("RES", responseDescr)
-        Log.d("ALL)", descriptionDTO.toString())
-        Log.d("ALL)", descriptionDTO.tags.toString())
+
 
         val knopkaDescriptionText = dialog.findViewById<TextView>(R.id.KnopkaDescriptionText)
         knopkaDescriptionText.setText(descriptionDTO.text)
@@ -79,15 +77,14 @@ class ShowDescription : AppCompatActivity(), OnTagClickListener {
     }
 
     override fun onItemLongClick(item: String, position: Int) {
-//        Log.d("Tag","long click")
-        Log.d("in click", position.toString())
+
         val intent = Intent(context, FeedActivity::class.java)
         intent.putExtra("tag", adapter.tagList[position])
         startActivity(context, intent, null)
     }
 
     override fun onItemClick(item: String, position: Int) {
-        Log.d("in click", position.toString())
+
         val intent = Intent(context, FeedActivity::class.java)
         intent.putExtra("tag", adapter.tagList[position])
         startActivity(context, intent, null)
