@@ -1,6 +1,5 @@
 package com.example.Auth
 
-import android.Manifest
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.Dialog
@@ -25,7 +24,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.location.LocationManagerCompat.getCurrentLocation
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.Auth.Converters.base64StringToBitMap
@@ -39,12 +37,8 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.*
-import kotlin.collections.set
-import android.widget.Toast
 
 import android.location.Geocoder
-import android.widget.Toast.LENGTH_LONG
-import java.io.IOException
 
 
 private val jsonFormat = Json {
@@ -221,7 +215,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
                                 "\"id\"" to units.id.toString()
 //                                "\"LocalDateTime\"" to "\"" + mapData["LocalDateTime"] + "\""
                             )
-
+                            Log.d("before sendPost", "here")
                             val res = sendPostButtonRequest(
                                 m as Map<String, String>
                             ) // the end of the knpokas list
@@ -314,7 +308,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendPostButtonRequest(param: Map<String, String>): Long {
         val result =
-            Requests.PostKnopkaRequest(this, "http://10.0.2.2:8080/api/v1", 1, "111", param)
+            Requests.PostKnopkaRequest(this, "http://10.0.2.2:8080/api/v1/knopka", 1, "111", param)
         return result.toLong()
     }
 

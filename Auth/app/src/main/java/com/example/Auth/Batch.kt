@@ -1,7 +1,6 @@
 package com.example.Auth
 
 import kotlinx.serialization.Serializable
-import org.threeten.bp.LocalDateTime
 
 @Serializable
 data class Batch(

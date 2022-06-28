@@ -2,7 +2,6 @@ package com.example.Auth
 
 import android.content.Intent
 import android.view.MenuItem
-import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.ContextCompat.startActivity
@@ -30,13 +29,5 @@ class ToolbarItemSetter(
                 }
             }
         }
-//        if (callingFrom == "Feed" || callingFrom == "Foollowing") run {
-//            when (item.itemId) {
-//                R.id.searchKnopkaIcon -> {
-////                    val searchView = R.id.searchKnopkaIcon?.actionView as SearchView
-//
-//                }
-//            }
-//        }
     }
 }

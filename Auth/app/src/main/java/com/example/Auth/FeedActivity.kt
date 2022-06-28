@@ -84,6 +84,7 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         val res = GetAllExistingRegions("http://10.0.2.2:8080/api/v1/click/validregions", "111")
         Log.d("EXISTING REGIONS", res)
         existingRegions = mutableListOf("World")
+
         existingRegions.addAll(jsonFormat.decodeFromString<List<String>>(res))
         Log.d("EXISTING REGIONS", existingRegions.toString())
         a = ArrayAdapter<String>(this, R.layout.region_item, existingRegions)
@@ -277,8 +278,14 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         val myIntent = Intent(this@FeedActivity, BatchReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(this@FeedActivity, 0, myIntent, 0)
 
+//        val myIntent2 = Intent(this@FeedActivity, CountryReceiver::class.java)
+//        val pendingIntent2 = PendingIntent.getBroadcast(this@FeedActivity, 0, myIntent2, 0)
+
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
         alarmManager[AlarmManager.RTC, calendar.getTimeInMillis()] = pendingIntent
+
+//        val alarmManager2 = getSystemService(ALARM_SERVICE) as AlarmManager
+//        alarmManager2[AlarmManager.RTC, calendar.getTimeInMillis()] = pendingIntent2
 
         Log.d("CAL", calendar.toString())
         if (BatchesToAdd.clicks.isNotEmpty()) {
@@ -286,6 +293,10 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
                 addBatchToStorage(i)
             }
         }
+//        Log.d("Cal reg", regions.toString())
+//        existingRegions.addAll(regions)
+
+
 
     }
 

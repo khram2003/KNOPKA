@@ -4,19 +4,15 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 import java.io.ByteArrayOutputStream
-import java.lang.Short.decode
-import java.nio.charset.StandardCharsets
 import java.util.Base64
 
 
@@ -95,17 +91,19 @@ class ChangeInfoActivity : AppCompatActivity() {
         units.applyButton?.setOnClickListener { // nickname change listener
 
             val imageString: String? = bitMapToBase64String(units.profilePicBitMap)
-            val nameString: String = units.editTextName?.text.toString()
-            val bioString: String = units.editTextBio?.text.toString()
-
-//            Toast.makeText(this, name, Toast.LENGTH_SHORT).show() //show new value at the bottom
-
-            val returnIntent = Intent()
-            val mapData = mapOf("nickname" to nameString, "bio" to bioString, "photo" to imageString)
-            val jsonData = Json.encodeToString(mapData)
-            returnIntent.putExtra("data", jsonData) //return new name from activity
-            setResult(Activity.RESULT_OK, returnIntent)
-            finish()
+            var nameString: String = ""
+            if (units.editTextName?.text?.length!!  <= 8) {
+                nameString = units.editTextName?.text.toString()
+                val bioString: String = units.editTextBio?.text.toString()
+                val returnIntent = Intent()
+                val mapData = mapOf("nickname" to nameString, "bio" to bioString, "photo" to imageString)
+                val jsonData = Json.encodeToString(mapData)
+                returnIntent.putExtra("data", jsonData) //return new name from activity
+                setResult(Activity.RESULT_OK, returnIntent)
+                finish()
+            } else {
+                Toast.makeText(this, "Name must be less than 9 characters", Toast.LENGTH_SHORT).show()
+            }
         }
 
         units.cancelButton?.setOnClickListener {

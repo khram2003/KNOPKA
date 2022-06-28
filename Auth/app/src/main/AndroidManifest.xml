@@ -21,7 +21,7 @@
         tools:targetApi="m">
 
         <receiver
-            android:name=".BatchReceiver"
+            android:name="com.example.Auth.BatchReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -30,28 +30,28 @@
         </receiver>
 
         <activity
-            android:name=".CreateButtonActivity"
+            android:name="com.example.Auth.CreateButtonActivity"
             android:exported="false" />
         <activity
-            android:name=".ChangeInfoActivity"
+            android:name="com.example.Auth.ChangeInfoActivity"
             android:exported="false" />
         <activity
-            android:name=".BioActivity"
+            android:name="com.example.Auth.BioActivity"
             android:exported="false" />
         <activity
-            android:name=".ProfileActivity"
+            android:name="com.example.Auth.ProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".FeedActivity"
+            android:name="com.example.Auth.FeedActivity"
             android:exported="false" />
         <activity
-            android:name=".FollowingActivity"
+            android:name="com.example.Auth.FollowingActivity"
             android:exported="false" />
         <activity
-            android:name=".FriendBioActivity"
+            android:name="com.example.Auth.FriendBioActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.Auth.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

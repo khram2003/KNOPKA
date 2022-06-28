@@ -1,19 +1,12 @@
 package com.example.Auth
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.AsyncTask
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 //import androidx.work.Worker
-import kotlinx.serialization.json.Json
 import org.threeten.bp.LocalDateTime
 import java.util.*
-import kotlin.Result.Companion.failure
-import kotlin.Result.Companion.success
 import kotlin.collections.HashMap
 
 class ClickBatch {
