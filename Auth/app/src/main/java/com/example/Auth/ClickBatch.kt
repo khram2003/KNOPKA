@@ -44,9 +44,6 @@ class BatchReceiver : BroadcastReceiver() {
             )
             Log.d("BATCH SENT", bodyMap.toString())
             val res = Requests.PostBatchRequest(
-                "http://10.0.2.2:8080/api/v1/click/batch",
-                1,
-                "111",
                 bodyMap
             )
             Log.d("RESS", res.toString())
@@ -71,15 +68,10 @@ class BatchReceiver : BroadcastReceiver() {
             )
             Log.d("ddddd", bodyMap.toString())
             val res = Requests.PostBatchRequest(
-                "http://10.0.2.2:8080/api/v1/click/batch",
-                1,
-                "111",
                 bodyMap
             )
             Log.d("RESS", res.toString())
-            if (res.code() == 200 /*&& res.body()
-                    ?.string().toString() == ""//TODO what*/
-            ) {
+            if (res.code() == 200) {
                 BatchesToAdd.clicks.remove(i)
             }
         }
@@ -96,16 +88,3 @@ class BatchReceiver : BroadcastReceiver() {
     }
 
 }
-
-//
-//class MyWorker(context: Context/*, params: WorkerParameters*/) : Worker() {
-//    override fun doWork(): WorkerResult {
-//        try {
-//            Log.d("IN WORKER", "DOIN WORK")
-//        } catch (ex: Exception) {
-//            return WorkerResult.FAILURE//или Result.Retry
-//        }
-//        return WorkerResult.SUCCESS
-//    }
-//
-//}

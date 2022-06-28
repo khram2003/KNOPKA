@@ -4,6 +4,7 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.os.AsyncTask
 import android.util.Log
+import android.widget.Toast
 import kotlinx.serialization.json.Json
 import okhttp3.*
 import java.util.concurrent.TimeUnit
@@ -11,84 +12,79 @@ import java.util.concurrent.TimeUnit
 object Requests {
     // gets
     fun GetUserProfileInfo(
-        context: Context,
-        url: String, id: Long,
-        token: String, requestId: Long
+        requestId: Long
     ): String =
-        SendGetRequest<Nothing>(context, "$url/$requestId", token, null, null).execute().get()
+        SendGetRequest<Nothing>(
+            ThisDb.dbInfo.url + "api/v1/profile/$requestId",
+            ThisUser.userInfo.token,
+            null,
+            null
+        ).execute().get()
 
 
     fun GetUserKnopkaIds(
-        context: Context,
-        url: String, idOwner: Long,
-        idSender: Long, token: String
+        context: Context, idOwner: Long,
     ): String =
         SendGetRequest<Void>(
-            context,
-            "$url/$idOwner/knopkasId",
-            token,
+            ThisDb.dbInfo.url + "api/v1/user/$idOwner/knopkasId",
+            ThisUser.userInfo.token,
             null,
             null
         ).execute().get()
 
     fun GetUserKnopkas(
-        context: Context?,
-        url: String, id: Int, token: String,
         knopkasIdList: List<Long>
     ):
             String =
-        SendGetRequest<Long>(context, "$url/knopka/getbyids", token, knopkasIdList, "ids").execute()
+        SendGetRequest(
+            ThisDb.dbInfo.url + "api/v1/knopka/getbyids",
+            ThisUser.userInfo.token,
+            knopkasIdList,
+            "ids"
+        ).execute()
             .get()
 
     fun GetUserFriendsIds(
-        context: Context,
-        url: String,
-        idSender: Int,
         idOwner: Int,
-        token: String
     ):
             String =
         SendGetRequest<Nothing>(
-            context,
-            "$url/$idOwner/friendsId",
-            token,
+            ThisDb.dbInfo.url + "api/v1/user/$idOwner/friendsId",
+            ThisUser.userInfo.token,
             null,
             null
         ).execute()
             .get()
 
     fun GetUserFriends(
-        context: Context,
-        url: String, id: Int, token: String,
         friendsIdList: List<Long>
     ):
             String =
-        SendGetRequest<Long>(
-            context,
-            "$url/friends",
-            token,
+        SendGetRequest(
+            ThisDb.dbInfo.url + "api/v1/user/friends",
+            ThisUser.userInfo.token,
             friendsIdList,
             "friendsId"
         ).execute().get()
 
     fun GetAllKnopkas(
-        context: Context,
-        url: String, idSender: Long, token: String
     ): String =
-        SendGetRequest<Void>(context, "$url/getall", token, null, null).execute().get()
+        SendGetRequest<Void>(
+            ThisDb.dbInfo.url + "api/v1/knopka/getall",
+            ThisUser.userInfo.token,
+            null,
+            null
+        ).execute().get()
 
     fun GetKnopkaDescription(
-        context: Context,
-        url: String,
-        token: String, requestId: Long, knopkaUserId: Long, paramName: String,
+        requestId: Long, knopkaUserId: Long, paramName: String,
     ): String {
         val al = ArrayList<Long>()
         al.add(knopkaUserId)
-        Log.d("AAAAAAAAAAAAAAAA", "$url/description/$requestId")
-        return SendGetRequest<Long>(
-            context,
-            "$url/description/$requestId",
-            token,
+
+        return SendGetRequest(
+            ThisDb.dbInfo.url + "api/v1/description/$requestId",
+            ThisUser.userInfo.token,
             al,
             paramName
         ).execute()
@@ -96,8 +92,6 @@ object Requests {
     }
 
     fun GetKnopkasByTag(
-        url: String,
-        token: String,
         tag: String,
         knopkaUserId: Long,
         parameterName: String?,
@@ -106,11 +100,10 @@ object Requests {
         val al = ArrayList<Any>()
         al.add(tag)
         al.add(knopkaUserId)
-        Log.d("tagReq", tag)
+
         return SendGetRequest(
-            null,
-            "$url/description/tag",
-            token,
+            ThisDb.dbInfo.url + "api/v1/description/tag",
+            ThisUser.userInfo.token,
             al,
             parameterName,
             parameterName2
@@ -119,17 +112,26 @@ object Requests {
     }
 
     fun GetAllExistingRegions(
-        url: String, token: String
-    ): String = SendGetRequest<Void>(null, url, token, null, null).execute().get()
+    ): String = SendGetRequest<Void>(
+        ThisDb.dbInfo.url + "api/v1/click/validregions",
+        ThisUser.userInfo.token,
+        null,
+        null
+    ).execute().get()
 
-    fun GetKnopkasByRegion(url: String, region: String, token: String): String {
-        return SendGetRequest<Long>(null, "$url/click/top/$region", token, null, null).execute().get()
+    fun GetKnopkasByRegion(region: String): String {
+        return SendGetRequest<Long>(
+            ThisDb.dbInfo.url + "api/v1/click/top/$region",
+            ThisUser.userInfo.token,
+            null,
+            null
+        ).execute()
+            .get()
     }
 
     // posts
     fun PostKnopkaRequest(
-        context: Context,
-        url: String, id: Int, token: String,
+        id: Long,
         requestBodyMap: Map<String, String>
     ): String {
         val knopkaDTO: RequestBody = RequestBody.create(
@@ -137,9 +139,8 @@ object Requests {
             requestBodyMap.toString().replace("=", ":")
         )
         return SendPostRequest(
-            context,
-            url,
-            token,
+            ThisDb.dbInfo.url + "api/v1",
+            ThisUser.userInfo.token,
             knopkaDTO,
             id.toString(),
             "knopkaUserId"
@@ -149,29 +150,7 @@ object Requests {
     }
 
 
-    fun PostDescriptionRequest(
-        context: Context,
-        url: String, idButton: Long, token: String,
-        requestBodyMap: Map<String, String>
-    ): String {
-        val descriptionDTO: RequestBody = RequestBody.create(
-            MediaType.parse("application/json"),
-            requestBodyMap.toString().replace("=", ":")
-        )
-        return SendPostRequest(
-            context,
-            "$url/$idButton",
-            token,
-            descriptionDTO,
-            idButton.toString(),
-            ""
-        ).execute()
-            .get()?.body()
-            ?.string().toString()
-    }
-
     fun PostBatchRequest(
-        url: String, id: Int, token: String,
         requestBodyMap: Map<String, Any?>
     ): Response {
         val batchDTO: RequestBody = RequestBody.create(
@@ -179,9 +158,8 @@ object Requests {
             requestBodyMap.toString().replace("=", ":")
         )
         return SendPostRequest(
-            null,
-            url,
-            token,
+            ThisDb.dbInfo.url + "api/v1/click/batch",
+            ThisUser.userInfo.token,
             batchDTO,
             null,
             null
@@ -192,7 +170,7 @@ object Requests {
     // puts
     fun PutDescriptionRequest(
         context: Context,
-        url: String, idButton: Long, token: String,
+        idButton: Long,
         requestBodyMap: Map<String, Any?>
     ): String {
         Log.d("req", requestBodyMap.toString())
@@ -202,8 +180,8 @@ object Requests {
         )
         return SendPutRequest(
             context,
-            "$url/$idButton",
-            token,
+            ThisDb.dbInfo.url + "api/v1/description/$idButton",
+            ThisUser.userInfo.token,
             descriptionDTO,
             idButton.toString(),
             ""
@@ -215,32 +193,37 @@ object Requests {
 
     fun PutChangeInfoRequest(
         context: Context,
-        url: String, id: Int, token: String,
+        id: Long,
         requestBodyMap: Map<String, String>
     ): String {
         val requestDTO: RequestBody = RequestBody.create(
             MediaType.parse("application/json"),
             requestBodyMap.toString().replace("=", ":")
         )
-        return SendPutRequest(context, "$url/$id", token, requestDTO, null, null).execute().get()
+        return SendPutRequest(
+            context,
+            ThisDb.dbInfo.url + "api/v1/profile/$id",
+            ThisUser.userInfo.token,
+            requestDTO,
+            null,
+            null
+        ).execute().get()
             ?.body()
             ?.string().toString()
     }
 
     fun PutAddFriendRequest(
         context: Context,
-        url: String, id: Int, token: String,
         friendId: Long
     ): String {
         val requestDTO: RequestBody = RequestBody.create(
             MediaType.parse("application/json"),
             Json.Default.toString().replace("=", ":")
         )
-        Log.d("URL: ", "$url/$id")
         return SendPutRequest(
             context,
-            "$url/$id",
-            token, requestDTO,
+            ThisDb.dbInfo.url + "api/v1/user/$friendId",
+            ThisUser.userInfo.token, requestDTO,
             friendId.toString(),
             "friendId"
         ).execute().get()
@@ -249,7 +232,6 @@ object Requests {
     }
 
     internal class SendGetRequest<T>(
-        private val context: Context?,
         private val url: String,
         private val token: String,
         private val parameters: List<T>?,
@@ -258,7 +240,6 @@ object Requests {
 
     ) :
         AsyncTask<Void, Void, String>() {
-        //        private val pdia = ProgressDialog(context);
         override fun doInBackground(vararg params: Void?): String {
             val client = OkHttpClient()
             val httpBuilder = HttpUrl.parse(url)!!.newBuilder()
@@ -275,19 +256,6 @@ object Requests {
                 }
             }
 
-//            if (parameters != null && parameterName != null) {
-//                for (param in parameters) {
-//                    Log.d("pARARM", param.toString())
-//                    httpBuilder.addQueryParameter(parameterName, param.toString())
-//                }
-//            }
-//            if (parameterName2 != null) {
-//                httpBuilder.addQueryParameter(
-//                    parameterName2,
-//                    parameters?.get(parameters.size - 1)?.toString()
-//                )
-//
-//            }
 
             val request =
                 Request.Builder().url(httpBuilder.build()).addHeader("token", token)
@@ -300,20 +268,9 @@ object Requests {
             return response.body()?.string().toString()
         }
 
-        override fun onPreExecute() {
-            super.onPreExecute()
-//            pdia.setMessage("Loading...")
-//            pdia.show()
-        }
-
-        override fun onPostExecute(result: String?) {
-//            pdia.dismiss()
-        }
-
     }
 
     internal class SendPostRequest(
-        private val context: Context?,
         private val url: String,
         private val token: String,
         private val requestDTO: RequestBody,
@@ -321,7 +278,6 @@ object Requests {
         private val parameterName: String?
     ) :
         AsyncTask<Void, Void, Response>() {
-//        private val pdia = ProgressDialog(context);
 
         override fun doInBackground(vararg params: Void?): Response? {
             val client = OkHttpClient()
@@ -345,21 +301,11 @@ object Requests {
             return response
         }
 
-        override fun onPreExecute() {
-            super.onPreExecute()
-//            pdia.setMessage("Loading...")
-//            pdia.show()
-        }
-
-        override fun onPostExecute(result: Response) {
-//            pdia.dismiss()
-        }
     }
 
 
     internal class SendPutRequest(
-        private val context: Context,
-
+        context: Context,
         private val url: String,
         private val token: String,
         private val requestDTO: RequestBody?,
@@ -369,7 +315,7 @@ object Requests {
         AsyncTask<Void, Void, Response?>() {
         private val pdia = ProgressDialog(context);
 
-        //
+
         override fun doInBackground(vararg params: Void?): Response? {
 
             val client = OkHttpClient.Builder().connectTimeout(100, TimeUnit.SECONDS)
@@ -416,11 +362,8 @@ object Requests {
         Log.d("RESPONSE STATUS CODE", code.toString())
 
         when (code) {
-            400 -> {
-
-            }
-            200 -> {
-
+            in 400..505 -> {
+                TODO()
             }
         }
     }

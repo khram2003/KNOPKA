@@ -1,5 +1,6 @@
 package com.example.Auth
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.Dialog
@@ -39,6 +40,8 @@ import kotlinx.serialization.json.Json
 import java.util.*
 
 import android.location.Geocoder
+import android.widget.Toast.LENGTH_LONG
+import java.io.IOException
 
 
 private val jsonFormat = Json {
@@ -215,12 +218,11 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
                                 "\"id\"" to units.id.toString()
 //                                "\"LocalDateTime\"" to "\"" + mapData["LocalDateTime"] + "\""
                             )
-                            Log.d("before sendPost", "here")
+
                             val res = sendPostButtonRequest(
                                 m as Map<String, String>
                             ) // the end of the knpokas list
 
-                            //TODO
                             val knopka =
                                 adapter.addKnopka(
                                     Knopka(
@@ -228,7 +230,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
                                         "",
                                         0,
                                         res,
-                                        1
+                                        ThisUser.userInfo.id
                                     )
                                 ) // 1 = this userID
 
@@ -293,7 +295,9 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun sendGetUserProfileInfo() {
-        val result = GetUserProfileInfo(this, "http://10.0.2.2:8080/api/v1/profile", 1, "111", 1)
+        val result = GetUserProfileInfo(
+            ThisUser.userInfo.id
+        )
         val mapData: User = jsonFormat.decodeFromString(result)
         units.textViewName?.text = mapData.nickname
         units.textViewBio?.text = mapData.bio
@@ -308,7 +312,10 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendPostButtonRequest(param: Map<String, String>): Long {
         val result =
-            Requests.PostKnopkaRequest(this, "http://10.0.2.2:8080/api/v1/knopka", 1, "111", param)
+            Requests.PostKnopkaRequest(
+                ThisUser.userInfo.id,
+                param
+            )
         return result.toLong()
     }
 
@@ -321,9 +328,7 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
         val result =
             Requests.PutDescriptionRequest(
                 this,
-                "http://10.0.2.2:8080/api/v1/description",
                 idBtn,
-                "111",
                 param
             )
         return result
@@ -332,13 +337,20 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendPutChangeInfoRequest(param: Map<String, String>) =
-        Requests.PutChangeInfoRequest(this, "http://10.0.2.2:8080/api/v1/profile", 1, "111", param)
+        Requests.PutChangeInfoRequest(
+            this,
+            ThisUser.userInfo.id,
+            param
+        )
 
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendGetUserKnopkaIds(): List<Long> {
         val result =
-            Requests.GetUserKnopkaIds(this, "http://10.0.2.2:8080/api/v1/user", 1, 1, "111")
-        Log.d("KNOKA IDS", result.toString())
+            Requests.GetUserKnopkaIds(
+                this,
+                ThisUser.userInfo.id,
+            )
+        Log.d("KNOKA IDS", result)
         val knopkaIdsList =
             jsonFormat.decodeFromString<List<Long>>(result)
         return knopkaIdsList
@@ -348,14 +360,10 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     fun sendGetUserKnopkas(knopkasIdList: List<Long>): List<Knopka> {
         val result =
             Requests.GetUserKnopkas(
-                this,
-                "http://10.0.2.2:8080/api/v1",
-                1,
-                "111",
                 knopkasIdList
             )
-        Log.d("KNOPKAS", result.toString())
-        val knopkasList = stringToButtons(result.toString())
+        Log.d("KNOPKAS", result)
+        val knopkasList = stringToButtons(result)
         return knopkasList
     }
 
@@ -440,14 +448,18 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
     fun addBatchToStorage(batch: Batch) {
         val sharedPref = getSharedPreferences("mypref1", 0)
         val editor = sharedPref.edit()
+
         val batches: List<Batch> =
             jsonFormat.decodeFromString(sharedPref.getString("batches", "").toString())
+
+        removeBatchFromStorage()
+
         batches.plus(batch);
         editor.putString("batches", jsonFormat.encodeToString(batches))
         editor.apply()
     }
 
-    fun removeBatchesFromStorage() {
+    fun removeBatchFromStorage() {
         val sharedPref = getSharedPreferences("mypref1", 0)
         val editor = sharedPref.edit()
 
@@ -536,4 +548,6 @@ class BioActivity : AppCompatActivity(), OnKnopkaClickListener {
             geocoder.getFromLocation(lat, lng, 1)
         return addresses[0].countryName
     }
+
+
 }

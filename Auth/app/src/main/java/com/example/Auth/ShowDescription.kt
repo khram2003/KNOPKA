@@ -26,9 +26,6 @@ class ShowDescription : AppCompatActivity(), OnTagClickListener {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        val inflater = this.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-//        Log.d("layoutinfl", inflater.toString())
-//        binding = ActivityPopUpInfoBinding.inflate(inflater)
     }
 
     fun showDescription(dialog: Dialog, item: Knopka, cnxt: AppCompatActivity) {
@@ -38,12 +35,8 @@ class ShowDescription : AppCompatActivity(), OnTagClickListener {
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val name = dialog.findViewById<TextView>(R.id.KnopkaName)
         val userProfileInfo = Requests.GetUserProfileInfo(
-            context,
-            "http://10.0.2.2:8080/api/v1/profile",
-            1,
-            "111",
-            1
-        ) //TODO NOT 1
+            item.authorId
+        )
         val mapData: User = jsonFormat.decodeFromString(userProfileInfo.toString())
         name.text = item.name
 
@@ -58,11 +51,8 @@ class ShowDescription : AppCompatActivity(), OnTagClickListener {
             startActivity(context, authorIntent, null)
         }
         val responseDescr = Requests.GetKnopkaDescription(
-            context,
-            "http://10.0.2.2:8080/api/v1",
-            "111",
             item.id,
-            1,
+            ThisUser.userInfo.id,
             "knopkaUserId"
         )
 

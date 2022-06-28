@@ -141,9 +141,6 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
     fun sendGetUserProfileInfo() {
         val result =
             Requests.GetUserProfileInfo(
-                this, "http://10.0.2.2:8080/api/v1/profile",
-                1,
-                "111",
                 units.id
             )
         val mapData: User = jsonFormat.decodeFromString(result.toString())
@@ -161,7 +158,7 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendGetUserKnopkaIds(): List<Long> {
         val result =
-            Requests.GetUserKnopkaIds(this, "http://10.0.2.2:8080/api/v1/user", units.id, 1, "111")
+            Requests.GetUserKnopkaIds(this, units.id)
         Log.d("KNOKA IDS", result.toString())
         val knopkaIdsList =
             jsonFormat.decodeFromString<List<Long>>(result)
@@ -172,10 +169,6 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
     fun sendGetUserKnopkas(knopkasIdList: List<Long>): List<Knopka> {
         val result =
             Requests.GetUserKnopkas(
-                this,
-                "http://10.0.2.2:8080/api/v1",
-                1,
-                "111",
                 knopkasIdList
             )
         Log.d("KNOPKAS", result.toString())
@@ -183,8 +176,6 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
         return knopkaIdsList
     }
 
-//    @RequiresApi(Build.VERSION_CODES.N)
-//    fun sendGetUserFriendsList() = getUserFriendsList().execute()
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.add_friend_menu, menu)
@@ -200,9 +191,6 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
                 //TODO
                 Requests.PutAddFriendRequest(
                     this,
-                    "http://10.0.2.2:8080/api/v1/user",
-                    1,
-                    "111",
                     units.id
                 )
             }
@@ -255,7 +243,7 @@ class FriendBioActivity : AppCompatActivity(), OnKnopkaClickListener {
         editor.apply()
     }
 
-    fun removeBatchesFromStorage(){
+    fun removeBatchesFromStorage() {
         val sharedPref = getSharedPreferences("mypref1", 0)
         val editor = sharedPref.edit()
 

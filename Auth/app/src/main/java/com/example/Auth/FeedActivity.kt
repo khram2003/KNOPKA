@@ -81,7 +81,7 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         newListReg = adapter.knopkaList
         tmpListReg = arrayListOf<Knopka>()
 
-        val res = GetAllExistingRegions("http://10.0.2.2:8080/api/v1/click/validregions", "111")
+        val res = GetAllExistingRegions()
         Log.d("EXISTING REGIONS", res)
         existingRegions = mutableListOf("World")
 
@@ -131,8 +131,8 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
     @RequiresApi(Build.VERSION_CODES.N)
     fun sendGetAllKnopkas(): List<Knopka> {
         val result =
-            Requests.GetAllKnopkas(this, "http://10.0.2.2:8080/api/v1/knopka", 1, "111")
-        Log.d("KNOPKAS", result.toString())
+            Requests.GetAllKnopkas()
+        Log.d("KNOPKAS", result)
         val knopkasList = jsonFormat.decodeFromString<List<Knopka>>(result)
         newList = knopkasList as ArrayList<Knopka>
         return knopkasList
@@ -144,7 +144,6 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         val searchText = p0?.toLowerCase(Locale.getDefault())
         if (searchText!!.isNotEmpty()) {
             val result = GetKnopkasByTag(
-                "http://10.0.2.2:8080/api/v1", "111",
                 searchText, 1, "tag", "knopkaUserId"
             ) // todo knopkauserId 1
             val foundKnopkasIds = jsonFormat.decodeFromString<List<Long>>(result)
@@ -152,9 +151,6 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
             if (foundKnopkasIds.isNotEmpty()) {
                 tmpList = jsonFormat.decodeFromString(
                     GetUserKnopkas(
-                        null, "http://10.0.2.2:8080/api/v1",
-                        1, /*todo not 1*/
-                        "111",
                         foundKnopkasIds
                     )
                 )
@@ -182,15 +178,12 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
         } else {
             tmpListReg.clear()
             if (existingRegions.contains(p0)) {
-                val result = GetKnopkasByRegion("http://10.0.2.2:8080/api/v1", p0, "111")
+                val result = GetKnopkasByRegion(p0)
                 val foundKnopkasIds = jsonFormat.decodeFromString<List<Long>>(result)
                 if (foundKnopkasIds.isNotEmpty()) {
                     Log.d("REGION FILTER", foundKnopkasIds.toString())
                     tmpList = jsonFormat.decodeFromString(
                         GetUserKnopkas(
-                            null, "http://10.0.2.2:8080/api/v1",
-                            1, /*todo not 1*/
-                            "111",
                             foundKnopkasIds
                         )
                     )
@@ -303,18 +296,23 @@ class FeedActivity : AppCompatActivity(), OnKnopkaClickListener {
     fun addBatchToStorage(batch: Batch) {
         val sharedPref = getSharedPreferences("mypref1", 0)
         val editor = sharedPref.edit()
+
         val batches: List<Batch> =
             jsonFormat.decodeFromString(sharedPref.getString("batches", "").toString())
+
+        removeBatchFromStorage()
+
         batches.plus(batch);
         editor.putString("batches", jsonFormat.encodeToString(batches))
         editor.apply()
     }
 
-    fun removeBatchesFromStorage(){
+    fun removeBatchFromStorage() {
         val sharedPref = getSharedPreferences("mypref1", 0)
         val editor = sharedPref.edit()
 
         editor.putString("batches", jsonFormat.encodeToString(BatchesToAdd.clicks))
         editor.apply()
     }
+
 }
